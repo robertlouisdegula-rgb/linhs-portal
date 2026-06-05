@@ -63,4 +63,24 @@ public class DocumentRequest {
     public void setDocumentDetails(String documentDetails) {
         this.documentType = documentDetails;
     }
+
+    public void setContactNumber(String contactNumber) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'setContactNumber'");
+    }
+
+    public void setAcademicYear(String academicYear) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'setAcademicYear'");
+    }
+
+    public void setGradeSection(String gradeSection) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'setGradeSection'");
+    }
+
+    public void setPurpose(String purpose) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'setPurpose'");
+    }
 }

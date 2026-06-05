@@ -393,4 +393,17 @@ public class PageController {
             return state;
         }
     }
+
+    public class GuidanceRecord {
+
+        public String getInfractionDescription() {
+            // TODO Auto-generated method stub
+            throw new UnsupportedOperationException("Unimplemented method 'getInfractionDescription'");
+        }
+
+        public LocalDateTime getLogDate() {
+            // TODO Auto-generated method stub
+            throw new UnsupportedOperationException("Unimplemented method 'getLogDate'");
+        }
+    }
 }

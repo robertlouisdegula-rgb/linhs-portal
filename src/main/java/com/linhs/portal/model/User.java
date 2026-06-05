@@ -98,4 +98,9 @@ public class User {
         this.roleName = role;
     }
 
+    public User orElse(Object object) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'orElse'");
+    }
+
 }

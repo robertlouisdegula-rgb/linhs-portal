@@ -44,4 +44,14 @@ public class GuidanceRecord {
     public void setLoggedAt(LocalDateTime loggedAt) { 
         this.createdAt = loggedAt; 
     }
+
+    public String getInfractionDescription() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getInfractionDescription'");
+    }
+
+    public LocalDateTime getLogDate() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getLogDate'");
+    }
 }
