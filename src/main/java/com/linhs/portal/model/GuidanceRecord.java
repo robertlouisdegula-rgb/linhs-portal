@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 
 @Entity
 public class GuidanceRecord {
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -13,10 +14,15 @@ public class GuidanceRecord {
     private String studentName;
     private String incidentDetails;
     private String actionTaken;
+    
+    // --> ADDED THE MISSING STATUS FIELD <--
+    private String status; 
+    
     private LocalDateTime createdAt;
 
     public GuidanceRecord() {}
 
+    // Standard Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -32,11 +38,14 @@ public class GuidanceRecord {
     public String getActionTaken() { return actionTaken; }
     public void setActionTaken(String actionTaken) { this.actionTaken = actionTaken; }
 
+    // GETTER AND SETTER FOR STATUS
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
+
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
 
     // --- ALIAS METHODS TO SATISFY THE CONTROLLER ---
-    
     public LocalDateTime getLoggedAt() { 
         return createdAt; 
     }
@@ -50,6 +59,7 @@ public class GuidanceRecord {
     }
 
     public LocalDateTime getLogDate() {
-        return this.createdAt;
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getLogDate'");
     }
 }
