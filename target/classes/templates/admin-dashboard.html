@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LINHS - Main Admin Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        darkBg: '#090d0a',
+                        cardBg: '#111612',
+                        emeraldAccent: '#10b981',
+                        goldAccent: '#fbbf24',
+                        dangerRed: '#ef4444',
+                        panelBorder: '#1f2937'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #090d0a;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #1f2937;
+            border-radius: 3px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #10b981;
+        }
+    </style>
+</head>
+
+<body class="bg-darkBg text-white antialiased font-sans flex h-screen overflow-hidden relative">
+
+    <div
+        class="md:hidden fixed top-0 left-0 right-0 h-16 bg-cardBg border-b border-zinc-800 flex items-center justify-between px-6 z-40">
+        <div class="flex items-center gap-3">
+            <i class="fas fa-user-shield text-emeraldAccent"></i>
+            <span class="text-sm font-bold tracking-wide text-zinc-200">LINHS Admin</span>
+        </div>
+        <button onclick="toggleMobileSidebar()" class="text-zinc-400 hover:text-white p-2">
+            <i id="mobile-menu-icon" class="fas fa-bars text-lg"></i>
+        </button>
+    </div>
+
+    <aside id="sidebar"
+        class="w-64 bg-cardBg border-r border-zinc-800 flex flex-col justify-between fixed md:sticky top-0 bottom-0 left-0 z-40 transition-transform duration-300 transform -translate-x-full md:translate-x-0 pt-16 md:pt-0 h-full">
+        <div>
+            <div class="p-6 flex items-center gap-3 border-b border-zinc-800">
+                <div
+                    class="w-8 h-8 rounded-full bg-emeraldAccent/10 border border-emeraldAccent/30 flex items-center justify-center">
+                    <i class="fas fa-user-shield text-emeraldAccent text-sm"></i>
+                </div>
+                <div>
+                    <h1 class="text-sm font-bold text-goldAccent" th:text="${userName}">Admin Name</h1>
+                    <p class="text-[10px] text-zinc-400" th:text="${userEmail}">admin@linhs.edu.ph</p>
+                </div>
+            </div>
+
+            <nav class="p-4 space-y-1" id="sidebar-nav">
+                <button onclick="switchTab('overview')" id="btn-overview"
+                    class="tab-btn w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-semibold transition bg-emeraldAccent/10 text-emeraldAccent border border-emeraldAccent/20">
+                    <i class="fas fa-chart-pie w-4"></i> System Overview
+                </button>
+                <button onclick="switchTab('advisers')" id="btn-advisers"
+                    class="tab-btn w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-semibold transition text-zinc-400 hover:text-white hover:bg-zinc-800/50">
+                    <i class="fas fa-chalkboard-teacher w-4"></i> Manage Advisers
+                </button>
+                <button onclick="switchTab('cms')" id="btn-cms"
+                    class="tab-btn w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-semibold transition text-zinc-400 hover:text-white hover:bg-zinc-800/50">
+                    <i class="fas fa-window-restore w-4"></i> Homepage CMS
+                </button>
+            </nav>
+        </div>
+        <div class="p-4 border-t border-zinc-800">
+            <a href="/logout"
+                class="block w-full text-center px-4 py-2 border border-dangerRed/30 text-dangerRed hover:bg-dangerRed/10 rounded-lg text-sm transition font-medium">
+                <i class="fas fa-sign-out-alt me-2"></i>Secure Logout
+            </a>
+        </div>
+    </aside>
+
+    <main
+        class="flex-1 overflow-y-auto p-6 md:p-8 mt-16 md:mt-0 custom-scrollbar flex flex-col justify-between min-h-screen">
+        <div>
+            <header class="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-8">
+                <div>
+                    <h2 id="page-title" class="text-2xl font-bold tracking-tight">System Overview</h2>
+                    <p id="page-subtitle" class="text-sm text-zinc-400">Institutional Administration & Live Enrollment
+                    </p>
+                </div>
+                <div th:if="${param.success != null}"
+                    class="bg-emeraldAccent/10 text-emeraldAccent px-4 py-2 rounded-lg border border-emeraldAccent/20 text-sm flex items-center gap-2 shadow-sm self-start sm:self-center">
+                    <i class="fas fa-check-circle"></i>
+                    <span>System updates updated and broadcasted successfully.</span>
+                </div>
+            </header>
+
+            <section id="tab-overview" class="tab-content space-y-8">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="bg-cardBg p-6 rounded-xl border border-zinc-800 shadow-sm">
+                        <div class="flex justify-between items-start mb-2">
+                            <p class="text-zinc-400 text-xs font-semibold uppercase tracking-wider">Total Enrolled
+                                Students</p>
+                            <i class="fas fa-user-graduate text-zinc-600 text-sm"></i>
+                        </div>
+                        <p class="text-3xl font-bold text-white tracking-tight" th:text="${totalStudents}">0</p>
+                    </div>
+                    <div class="bg-cardBg p-6 rounded-xl border border-zinc-800 shadow-sm">
+                        <div class="flex justify-between items-start mb-2">
+                            <p class="text-zinc-400 text-xs font-semibold uppercase tracking-wider">System Accounts
+                                Scope</p>
+                            <i class="fas fa-users-cog text-zinc-600 text-sm"></i>
+                        </div>
+                        <p class="text-3xl font-bold text-white tracking-tight" th:text="${#lists.size(facultyList)}">0
+                        </p>
+                    </div>
+                    <div class="bg-cardBg p-6 rounded-xl border border-zinc-800 shadow-sm sm:col-span-2 lg:col-span-1">
+                        <div class="flex justify-between items-start mb-2">
+                            <p class="text-zinc-400 text-xs font-semibold uppercase tracking-wider">Active Sections &
+                                Advisers</p>
+                            <i class="fas fa-check-circle text-emeraldAccent/70 text-sm"></i>
+                        </div>
+                        <p class="text-3xl font-bold text-emeraldAccent tracking-tight" th:text="${activeAdvisers}">0
+                        </p>
+                    </div>
+                </div>
+
+                <div class="bg-cardBg rounded-xl border border-zinc-800 overflow-hidden shadow-sm">
+                    <div class="p-5 border-b border-zinc-800 bg-zinc-900/20 flex justify-between items-center">
+                        <h3 class="font-bold text-sm tracking-wide text-zinc-200">Faculty & System Privilege Assignment
+                            Directory</h3>
+                    </div>
+                    <div class="overflow-x-auto custom-scrollbar">
+                        <table class="w-full text-left text-sm min-w-[700px]">
+                            <thead
+                                class="bg-zinc-900/50 text-zinc-400 text-xs uppercase tracking-wider border-b border-zinc-800">
+                                <tr>
+                                    <th class="px-6 py-4">Name</th>
+                                    <th class="px-6 py-4">Email Address</th>
+                                    <th class="px-6 py-4">System Role</th>
+                                    <th class="px-6 py-4">Section Scope</th>
+                                    <th class="px-6 py-4 text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-zinc-800/60">
+                                <tr th:each="user : ${facultyList}" th:if="${user.role.toString() != 'ADVISER'}"
+                                    class="hover:bg-zinc-800/10 transition">
+                                    <td class="px-6 py-4 font-semibold text-white" th:text="${user.name}">Name</td>
+                                    <td class="px-6 py-4 text-zinc-400 font-mono text-xs" th:text="${user.email}">Email
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <span
+                                            class="inline-block px-2.5 py-0.5 text-[10px] font-bold rounded tracking-wide uppercase bg-zinc-800 text-zinc-400"
+                                            th:classappend="${user.role.toString() == 'ADMIN_PRINCIPAL'} ? '!bg-goldAccent/10 !text-goldAccent border border-goldAccent/20' : ''"
+                                            th:text="${user.role}">ROLE</span>
+                                    </td>
+                                    <td class="px-6 py-4 text-emeraldAccent font-medium"
+                                        th:text="${user.assignedSection}">None</td>
+                                    <td class="px-6 py-4 text-right">
+                                        <button type="button"
+                                            class="text-goldAccent hover:text-yellow-300 text-xs font-bold transition flex items-center gap-1 ml-auto"
+                                            th:data-id="${user.id}" th:data-name="${user.name}"
+                                            th:data-email="${user.email}" th:data-section="${user.assignedSection}"
+                                            onclick="openEditor(this.getAttribute('data-id'), this.getAttribute('data-name'), this.getAttribute('data-email'), this.getAttribute('data-section'))">
+                                            <i class="fas fa-user-edit text-[10px]"></i> Edit Account
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <section id="tab-advisers" class="tab-content hidden space-y-6">
+                <div
+                    class="flex flex-col sm:flex-row justify-between sm:items-center bg-zinc-900/20 p-4 border border-zinc-800 rounded-xl gap-4">
+                    <div>
+                        <h4 class="font-bold text-sm">Adviser Accounts Control</h4>
+                        <p class="text-xs text-zinc-400">Deploy, provisions, and monitor sections live database metrics.
+                        </p>
+                    </div>
+                    <button onclick="openAddAdviserModal()"
+                        class="px-4 py-2 bg-emeraldAccent hover:bg-emerald-400 text-darkBg text-xs font-bold rounded-lg transition shadow-md flex items-center gap-2 self-start sm:self-center">
+                        <i class="fas fa-plus-circle"></i> Provision New Adviser
+                    </button>
+                </div>
+
+                <div class="bg-cardBg rounded-xl border border-zinc-800 overflow-hidden shadow-sm">
+                    <div
+                        class="p-4 border-b border-zinc-800 bg-zinc-900/20 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                        <div>
+                            <h5 class="font-bold text-sm">Adviser &rarr; Section &rarr; Students Browser</h5>
+                            <p class="text-xs text-zinc-400 mt-1">Click a section to see all enrolled students for that
+                                adviser.</p>
+                        </div>
+                    </div>
+
+                    <div class="p-4">
+                        <div class="flex flex-col lg:flex-row gap-4">
+                            <div class="lg:w-1/3">
+                                <div class="bg-zinc-900/30 border border-zinc-800 rounded-xl p-3">
+                                    <h6 class="text-xs text-zinc-300 font-bold uppercase tracking-wider mb-3">Advisers
+                                    </h6>
+                                    <div class="space-y-2" id="adviserList">
+                                        <div th:each="adv : ${facultyList}" th:if="${adv.role.toString() == 'ADVISER'}"
+                                            th:data-adviser-id="${adv.id}" th:data-adviser-name="${adv.name}"
+                                            th:data-adviser-section="${adv.assignedSection}"
+                                            onclick="selectAdviser(this)"
+                                            class="adviser-card p-3 rounded-lg border border-zinc-800 bg-zinc-900/50 hover:bg-zinc-800/40 cursor-pointer transition flex items-center justify-between">
+                                            <div>
+                                                <p class="text-xs font-bold text-white" th:text="${adv.name}">Adviser
+                                                    Name</p>
+                                                <p class="text-[10px] text-zinc-400 mt-0.5 font-mono"
+                                                    th:text="${adv.email}">Email</p>
+                                            </div>
+                                            <span
+                                                class="text-[10px] bg-emeraldAccent/10 text-emeraldAccent font-semibold px-2 py-0.5 rounded border border-emeraldAccent/20"
+                                                th:text="${adv.assignedSection}">Section</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="lg:w-2/3 flex flex-col">
+                                <div class="bg-zinc-900/30 border border-zinc-800 rounded-xl p-4 flex-1">
+                                    <div class="flex justify-between items-center border-b border-zinc-800 pb-3 mb-4">
+                                        <div>
+                                            <span
+                                                class="text-[10px] uppercase font-bold tracking-wider text-zinc-400">Class
+                                                Roster For:</span>
+                                            <h6 id="selectedAdviserName" class="text-sm font-bold text-goldAccent">
+                                                &mdash;</h6>
+                                        </div>
+                                        <div class="text-right">
+                                            <span id="selectedAdviserSection"
+                                                class="inline-block px-2.5 py-0.5 bg-zinc-800 border border-zinc-700 rounded text-xs font-bold text-white">None</span>
+                                            <p id="studentsCountLabel" class="text-[10px] text-zinc-400 mt-1">0 students
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div class="overflow-x-auto custom-scrollbar">
+                                        <table class="w-full text-left text-sm min-w-[500px]">
+                                            <thead
+                                                class="bg-zinc-900/50 text-zinc-400 text-xs uppercase tracking-wider border-b border-zinc-800">
+                                                <tr>
+                                                    <th class="px-4 py-3">LRN</th>
+                                                    <th class="px-4 py-3">Student Name</th>
+                                                    <th class="px-4 py-3">Section</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="studentsTableBody" class="divide-y divide-zinc-800/60">
+                                                <tr>
+                                                    <td class="px-4 py-4 text-muted" colspan="3">Select an adviser on
+                                                        the left.</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                <script th:inline="javascript">
+                                    /*<![CDATA[*/
+                                    var studentsByAdviserIdData = /*[[${studentsByAdviserId}]]*/ {};
+                                    /*]]>*/
+                                </script>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+                    <div th:each="adv : ${facultyList}" th:if="${adv.role.toString() == 'ADVISER'}"
+                        class="bg-cardBg border border-zinc-800 p-4 rounded-xl flex flex-col justify-between shadow-sm">
+                        <div>
+                            <div class="flex justify-between items-start mb-2">
+                                <h5 class="text-sm font-bold text-white" th:text="${adv.name}">Name</h5>
+                                <span
+                                    class="text-[10px] font-bold px-2 py-0.5 bg-zinc-900 border border-zinc-800 text-zinc-400 rounded uppercase tracking-wide">ADVISER</span>
+                            </div>
+                            <p class="text-xs text-zinc-400 font-mono" th:text="${adv.email}">Email</p>
+                            <div class="mt-3 flex items-center gap-2">
+                                <span class="text-[11px] font-semibold text-zinc-400">Class Scope:</span>
+                                <span
+                                    class="text-xs font-bold text-emeraldAccent bg-emeraldAccent/5 border border-emeraldAccent/10 px-2 py-0.5 rounded"
+                                    th:text="${adv.assignedSection}">Section</span>
+                            </div>
+                        </div>
+                        <div class="mt-5 pt-3 border-t border-zinc-800 flex items-center justify-between">
+                            <button type="button"
+                                class="text-goldAccent hover:text-yellow-300 text-xs font-bold transition flex items-center gap-1"
+                                th:data-id="${adv.id}" th:data-name="${adv.name}"
+                                th:data-section="${adv.assignedSection}"
+                                onclick="openAdviserEditor(this.getAttribute('data-id'), this.getAttribute('data-name'), this.getAttribute('data-section'))">
+                                <i class="fas fa-edit text-[10px]"></i> Change Section
+                            </button>
+                            <form action="/admin/delete-faculty" method="POST"
+                                onsubmit="return confirm('Revoke credentials and permanently delete account profile data sync?');">
+                                <input type="hidden" name="id" th:value="${adv.id}">
+                                <button type="submit"
+                                    class="text-dangerRed hover:text-red-400 text-xs font-bold transition flex items-center gap-1">
+                                    <i class="fas fa-user-minus text-[10px]"></i> Decommission
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="tab-cms" class="tab-content hidden space-y-8">
+                <div class="bg-cardBg p-6 rounded-xl border border-zinc-800 shadow-sm">
+                    <h4 class="font-bold text-base mb-2 text-goldAccent"><i
+                            class="fas fa-folder-open me-2"></i>Institutional Media & Public Document Repositories</h4>
+                    <p class="text-xs text-zinc-400 mb-6">Inbound portal configuration files deployed directly across
+                        specific application runtime context routes inside sections connected to the homepage template
+                        view parameters.</p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div
+                            class="p-4 border border-zinc-800 bg-zinc-900/30 rounded-xl flex justify-between items-center hover:border-zinc-700 transition">
+                            <div>
+                                <h5 class="text-sm font-semibold text-zinc-200">School Documents & Forms</h5>
+                                <p class="text-[11px] text-zinc-400 mt-0.5">PDF downloads section configuration.</p>
+                            </div>
+                            <button type="button" onclick="openCmsModal('document')"
+                                class="px-3 py-1.5 bg-zinc-800 text-zinc-200 hover:text-white rounded text-xs font-semibold border border-zinc-700 hover:bg-zinc-700 transition">Configure
+                                Files</button>
+                        </div>
+                        <div
+                            class="p-4 border border-zinc-800 bg-zinc-900/30 rounded-xl flex justify-between items-center hover:border-zinc-700 transition">
+                            <div>
+                                <h5 class="text-sm font-semibold text-zinc-200">Gallery Media Roll</h5>
+                                <p class="text-[11px] text-zinc-400 mt-0.5">Injected landing layout image cards.</p>
+                            </div>
+                            <button type="button" onclick="openCmsModal('gallery')"
+                                class="px-3 py-1.5 bg-zinc-800 text-zinc-200 hover:text-white rounded text-xs font-semibold border border-zinc-700 hover:bg-zinc-700 transition">Modify
+                                Photos</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <footer class="mt-12 pt-4 border-t border-zinc-900 text-center text-[11px] text-zinc-600 font-mono">
+            LINHS Portal Suite &bull; Institutional Admin Build Engine v2.6.4
+        </footer>
+    </main>
+
+    <div id="addAdviserModal"
+        class="hidden fixed inset-0 bg-black/80 flex items-center justify-center z-50 backdrop-blur-sm p-4">
+        <div class="bg-cardBg p-6 rounded-xl border border-zinc-700 w-full max-w-md shadow-2xl">
+            <div class="flex justify-between items-center mb-4 border-b border-zinc-800 pb-2">
+                <h3 class="text-base font-bold text-emeraldAccent flex items-center gap-2"><i
+                        class="fas fa-user-plus"></i> Provision Adviser Account</h3>
+                <button type="button" onclick="closeAddAdviserModal()" class="text-zinc-500 hover:text-white text-sm"><i
+                        class="fas fa-times"></i></button>
+            </div>
+            <form action="/admin/add-adviser" method="POST" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-zinc-400 mb-1">Adviser Complete Name</label>
+                    <input type="text" name="name" required
+                        class="w-full bg-darkBg border border-zinc-700 rounded p-2.5 text-sm text-white focus:border-emeraldAccent focus:outline-none"
+                        placeholder="e.g. Delos Santos, Juan">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-zinc-400 mb-1">Institutional Email Address</label>
+                    <input type="email" name="email" required
+                        class="w-full bg-darkBg border border-zinc-700 rounded p-2.5 text-sm text-white focus:border-emeraldAccent focus:outline-none font-mono"
+                        placeholder="username@linhs.edu.ph">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-zinc-400 mb-1">System Temporary Password</label>
+                    <input type="password" name="password" required
+                        class="w-full bg-darkBg border border-zinc-700 rounded p-2.5 text-sm text-white focus:border-emeraldAccent focus:outline-none"
+                        placeholder="••••••••••••">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-zinc-400 mb-1">Initial Advisory Section
+                        Assignment</label>
+                    <input type="text" name="assignedSection" required
+                        class="w-full bg-darkBg border border-zinc-700 rounded p-2.5 text-sm text-white focus:border-emeraldAccent focus:outline-none"
+                        placeholder="e.g. Grade 10 - Diamond">
+                </div>
+                <div class="flex justify-end gap-2 pt-4 border-t border-zinc-800 mt-6">
+                    <button type="button" onclick="closeAddAdviserModal()"
+                        class="px-4 py-2 text-xs font-bold text-zinc-400 hover:text-white">Cancel</button>
+                    <button type="submit"
+                        class="px-5 py-2 text-xs bg-emeraldAccent text-darkBg font-bold rounded-lg hover:bg-emerald-400 transition shadow-md">Deploy
+                        Account</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="editModal"
+        class="hidden fixed inset-0 bg-black/80 flex items-center justify-center z-50 backdrop-blur-sm p-4">
+        <div class="bg-cardBg p-6 rounded-xl border border-zinc-700 w-full max-w-md shadow-2xl">
+            <div class="flex justify-between items-center mb-4 border-b border-zinc-800 pb-2">
+                <h3 class="text-base font-bold text-goldAccent flex items-center gap-2"><i class="fas fa-edit"></i>
+                    Modify Faculty Credentials</h3>
+                <button type="button" onclick="closeEditor()" class="text-zinc-500 hover:text-white text-sm"><i
+                        class="fas fa-times"></i></button>
+            </div>
+            <form action="/admin/edit-faculty" method="POST" class="space-y-4">
+                <input type="hidden" id="edit-id" name="id">
+                <div>
+                    <label class="block text-xs font-semibold text-zinc-400 mb-1">Account Display Name</label>
+                    <input type="text" id="edit-name" name="name" required
+                        class="w-full bg-darkBg border border-zinc-700 rounded p-2.5 text-sm text-white focus:border-emeraldAccent focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-zinc-400 mb-1">Account Email System Login</label>
+                    <input type="email" id="edit-email" name="email" required
+                        class="w-full bg-darkBg border border-zinc-700 rounded p-2.5 text-sm text-white focus:border-emeraldAccent focus:outline-none font-mono">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-zinc-400 mb-1">Assigned Advisory Section
+                        Scope</label>
+                    <input type="text" id="edit-section" name="assignedSection"
+                        class="w-full bg-darkBg border border-zinc-700 rounded p-2.5 text-sm text-white focus:border-emeraldAccent focus:outline-none">
+                </div>
+                <div class="flex justify-end gap-2 pt-4 border-t border-zinc-800 mt-6">
+                    <button type="button" onclick="closeEditor()"
+                        class="px-4 py-2 text-xs font-bold text-zinc-400 hover:text-white">Cancel</button>
+                    <button type="submit"
+                        class="px-5 py-2 text-xs bg-goldAccent text-darkBg font-bold rounded-lg hover:bg-yellow-400 transition shadow-md">Apply
+                        Modifications</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="editAdviserModal"
+        class="hidden fixed inset-0 bg-black/80 flex items-center justify-center z-50 backdrop-blur-sm p-4">
+        <div class="bg-cardBg p-6 rounded-xl border border-zinc-700 w-full max-w-md shadow-2xl">
+            <div class="flex justify-between items-center mb-4 border-b border-zinc-800 pb-2">
+                <h3 class="text-base font-bold text-emeraldAccent"><i class="fas fa-chalkboard-teacher me-1"></i> Edit
+                    Advisory Track</h3>
+                <button type="button" onclick="closeAdviserEditor()" class="text-zinc-500 hover:text-white text-sm"><i
+                        class="fas fa-times"></i></button>
+            </div>
+            <form action="/admin/edit-adviser-section" method="POST" class="space-y-4">
+                <input type="hidden" id="adv-edit-id" name="id">
+                <div>
+                    <label class="block text-xs font-semibold text-zinc-400 mb-1">Adviser Name</label>
+                    <input type="text" id="adv-edit-name" disabled
+                        class="w-full bg-zinc-900 border border-zinc-800 rounded p-2.5 text-sm text-zinc-500 font-medium">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-zinc-400 mb-1">Reassigned Target Section</label>
+                    <input type="text" id="adv-edit-section" name="assignedSection" required
+                        class="w-full bg-darkBg border border-zinc-700 rounded p-2.5 text-sm text-white focus:border-emeraldAccent focus:outline-none"
+                        placeholder="e.g. Grade 11 - Platinum">
+                </div>
+                <div class="flex justify-end gap-2 pt-4 border-t border-zinc-800 mt-6">
+                    <button type="button" onclick="closeAdviserEditor()"
+                        class="px-4 py-2 text-xs font-bold text-zinc-400 hover:text-white">Cancel</button>
+                    <button type="submit"
+                        class="px-5 py-2 text-xs bg-emeraldAccent text-darkBg font-bold rounded-lg hover:bg-emerald-400 transition shadow-md">Commit
+                        Reassignment</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="cmsModal"
+        class="hidden fixed inset-0 bg-black/80 flex items-center justify-center z-50 backdrop-blur-sm p-4">
+        <div class="bg-cardBg p-6 rounded-xl border border-zinc-700 w-full max-w-lg shadow-2xl">
+            <div class="flex justify-between items-center mb-4 border-b border-zinc-800 pb-2">
+                <h3 id="cmsModalTitle" class="text-base font-bold text-zinc-100">CMS Configuration</h3>
+                <button type="button" onclick="closeCmsModal()" class="text-zinc-500 hover:text-white text-sm"><i
+                        class="fas fa-times"></i></button>
+            </div>
+            <div id="cmsModalBody"></div>
+        </div>
+    </div>
+
+    <script>
+        const sidebar = document.getElementById('sidebar');
+        const mobileMenuIcon = document.getElementById('mobile-menu-icon');
+        const modal = document.getElementById('editModal');
+        const adviserModal = document.getElementById('addAdviserModal');
+        const advSectionModal = document.getElementById('editAdviserModal');
+        const cmsModal = document.getElementById('cmsModal');
+
+        let activeAdviserId = null;
+        let activeSection = null;
+
+        function toggleMobileSidebar() {
+            if (sidebar.classList.contains('-translate-x-full')) {
+                sidebar.classList.remove('-translate-x-full');
+                mobileMenuIcon.classList.replace('fa-bars', 'fa-times');
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                mobileMenuIcon.classList.replace('fa-times', 'fa-bars');
+            }
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(el => {
+                el.classList.remove('bg-emeraldAccent/10', 'text-emeraldAccent', 'border', 'border-emeraldAccent/20');
+                el.classList.add('text-zinc-400', 'hover:text-white', 'hover:bg-zinc-800/50');
+            });
+
+            document.getElementById('tab-' + tabId).classList.remove('hidden');
+            const targetBtn = document.getElementById('btn-' + tabId);
+            targetBtn.classList.add('bg-emeraldAccent/10', 'text-emeraldAccent', 'border', 'border-emeraldAccent/20');
+            targetBtn.classList.remove('text-zinc-400', 'hover:text-white', 'hover:bg-zinc-800/50');
+
+            const titleMap = {
+                'overview': { t: 'System Overview', s: 'Institutional Administration & Live Enrollment' },
+                'advisers': { t: 'Manage Adviser Accounts', s: 'Real-time System Deployment Matrix & Section Performance Logs' },
+                'cms': { t: 'Homepage Content Management System', s: 'Control Live Content Injected into Public Landing Components' }
+            };
+            document.getElementById('page-title').innerText = titleMap[tabId].t;
+            document.getElementById('page-subtitle').innerText = titleMap[tabId].s;
+
+            if (window.innerWidth < 768) {
+                sidebar.classList.add('-translate-x-full');
+                mobileMenuIcon.classList.replace('fa-times', 'fa-bars');
+            }
+        }
+
+        function openEditor(id, name, email, section) {
+            document.getElementById('edit-id').value = id;
+            document.getElementById('edit-name').value = name;
+            document.getElementById('edit-email').value = email;
+            document.getElementById('edit-section').value = (section === 'Not Assigned' || section === 'None') ? '' : section;
+            modal.classList.remove('hidden');
+        }
+        function closeEditor() { modal.classList.add('hidden'); }
+
+        function openAddAdviserModal() { adviserModal.classList.remove('hidden'); }
+        function closeAddAdviserModal() { adviserModal.classList.add('hidden'); }
+
+        function openAdviserEditor(id, name, section) {
+            document.getElementById('adv-edit-id').value = id;
+            document.getElementById('adv-edit-name').value = name;
+            document.getElementById('adv-edit-section').value = (section === 'Not Assigned' || section === 'None') ? '' : section;
+            advSectionModal.classList.remove('hidden');
+        }
+        function closeAdviserEditor() { advSectionModal.classList.add('hidden'); }
+
+        function selectAdviser(el) {
+            document.querySelectorAll('.adviser-card').forEach(card => card.classList.remove('border-emeraldAccent/40', 'bg-emeraldAccent/5'));
+            el.classList.add('border-emeraldAccent/40', 'bg-emeraldAccent/5');
+
+            activeAdviserId = el.getAttribute('data-adviser-id');
+            const name = el.getAttribute('data-adviser-name') || '—';
+            const section = el.getAttribute('data-adviser-section') || 'None';
+            activeSection = section;
+
+            document.getElementById('selectedAdviserName').textContent = name;
+            document.getElementById('selectedAdviserSection').textContent = section;
+
+            let students = [];
+            try {
+                const adviserIdKey = String(activeAdviserId);
+                if (typeof studentsByAdviserIdData !== 'undefined' && studentsByAdviserIdData) {
+                    students = studentsByAdviserIdData[adviserIdKey] || [];
+                }
+            } catch (e) { console.error(e); }
+
+            document.getElementById('studentsCountLabel').textContent = students.length + (students.length === 1 ? ' student' : ' students');
+
+            const tbody = document.getElementById('studentsTableBody');
+            if (students.length === 0) {
+                tbody.innerHTML = `<tr><td class="px-4 py-4 text-muted text-center" colspan="3">No students found for this adviser section.</td></tr>`;
+            } else {
+                let rowsHtml = '';
+                students.forEach(st => {
+                    rowsHtml += `
+                        <tr class="hover:bg-zinc-800/20 transition">
+                            <td class="px-4 py-3 font-mono text-xs text-zinc-300">${st.lrn || '—'}</td>
+                            <td class="px-4 py-3 text-zinc-100 font-medium">${st.name || st.studentName || '—'}</td>
+                            <td class="px-4 py-3 text-zinc-400 text-xs">${section}</td>
+                        </tr>
+                    `;
+                });
+                tbody.innerHTML = rowsHtml;
+            }
+        }
+
+        function openCmsModal(type) {
+            const title = document.getElementById('cmsModalTitle');
+            const body = document.getElementById('cmsModalBody');
+            let injectionHtml = '';
+
+            if (type === 'document') {
+                title.innerHTML = '<i class="fas fa-file-pdf text-emeraldAccent me-2"></i> Deploy Official Forms';
+                injectionHtml = `
+                    <form action="/admin/cms/add-document" method="POST" enctype="multipart/form-data" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-zinc-400 mb-1">Document Display Title</label>
+                            <input type="text" name="title" required class="w-full bg-darkBg border border-zinc-700 rounded p-2.5 text-sm text-white focus:border-emeraldAccent focus:outline-none" placeholder="e.g., Clearance Form 2026 Revision">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-zinc-400 mb-1">File Asset Upload</label>
+                            <input type="file" name="file" class="w-full text-zinc-400 text-xs file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:cursor-pointer file:font-semibold" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.zip" required />
+                            <p class="text-xs text-zinc-500 mt-1">Accepted: PDF, DOC, DOCX, XLS, XLSX, PPT, PPTX, ZIP</p>
+                        </div>
+                        <div class="flex justify-end gap-2 pt-4 border-t border-zinc-800">
+                            <button type="button" onclick="closeCmsModal()" class="px-4 py-2 text-xs font-bold text-zinc-400 hover:text-white">Cancel</button>
+                            <button type="submit" class="px-5 py-2 text-xs bg-blue-500 text-white font-bold rounded-lg hover:bg-blue-400 transition shadow-md">Upload & Distribute</button>
+                        </div>
+                    </form>`;
+            } else if (type === 'gallery') {
+                title.innerHTML = '<i class="fas fa-photo-video text-purple-400 me-2"></i> Update Photo Roll Feed Asset';
+                injectionHtml = `
+                    <form action="/admin/cms/add-gallery" method="POST" enctype="multipart/form-data" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-zinc-400 mb-1">Photo Title / Caption</label>
+                            <input type="text" name="title" required class="w-full bg-darkBg border border-zinc-700 rounded p-2.5 text-sm text-white focus:border-purple-400 focus:outline-none" placeholder="e.g., LINHS Groundbreaking Ceremony">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-zinc-400 mb-1">Media File Upload (Image)</label>
+                            <input type="file" name="file" class="w-full text-zinc-400 text-xs file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:cursor-pointer file:font-semibold" accept="image/*" required />
+                            <p class="text-xs text-zinc-500 mt-1">Accepted formats: JPG, JPEG, PNG, GIF, WEBP</p>
+                        </div>
+                        <div class="flex justify-end gap-2 pt-4 border-t border-zinc-800">
+                            <button type="button" onclick="closeCmsModal()" class="px-4 py-2 text-xs font-bold text-zinc-400 hover:text-white">Cancel</button>
+                            <button type="submit" class="px-5 py-2 text-xs bg-purple-500 text-white font-bold rounded-lg hover:bg-purple-400 transition shadow-md">Deploy Photo Card</button>
+                        </div>
+                    </form>`;
+            }
+
+            body.innerHTML = injectionHtml;
+            cmsModal.classList.remove('hidden');
+        }
+        function closeCmsModal() { cmsModal.classList.add('hidden'); }
+    </script>
+</body>
+
+</html>

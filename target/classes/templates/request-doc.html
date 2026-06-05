@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Public Request Gateway | LINHS Portal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --dark-bg: #0d0d0d;
+            --panel-bg: #161616;
+            --border-color: #2a2a2a;
+            --mint-green: #20c997;
+            --mint-hover: #1aa078;
+            --text-main: #ffffff;
+            --text-muted: #b0b0b0;
+            --input-bg: #0a0a0a;
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .request-container {
+            background-color: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 30px;
+            width: 100%;
+            max-width: 650px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .form-control,
+        .form-select {
+            background-color: var(--input-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            background-color: var(--input-bg);
+            border-color: var(--mint-green);
+            color: var(--text-main);
+            box-shadow: 0 0 0 0.25rem rgba(32, 201, 151, 0.25);
+        }
+
+        .btn-primary {
+            background-color: var(--mint-green);
+            border-color: var(--mint-green);
+            color: #000000;
+            font-weight: 600;
+            width: 100%;
+            padding: 10px;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--mint-hover);
+            border-color: var(--mint-hover);
+            color: #000000;
+        }
+
+        .header-title {
+            color: var(--text-main);
+            font-weight: 700;
+        }
+
+        .text-muted {
+            color: var(--text-muted) !important;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="request-container m-3">
+        <div class="text-center mb-4">
+            <h2 class="header-title"><i class="fas fa-file-invoice me-2" style="color: var(--mint-green);"></i> Document
+                Request Gateway</h2>
+            <p class="text-muted text-sm mt-1">Lumban National High School Public Portal Interface</p>
+        </div>
+
+        <div th:if="${successMessage}"
+            class="alert alert-success bg-opacity-10 text-success border-success border-opacity-20 mb-4" role="alert">
+            <i class="fas fa-check-circle me-1"></i> <span th:text="${successMessage}">Request lodged
+                successfully!</span>
+        </div>
+        <div th:if="${errorMessage}"
+            class="alert alert-danger bg-opacity-10 text-danger border-danger border-opacity-20 mb-4" role="alert">
+            <i class="fas fa-exclamation-circle me-1"></i> <span th:text="${errorMessage}">Error processing transaction
+                parameters.</span>
+        </div>
+
+        <form action="/request-document/submit" method="POST" class="row g-3">
+            <div class="col-md-6">
+                <label class="form-label font-semibold" style="color: var(--mint-green);">First Name</label>
+                <input type="text" name="firstName" class="form-control" placeholder="Juan" required>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label font-semibold" style="color: var(--mint-green);">Last Name</label>
+                <input type="text" name="lastName" class="form-control" placeholder="Delos Santos" required>
+            </div>
+
+            <div class="col-12">
+                <label class="form-label font-semibold" style="color: var(--mint-green);">Contact Mobile Number</label>
+                <input type="tel" name="contactNumber" class="form-control" placeholder="09123456789" required>
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label font-semibold" style="color: var(--mint-green);">Last Academic Year
+                    Attended</label>
+                <input type="text" name="academicYear" class="form-control" placeholder="e.g., 2023-2024" required>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label font-semibold" style="color: var(--mint-green);">Last Grade Level &
+                    Section</label>
+                <input type="text" name="gradeSection" class="form-control" placeholder="e.g., Grade 10 - Emerald"
+                    required>
+            </div>
+
+            <div class="col-12">
+                <label class="form-label font-semibold" style="color: var(--mint-green);">Target Certifications / Form
+                    Types</label>
+                <select name="documentType" class="form-select" required>
+                    <option value="" disabled selected>Select credential profile payload...</option>
+                    <option value="Certificate of Enrollment">Certificate of Enrollment</option>
+                    <option value="Certificate of Academic Excellence">Certificate of Academic Excellence</option>
+                    <option value="Certified True Copy - SF 10">Certified True Copy - SF 10</option>
+                    <option value="Certified True Copy - SF 9 (Card)">Certified True Copy - SF 9 (Card)</option>
+                    <option value="Photocopy of SF9 (Card)">Photocopy of SF9 (Card)</option>
+                    <option value="Photocopy of SF10 (Permanent Record)">Photocopy of SF10 (Permanent Record)</option>
+                    <option value="Original SF10 (Permanent Record)">Original SF10 (Permanent Record)</option>
+                    <option value="Good Moral Certificate">Good Moral Certificate</option>
+                </select>
+            </div>
+
+            <div class="col-12">
+                <label class="form-label font-semibold" style="color: var(--mint-green);">Official Purpose of Document
+                    Request</label>
+                <textarea name="purpose" class="form-control" rows="3"
+                    placeholder="Type intent reason (e.g., Scholarship application, Permanent transfer)"
+                    required></textarea>
+            </div>
+
+            <div class="col-12 mt-4">
+                <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane me-1"></i> Dispatch Request
+                    Form</button>
+            </div>
+
+            <div class="col-12 text-center mt-3">
+                <a href="/login" class="text-muted text-xs text-decoration-none"><i class="fas fa-arrow-left me-1"></i>
+                    Return to Main Portal Login</a>
+            </div>
+        </form>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>LINHS Portal | Student Clearance Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f4f6f8;
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+        }
+
+        /* Public Header */
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        /* Logo Image Container Styling */
+        .logo-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .logo-img {
+            width: 96px;
+            height: auto;
+            object-fit: contain;
+        }
+
+        .header h1 {
+            color: #064e3b;
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .header p {
+            color: #6b7280;
+            font-size: 15px;
+            margin-top: 5px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+        }
+
+        /* Search Card */
+        .search-card {
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .search-card h2 {
+            font-size: 18px;
+            color: #111827;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .search-card p {
+            color: #6b7280;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .search-form {
+            display: flex;
+            gap: 10px;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 14px 18px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 500;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .search-input:focus {
+            border-color: #10b981;
+        }
+
+        .search-btn {
+            background: #064e3b;
+            color: white;
+            border: none;
+            padding: 0 24px;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .search-btn:hover {
+            background: #043e2f;
+        }
+
+        /* Error/Alert Message */
+        .alert {
+            background-color: #fef2f2;
+            border: 1px solid #fee2e2;
+            color: #991b1b;
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            font-size: 14px;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        /* Student Info Card */
+        .info-card {
+            background: white;
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            margin-bottom: 25px;
+            border-left: 5px solid #064e3b;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .info-item label {
+            display: block;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #9ca3af;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .info-item .value {
+            font-size: 16px;
+            color: #111827;
+            font-weight: 700;
+        }
+
+        /* Clearance Status Matrix */
+        .matrix-title {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #4b5563;
+            letter-spacing: 0.5px;
+            margin-bottom: 15px;
+            padding-left: 5px;
+        }
+
+        .clearance-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 480px) {
+            .clearance-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .department-card {
+            background: white;
+            padding: 20px;
+            border-radius: 14px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.03);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            border: 1px solid #f0f0f0;
+        }
+
+        .dept-icon {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .dept-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 12px;
+        }
+
+        .status-badge {
+            width: 100%;
+            padding: 8px 0;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-badge.cleared {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-badge.pending {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-badge.uncleared {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* Final Action Indicator Box */
+        .final-status {
+            padding: 20px;
+            border-radius: 14px;
+            font-weight: 600;
+            font-size: 15px;
+            text-align: center;
+            margin-bottom: 35px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+        }
+
+        .final-status.success {
+            background-color: #ecfdf5;
+            color: #047857;
+            border: 1px solid #a7f3d0;
+        }
+
+        .final-status.warning {
+            background-color: #fffbeb;
+            color: #b45309;
+            border: 1px solid #fde68a;
+        }
+
+        .back-link {
+            display: inline-block;
+            color: #064e3b;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            transition: color 0.2s;
+            margin-bottom: 40px;
+        }
+
+        .back-link:hover {
+            color: #10b981;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <header class="header">
+            <div class="logo-container">
+                <img th:src="@{lumbanglogo.jpg}" src="lumbanglogo.jpg" alt="LINHS Logo" class="logo-img">
+            </div>
+            <h1>LINHS Clearance Portal</h1>
+            <p>Real-time Institutional Liability & Sign-off Tracking</p>
+        </header>
+
+        <div class="search-card">
+            <h2>Track Your Clearance Status</h2>
+            <p>Enter your 12-digit Learner Reference Number (LRN) below.</p>
+            <form action="/clearance/track" method="GET" class="search-form">
+                <input type="text" name="lrn" class="search-input" placeholder="Enter 12-Digit LRN..."
+                    th:value="${param.lrn}" required maxlength="12" pattern="\d*">
+                <button type="submit" class="search-btn">Verify Status</button>
+            </form>
+        </div>
+
+        <div th:if="${error}" class="alert" th:text="${error}">
+            No student record mapping found corresponding to the provided parameters.
+        </div>
+
+        <div th:if="${student}">
+
+            <div class="info-card">
+                <div class="info-grid">
+                    <div class="info-item">
+                        <label>Student Name</label>
+                        <div class="value" th:text="${student.name}">Delos Santos, Juan</div>
+                    </div>
+                    <div class="info-item">
+                        <label>LRN Account</label>
+                        <div class="value" th:text="${student.lrn}">123456789012</div>
+                    </div>
+                </div>
+            </div>
+
+            <h3 class="matrix-title">Department Approval Status Matrix</h3>
+
+            <div class="clearance-grid">
+                <div class="department-card">
+                    <div class="dept-icon">🏢</div>
+                    <div class="dept-name">Class Adviser</div>
+                    <div th:class="'status-badge ' + ${student.adviserClearance != null ? #strings.toLowerCase(student.adviserClearance) : 'pending'}"
+                        th:text="${student.adviserClearance != null ? student.adviserClearance : 'PENDING'}">PENDING
+                    </div>
+                </div>
+
+                <div class="department-card">
+                    <div class="dept-icon">🔬</div>
+                    <div class="dept-name">Science Laboratory</div>
+                    <div th:class="'status-badge ' + ${student.labClearance != null ? #strings.toLowerCase(student.labClearance) : 'pending'}"
+                        th:text="${student.labClearance != null ? student.labClearance : 'PENDING'}">PENDING</div>
+                </div>
+
+                <div class="department-card">
+                    <div class="dept-icon">🏅</div>
+                    <div class="dept-name">Sports & Athletics</div>
+                    <div th:class="'status-badge ' + ${student.sportsClearance != null ? #strings.toLowerCase(student.sportsClearance) : 'pending'}"
+                        th:text="${student.sportsClearance != null ? student.sportsClearance : 'PENDING'}">PENDING</div>
+                </div>
+
+                <div class="department-card">
+                    <div class="dept-icon">⚖️</div>
+                    <div class="dept-name">Guidance Office</div>
+                    <div th:class="'status-badge ' + ${student.guidanceClearance != null ? #strings.toLowerCase(student.guidanceClearance) : 'pending'}"
+                        th:text="${student.guidanceClearance != null ? student.guidanceClearance : 'PENDING'}">PENDING
+                    </div>
+                </div>
+            </div>
+
+            <div th:if="${student.adviserClearance == 'CLEARED' and student.labClearance == 'CLEARED' and student.sportsClearance == 'CLEARED' and student.guidanceClearance == 'CLEARED'}"
+                class="final-status success">
+                🎉 Congratulations! You are fully cleared for this academic period.
+            </div>
+            <div th:unless="${student.adviserClearance == 'CLEARED' and student.labClearance == 'CLEARED' and student.sportsClearance == 'CLEARED' and student.guidanceClearance == 'CLEARED'}"
+                class="final-status warning">
+                ⚠️ You still have pending liabilities. Please visit the respective departments.
+            </div>
+
+        </div>
+
+        <div style="text-align: center;">
+            <a href="/" class="back-link">← Return to Homepage</a>
+        </div>
+
+    </div>
+
+</body>
+
+</html>

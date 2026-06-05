@@ -1,5 +1,7 @@
 package com.linhs.portal.controller;
 
+import com.linhs.portal.model.SportsEquipment;
+import com.linhs.portal.model.GuidanceRecord;
 import com.linhs.portal.model.*;
 import com.linhs.portal.repository.*;
 import com.linhs.portal.service.AuthService;
@@ -291,11 +293,17 @@ public class PageController {
                     new OpenLiabilityItem("Property Custodian", br.getItemName(), br.getBorrowedAt(), "UNRETURNED"));
         }
 
-        List<SportsEquipment> sportsRecords = sportsEquipmentRepository.findByStudentLrnAndStatus(lrn, "BORROWED");
-        for (SportsEquipment se : sportsRecords) {
-            details.addOpenItem(new OpenLiabilityItem("Sports & Athletics",
-                    se.getEquipmentName() + " (Qty: " + se.getQuantity() + ")", se.getBorrowDate(), "UNRETURNED"));
-        }
+        // Force Java to use the exact model entity by writing the full package path
+java.util.List<com.linhs.portal.model.SportsEquipment> sportsRecords = 
+    sportsEquipmentRepository.findByStudentLrnAndStatus(lrn, "BORROWED");
+
+// Also force the loop to use the exact model entity
+for (com.linhs.portal.model.SportsEquipment se : sportsRecords) {
+    details.addOpenItem(new OpenLiabilityItem("Sports & Athletics",
+            se.getEquipmentName() + " (Qty: " + se.getQuantity() + ")", 
+            se.getBorrowDate(), 
+            "UNRETURNED"));
+}
 
         // Explicitly query the model entity package and filter out records where action has already been taken
         List<com.linhs.portal.model.GuidanceRecord> guidanceRecords = guidanceRecordRepository.findByStudentLrn(lrn);
