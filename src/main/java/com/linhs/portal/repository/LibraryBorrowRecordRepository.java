@@ -9,5 +9,5 @@ public interface LibraryBorrowRecordRepository extends JpaRepository<LibraryBorr
 
     List<LibraryBorrowRecord> findByStudentLrn(String studentLrn);
 
-    List<com.linhs.portal.controller.PageController.LibraryBorrowRecord> findByStudentLrnAndStatus(String studentLrn, String status);
+    List<LibraryBorrowRecord> findByStudentLrnAndStatus(String studentLrn, String status);
 }

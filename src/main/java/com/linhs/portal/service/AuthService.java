@@ -55,15 +55,12 @@ public class AuthService {
         return true;
     }
 
-    // =========================================================
-    // --- ADDED THIS METHOD TO FIX CONTROLLER RED LINES ---
-    // =========================================================
     /**
      * Authenticates a user by username/email and password, returning the User object if successful.
      */
-    public Optional<com.linhs.portal.controller.PageController.User> authenticate(String username, String password) {
+    public Optional<User> authenticate(String username, String password) {
         if (username == null || password == null) {
-            return null;
+            return Optional.empty();
         }
         
         Optional<User> userOptional = userRepository.findByEmail(username.trim().toLowerCase());
@@ -71,10 +68,10 @@ public class AuthService {
         if (userOptional.isPresent()) {
             User user = userOptional.get();
             if (passwordEncoder.matches(password, user.getPassword())) {
-                return Optional.empty(); // Credentials match, return the user
+                return Optional.of(user);
             }
         }
-        return null; // Authentication failed
+        return Optional.empty();
     }
 
     /**

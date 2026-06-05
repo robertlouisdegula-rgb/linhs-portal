@@ -1,7 +1,5 @@
 package com.linhs.portal.controller;
 
-import com.linhs.portal.model.SportsEquipment;
-import com.linhs.portal.model.GuidanceRecord;
 import com.linhs.portal.model.*;
 import com.linhs.portal.repository.*;
 import com.linhs.portal.service.AuthService;
@@ -14,9 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Controller
 public class PageController {
@@ -73,7 +69,7 @@ public class PageController {
     public String showLandingPage(Model model) {
         model.addAttribute("announcements", announcementRepository.findAll());
         model.addAttribute("galleryItems", galleryRepository.findAll());
-        return "landing";
+        return "index";
     }
 
     @GetMapping("/login")
@@ -86,7 +82,7 @@ public class PageController {
             @RequestParam("password") String password,
             HttpSession session,
             Model model) {
-        Optional<User> userOpt = Optional.empty();
+        Optional<User> userOpt = authService.authenticate(username, password);
         if (userOpt.isPresent()) {
             User user = userOpt.get();
             session.setAttribute("user", user);
@@ -132,7 +128,8 @@ public class PageController {
 
     @GetMapping("/clearance/track")
     public String trackClearanceStatus(@RequestParam("lrn") String lrn, Model model) {
-        Optional<Student> studentOpt = Optional.empty();
+        @SuppressWarnings("null")
+        Optional<Student> studentOpt = studentRepository.findById(lrn);
         if (studentOpt.isPresent()) {
             model.addAttribute("student", studentOpt.get());
         } else {
@@ -178,7 +175,7 @@ public class PageController {
     }
 
     @PostMapping("/request-document/submit")
-    public <S> String handleDocumentRequestSubmission(
+    public String handleDocumentRequestSubmission(
             @RequestParam("firstName") String firstName,
             @RequestParam("lastName") String lastName,
             @RequestParam("contactNumber") String contactNumber,
@@ -199,7 +196,7 @@ public class PageController {
             newRequest.setPurpose(purpose);
             newRequest.setStatus("PENDING");
             newRequest.setRequestedAt(LocalDateTime.now());
-            documentRequestRepository.save((Iterable<S>) newRequest);
+            documentRequestRepository.save(newRequest);
 
             return "redirect:/registrar-dashboard";
 
@@ -278,7 +275,8 @@ public class PageController {
 
     @GetMapping("/student-liabilities-details")
     public String showStudentLiabilitiesDetails(@RequestParam("lrn") String lrn, Model model) {
-        Optional<Student> studentOpt = Optional.empty();
+        @SuppressWarnings("null")
+        Optional<Student> studentOpt = studentRepository.findById(lrn);
         if (studentOpt.isEmpty()) {
             model.addAttribute("error", "Student record tracking context missing.");
             return "error";
@@ -314,7 +312,7 @@ for (com.linhs.portal.model.SportsEquipment se : sportsRecords) {
             }
         }
 
-        List<LibraryBorrowRecord> libraryRecords = (List<LibraryBorrowRecord>) libraryBorrowRecordRepository.findByStudentLrnAndStatus(lrn,
+        List<LibraryBorrowRecord> libraryRecords = libraryBorrowRecordRepository.findByStudentLrnAndStatus(lrn,
                 "BORROWED");
         for (LibraryBorrowRecord lbr : libraryRecords) {
             details.addOpenItem(new OpenLiabilityItem("School Library", "Book: " + lbr.getBookTitle(),
@@ -396,274 +394,6 @@ for (com.linhs.portal.model.SportsEquipment se : sportsRecords) {
         }
     }
 
-    // =========================================================================
-    // INLINE ENTITY MODELS & DATA LAYERS (PRESERVED UNTOUCHED)
-    // =========================================================================
-
-    public static class User {
-        private String username;
-        private String password;
-        private String role;
-        private String assignedSection;
-
-        public String getUsername() {
-            return username;
-        }
-
-        public void setUsername(String username) {
-            this.username = username;
-        }
-
-        public String getPassword() {
-            return password;
-        }
-
-        public void setPassword(String password) {
-            this.password = password;
-        }
-
-        public String getRole() {
-            return role;
-        }
-
-        public void setRole(String role) {
-            this.role = role;
-        }
-
-        public String getAssignedSection() {
-            return assignedSection;
-        }
-
-        public void setAssignedSection(String assignedSection) {
-            this.assignedSection = assignedSection;
-        }
-
-        // Added bridge methods to support external entity model signatures cleanly
-        public String getRoleName() {
-            return this.role;
-        }
-
-        public void setRoleName(String roleName) {
-            this.role = roleName;
-        }
-    }
-
-    public static class Student {
-        private String name;
-        private String lrn;
-        private String section;
-        private String status;
-        private String adviserClearance;
-        private String labClearance;
-        private String sportsClearance;
-        private String guidanceClearance;
-        private String facilitiesClearance;
-        private String libraryClearance;
-
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
-
-        public String getLrn() {
-            return lrn;
-        }
-
-        public void setLrn(String lrn) {
-            this.lrn = lrn;
-        }
-
-        public String getSection() {
-            return section;
-        }
-
-        public void setSection(String section) {
-            this.section = section;
-        }
-
-        public String getStatus() {
-            return status;
-        }
-
-        public void setStatus(String status) {
-            this.status = status;
-        }
-
-        public String getAdviserClearance() {
-            return adviserClearance;
-        }
-
-        public void setAdviserClearance(String adviserClearance) {
-            this.adviserClearance = adviserClearance;
-        }
-
-        public String getLabClearance() {
-            return labClearance;
-        }
-
-        public void setLabClearance(String labClearance) {
-            this.labClearance = labClearance;
-        }
-
-        public String getSportsClearance() {
-            return sportsClearance;
-        }
-
-        public void setSportsClearance(String sportsClearance) {
-            this.sportsClearance = sportsClearance;
-        }
-
-        public String getGuidanceClearance() {
-            return guidanceClearance;
-        }
-
-        public void setGuidanceClearance(String guidanceClearance) {
-            this.guidanceClearance = guidanceClearance;
-        }
-
-        public String getFacilitiesClearance() {
-            return facilitiesClearance;
-        }
-
-        public void setFacilitiesClearance(String facilitiesClearance) {
-            this.facilitiesClearance = facilitiesClearance;
-        }
-
-        public String getLibraryClearance() {
-            return libraryClearance;
-        }
-
-        public void setLibraryClearance(String libraryClearance) {
-            this.libraryClearance = libraryClearance;
-        }
-    }
-
-    public static class BorrowRecord {
-        private Long id;
-        private String studentLrn;
-        private String equipmentName;
-        private Integer quantity;
-        private LocalDateTime borrowDate;
-        private String status;
-
-        public Long getId() {
-            return id;
-        }
-
-        public void setId(Long id) {
-            this.id = id;
-        }
-
-        public String getStudentLrn() {
-            return studentLrn;
-        }
-
-        public void setStudentLrn(String studentLrn) {
-            this.studentLrn = studentLrn;
-        }
-
-        public String getEquipmentName() {
-            return equipmentName;
-        }
-
-        public void setEquipmentName(String equipmentName) {
-            this.equipmentName = equipmentName;
-        }
-
-        public Integer getQuantity() {
-            return quantity;
-        }
-
-        public void setQuantity(Integer quantity) {
-            this.quantity = quantity;
-        }
-
-        public LocalDateTime getBorrowDate() {
-            return borrowDate;
-        }
-
-        public void setBorrowDate(LocalDateTime borrowDate) {
-            this.borrowDate = borrowDate;
-        }
-
-        public String getStatus() {
-            return status;
-        }
-
-        public void setStatus(String status) {
-            this.status = status;
-        }
-
-        // Added bridge methods to match standalone file parameters cleanly
-        public String getItemName() {
-            return this.equipmentName;
-        }
-
-        public LocalDateTime getBorrowedAt() {
-            return this.borrowDate;
-        }
-    }
-
-    public static class SportsEquipment {
-        private Long id;
-        private String studentLrn;
-        private String equipmentName;
-        private Integer quantity;
-        private LocalDateTime borrowDate;
-        private String status;
-
-        public Long getId() {
-            return id;
-        }
-
-        public void setId(Long id) {
-            this.id = id;
-        }
-
-        public String getStudentLrn() {
-            return studentLrn;
-        }
-
-        public void setStudentLrn(String studentLrn) {
-            this.studentLrn = studentLrn;
-        }
-
-        public String getEquipmentName() {
-            return equipmentName;
-        }
-
-        public void setEquipmentName(String equipmentName) {
-            this.equipmentName = equipmentName;
-        }
-
-        public Integer getQuantity() {
-            return quantity;
-        }
-
-        public void setQuantity(Integer quantity) {
-            this.quantity = quantity;
-        }
-
-        public LocalDateTime getBorrowDate() {
-            return borrowDate;
-        }
-
-        public void setBorrowDate(LocalDateTime borrowDate) {
-            this.borrowDate = borrowDate;
-        }
-
-        public String getStatus() {
-            return status;
-        }
-
-        public void setStatus(String status) {
-            this.status = status;
-        }
-    }
-
     public static class GuidanceRecord {
         private Long id;
         private String studentLrn;
@@ -712,99 +442,6 @@ for (com.linhs.portal.model.SportsEquipment se : sportsRecords) {
         }
     }
 
-    public static class DocumentRequest {
-        private Long id;
-        private String firstName;
-        private String lastName;
-        private String contactNumber;
-        private String academicYear;
-        private String gradeSection;
-        private String documentType;
-        private String purpose;
-        private String status;
-        private LocalDateTime requestedAt;
-
-        public Long getId() {
-            return id;
-        }
-
-        public void setId(Long id) {
-            this.id = id;
-        }
-
-        public String getFirstName() {
-            return firstName;
-        }
-
-        public void setFirstName(String firstName) {
-            this.firstName = firstName;
-        }
-
-        public String getLastName() {
-            return lastName;
-        }
-
-        public void setLastName(String lastName) {
-            this.lastName = lastName;
-        }
-
-        public String getContactNumber() {
-            return contactNumber;
-        }
-
-        public void setContactNumber(String contactNumber) {
-            this.contactNumber = contactNumber;
-        }
-
-        public String getAcademicYear() {
-            return academicYear;
-        }
-
-        public void setAcademicYear(String academicYear) {
-            this.academicYear = academicYear;
-        }
-
-        public String getGradeSection() {
-            return gradeSection;
-        }
-
-        public void setGradeSection(String gradeSection) {
-            this.gradeSection = gradeSection;
-        }
-
-        public String getDocumentType() {
-            return documentType;
-        }
-
-        public void setDocumentType(String documentType) {
-            this.documentType = documentType;
-        }
-
-        public String getPurpose() {
-            return purpose;
-        }
-
-        public void setPurpose(String purpose) {
-            this.purpose = purpose;
-        }
-
-        public String getStatus() {
-            return status;
-        }
-
-        public void setStatus(String status) {
-            this.status = status;
-        }
-
-        public LocalDateTime getRequestedAt() {
-            return requestedAt;
-        }
-
-        public void setRequestedAt(LocalDateTime requestedAt) {
-            this.requestedAt = requestedAt;
-        }
-    }
-
     public static class ClinicLog {
         private Long id;
         private String studentLrn;
@@ -850,63 +487,6 @@ for (com.linhs.portal.model.SportsEquipment se : sportsRecords) {
 
         public void setVisitDate(LocalDateTime visitDate) {
             this.visitDate = visitDate;
-        }
-    }
-
-    public static class FacilityLiability {
-        private Long id;
-        private String studentLrn;
-        private String facilityName;
-        private String damageDescription;
-        private LocalDateTime reportedDate;
-        private String status;
-
-        public Long getId() {
-            return id;
-        }
-
-        public void setId(Long id) {
-            this.id = id;
-        }
-
-        public String getStudentLrn() {
-            return studentLrn;
-        }
-
-        public void setStudentLrn(String studentLrn) {
-            this.studentLrn = studentLrn;
-        }
-
-        public String getFacilityName() {
-            return facilityName;
-        }
-
-        public void setFacilityName(String facilityName) {
-            this.facilityName = facilityName;
-        }
-
-        public String getDamageDescription() {
-            return damageDescription;
-        }
-
-        public void setDamageDescription(String damageDescription) {
-            this.damageDescription = damageDescription;
-        }
-
-        public LocalDateTime getReportedDate() {
-            return reportedDate;
-        }
-
-        public void setReportedDate(LocalDateTime reportedDate) {
-            this.reportedDate = reportedDate;
-        }
-
-        public String getStatus() {
-            return status;
-        }
-
-        public void setStatus(String status) {
-            this.status = status;
         }
     }
 
@@ -1159,51 +739,4 @@ for (com.linhs.portal.model.SportsEquipment se : sportsRecords) {
         }
     }
 
-    public static class LibraryBorrowRecord {
-        private Long id;
-        private String studentLrn;
-        private String bookTitle;
-        private LocalDateTime borrowDate;
-        private String status;
-
-        public Long getId() {
-            return id;
-        }
-
-        public void setId(Long id) {
-            this.id = id;
-        }
-
-        public String getStudentLrn() {
-            return studentLrn;
-        }
-
-        public void setStudentLrn(String studentLrn) {
-            this.studentLrn = studentLrn;
-        }
-
-        public String getBookTitle() {
-            return bookTitle;
-        }
-
-        public void setBookTitle(String bookTitle) {
-            this.bookTitle = bookTitle;
-        }
-
-        public LocalDateTime getBorrowDate() {
-            return borrowDate;
-        }
-
-        public void setBorrowDate(LocalDateTime borrowDate) {
-            this.borrowDate = borrowDate;
-        }
-
-        public String getStatus() {
-            return status;
-        }
-
-        public void setStatus(String status) {
-            this.status = status;
-        }
-    }
 }

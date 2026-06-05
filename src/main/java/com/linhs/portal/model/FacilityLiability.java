@@ -38,4 +38,16 @@ public class FacilityLiability {
 
     public LocalDateTime getReportedAt() { return reportedAt; }
     public void setReportedAt(LocalDateTime reportedAt) { this.reportedAt = reportedAt; }
+
+    // =========================================================
+    // --- BRIDGE METHODS TO MATCH CONTROLLER EXPECTATIONS ---
+    // =========================================================
+    public String getFacilityName() { return facilityOrItem; }
+    public void setFacilityName(String facilityName) { this.facilityOrItem = facilityName; }
+
+    public String getDamageDescription() { return description; }
+    public void setDamageDescription(String damageDescription) { this.description = damageDescription; }
+
+    public LocalDateTime getReportedDate() { return reportedAt; }
+    public void setReportedDate(LocalDateTime reportedDate) { this.reportedAt = reportedDate; }
 }

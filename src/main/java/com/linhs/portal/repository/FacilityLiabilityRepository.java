@@ -7,5 +7,5 @@ import java.util.List;
 public interface FacilityLiabilityRepository extends JpaRepository<FacilityLiability, Long> {
     List<FacilityLiability> findByStatus(String status);
     List<FacilityLiability> findByStudentLrn(String studentLrn);
-    List<com.linhs.portal.controller.PageController.FacilityLiability> findByStudentLrnAndStatus(String studentLrn, String status);
+    List<FacilityLiability> findByStudentLrnAndStatus(String studentLrn, String status);
 }

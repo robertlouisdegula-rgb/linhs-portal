@@ -6,8 +6,4 @@ import java.util.List;
 
 public interface SubjectRepository extends JpaRepository<Subject, Long> {
     List<Subject> findBySection(String section);
-
-    // Explicitly declaring findAll resolves any generic type matching issues in the
-    // controller
-    List<Subject> findAll();
 }
