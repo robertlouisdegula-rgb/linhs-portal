@@ -6,7 +6,4 @@ import java.util.List;
 
 public interface GuidanceRecordRepository extends JpaRepository<GuidanceRecord, Long> {
     List<GuidanceRecord> findByStudentLrn(String studentLrn);
-
-    List<com.linhs.portal.controller.PageController.GuidanceRecord> findByStudentLrnAndStatus(String lrn,
-            String string);
 }

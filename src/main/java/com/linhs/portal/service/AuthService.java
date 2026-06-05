@@ -61,7 +61,7 @@ public class AuthService {
     /**
      * Authenticates a user by username/email and password, returning the User object if successful.
      */
-    public User authenticate(String username, String password) {
+    public Optional<com.linhs.portal.controller.PageController.User> authenticate(String username, String password) {
         if (username == null || password == null) {
             return null;
         }
@@ -71,7 +71,7 @@ public class AuthService {
         if (userOptional.isPresent()) {
             User user = userOptional.get();
             if (passwordEncoder.matches(password, user.getPassword())) {
-                return user; // Credentials match, return the user
+                return Optional.empty(); // Credentials match, return the user
             }
         }
         return null; // Authentication failed

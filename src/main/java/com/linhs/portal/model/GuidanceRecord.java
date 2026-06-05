@@ -46,12 +46,10 @@ public class GuidanceRecord {
     }
 
     public String getInfractionDescription() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getInfractionDescription'");
+        return this.incidentDetails;
     }
 
     public LocalDateTime getLogDate() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getLogDate'");
+        return this.createdAt;
     }
 }

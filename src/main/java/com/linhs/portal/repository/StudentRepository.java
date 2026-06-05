@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface StudentRepository extends JpaRepository<Student, String> {
-    List<Student> findBySection(String section);
+    List<com.linhs.portal.controller.PageController.Student> findBySection(String section);
 
     List<Student> findAllByOrderByNameAsc();
 

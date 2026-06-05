@@ -7,5 +7,5 @@ import java.util.List;
 public interface BorrowRecordRepository extends JpaRepository<BorrowRecord, Long> {
     List<BorrowRecord> findByStatus(String status);
     List<BorrowRecord> findByStudentLrn(String studentLrn);
-    List<BorrowRecord> findByStudentLrnAndStatus(String studentLrn, String status);
+    List<com.linhs.portal.controller.PageController.BorrowRecord> findByStudentLrnAndStatus(String studentLrn, String status);
 }
