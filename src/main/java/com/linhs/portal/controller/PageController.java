@@ -121,6 +121,49 @@ public class PageController {
         return "redirect:/login";
     }
 
+    // ===== PUBLIC PAGES =====
+    @GetMapping("/about")
+    public String showAboutPage() {
+        return "about";
+    }
+
+    @GetMapping("/announcements")
+    public String showAnnouncementsPage(Model model) {
+        List<Announcement> announcements = announcementRepository.findAll();
+        model.addAttribute("announcements", announcements);
+        return "announcements";
+    }
+
+    @GetMapping("/resources")
+    public String showResourcesPage(Model model) {
+        List<ResourceHub> resources = resourceHubRepository.findAll();
+        model.addAttribute("resources", resources);
+        return "resources";
+    }
+
+    @GetMapping("/gallery")
+    public String showGalleryPage(Model model) {
+        List<Gallery> galleryItems = galleryRepository.findAll();
+        model.addAttribute("galleryItems", galleryItems);
+        return "gallery";
+    }
+
+    @GetMapping("/teacher-portal")
+    public String showTeacherPortal() {
+        return "dashboard";
+    }
+
+    // ===== CLEARANCE AND REQUESTS =====
+    @GetMapping("/clearance/lookup")
+    public String showClearanceLookup() {
+        return "clearance-status";
+    }
+
+    @GetMapping("/requests")
+    public String showRequestsPage() {
+        return "request-doc";
+    }
+
     @GetMapping("/clearance-tracker")
     public String showClearanceTrackerPage() {
         return "clearance-status";
