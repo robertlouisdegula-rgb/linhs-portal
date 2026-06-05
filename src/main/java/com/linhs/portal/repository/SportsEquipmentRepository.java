@@ -7,6 +7,6 @@ import java.util.List;
 
 @Repository
 public interface SportsEquipmentRepository extends JpaRepository<SportsEquipment, Long> {
-    // Fixed: Added generic type <SportsEquipment> to the return List
-    List<com.linhs.portal.controller.PageController.SportsEquipment> findByStudentLrnAndStatus(String studentLrn, String status);
+    // Aligned to return the actual database managed Entity model
+    List<SportsEquipment> findByStudentLrnAndStatus(String studentLrn, String status);
 }
