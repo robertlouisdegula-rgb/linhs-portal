@@ -271,6 +271,9 @@ public class PageController {
         model.addAttribute("staffAccounts", staffUsers);
         model.addAttribute("adviserAccounts", userRepository.findByRoleName("ADVISER"));
 
+        // 👉 ADD THIS EXACT LINE HERE SO THE TABLE CAN LOAD YOUR FILES!
+        model.addAttribute("resources", resourceHubRepository.findAll());
+
         return "admin-dashboard";
     }
 
