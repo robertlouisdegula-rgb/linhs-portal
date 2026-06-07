@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Controller
@@ -34,20 +35,20 @@ public class PageController {
     private final LibraryBorrowRecordRepository libraryBorrowRecordRepository;
 
     public PageController(AuthService authService,
-            UserRepository userRepository,
-            StudentRepository studentRepository,
-            BorrowRecordRepository borrowRecordRepository,
-            SportsEquipmentRepository sportsEquipmentRepository,
-            GuidanceRecordRepository guidanceRecordRepository,
-            DocumentRequestRepository documentRequestRepository,
-            ClinicLogRepository clinicLogRepository,
-            FacilityLiabilityRepository facilityLiabilityRepository,
-            SubjectRepository subjectRepository,
-            StudentGradeRepository studentGradeRepository,
-            ResourceHubRepository resourceHubRepository,
-            GalleryRepository galleryRepository,
-            AnnouncementRepository announcementRepository,
-            LibraryBorrowRecordRepository libraryBorrowRecordRepository) {
+                          UserRepository userRepository,
+                          StudentRepository studentRepository,
+                          BorrowRecordRepository borrowRecordRepository,
+                          SportsEquipmentRepository sportsEquipmentRepository,
+                          GuidanceRecordRepository guidanceRecordRepository,
+                          DocumentRequestRepository documentRequestRepository,
+                          ClinicLogRepository clinicLogRepository,
+                          FacilityLiabilityRepository facilityLiabilityRepository,
+                          SubjectRepository subjectRepository,
+                          StudentGradeRepository studentGradeRepository,
+                          ResourceHubRepository resourceHubRepository,
+                          GalleryRepository galleryRepository,
+                          AnnouncementRepository announcementRepository,
+                          LibraryBorrowRecordRepository libraryBorrowRecordRepository) {
         this.authService = authService;
         this.userRepository = userRepository;
         this.studentRepository = studentRepository;
@@ -65,423 +66,191 @@ public class PageController {
         this.libraryBorrowRecordRepository = libraryBorrowRecordRepository;
     }
 
-    @GetMapping("/")
-    public String showLandingPage(Model model) {
-        model.addAttribute("announcements", announcementRepository.findAll());
-        model.addAttribute("galleryItems", galleryRepository.findAll());
-        return "index";
-    }
-
-    @GetMapping("/login")
-    public String showLoginPage() {
-        return "login";
-    }
-
-    @PostMapping("/login")
-    public String handleLogin(@RequestParam("username") String username,
-            @RequestParam("password") String password,
-            HttpSession session,
-            Model model) {
-        Optional<User> userOpt = authService.authenticate(username, password);
-        if (userOpt.isPresent()) {
-            User user = userOpt.get();
-            session.setAttribute("user", user);
-
-            String role = user.getRoleName() != null ? user.getRoleName().toUpperCase() : "";
-            switch (role) {
-                case "ADMIN_PRINCIPAL":
-                    return "redirect:/admin-dashboard";
-                case "ADVISER":
-                    return "redirect:/adviser-dashboard";
-                case "REGISTRAR":
-                    return "redirect:/registrar-dashboard";
-                case "FACILITIES_ADMIN":
-                    return "redirect:/custodian-dashboard";
-                case "SPORTS_ADMIN":
-                    return "redirect:/sports-dashboard";
-                case "GUIDANCE_COUNSELOR":
-                    return "redirect:/guidance-dashboard";
-                case "NURSE":
-                    return "redirect:/clinic-dashboard";
-                case "LIBRARIAN":
-                    return "redirect:/library-dashboard";
-                case "LAB_ADMIN": 
-                    return "redirect:/lab-dashboard";
-                default:
-                    model.addAttribute("error", "Role mapping context unresolved.");
-                    return "login";
-            }
-        } else {
-            model.addAttribute("error", "Invalid institutional username or password credential profile.");
-            return "login";
-        }
-    }
-
-    @GetMapping("/logout")
-    public String handleLogout(HttpSession session) {
-        session.invalidate();
-        return "redirect:/login";
-    }
-
-    // ===== PUBLIC PAGES =====
-    @GetMapping("/about")
-    public String showAboutPage() {
-        return "about";
-    }
-
-    @GetMapping("/announcements")
-    public String showAnnouncementsPage(Model model) {
-        List<Announcement> announcements = announcementRepository.findAll();
-        model.addAttribute("announcements", announcements);
-        return "announcements";
-    }
-
-    @GetMapping("/resources")
-    public String showResourcesPage(Model model) {
-        List<ResourceHub> resources = resourceHubRepository.findAll();
-        model.addAttribute("resources", resources);
-        return "resources";
-    }
-
-    @GetMapping("/gallery")
-    public String showGalleryPage(Model model) {
-        List<Gallery> galleryItems = galleryRepository.findAll();
-        model.addAttribute("galleryItems", galleryItems);
-        return "gallery";
-    }
-
-    @GetMapping("/teacher-portal")
-    public String showTeacherPortal(HttpSession session, Model model) {
-        User user = (User) session.getAttribute("user");
-        
-        // 1. If not authenticated, redirect straight to the login page
-        if (user == null) {
-            return "redirect:/login";
-        }
-
-        // 2. If already authenticated, bypass login and go directly to their respective dashboard
-        String role = user.getRoleName() != null ? user.getRoleName().toUpperCase() : "";
-        switch (role) {
-                case "ADMIN_PRINCIPAL":
-                    return "redirect:/admin-dashboard";
-                case "ADVISER":
-                    return "redirect:/adviser-dashboard";
-                case "REGISTRAR":
-                    return "redirect:/registrar-dashboard";
-                case "FACILITIES_ADMIN":
-                    return "redirect:/custodian-dashboard";
-                case "SPORTS_ADMIN":
-                    return "redirect:/sports-dashboard";
-                case "GUIDANCE_COUNSELOR":
-                    return "redirect:/guidance-dashboard";
-                case "NURSE":
-                    return "redirect:/clinic-dashboard";
-                case "LIBRARIAN":
-                    return "redirect:/library-dashboard";
-                case "LAB_ADMIN": 
-                    return "redirect:/lab-dashboard";
-                default:
-                    model.addAttribute("error", "Role mapping context unresolved.");
-                    return "login";
-            }
-    }
-
-    // ===== CLEARANCE AND REQUESTS =====
-    @GetMapping("/clearance/lookup")
-    public String showClearanceLookup() {
-        return "clearance-status";
-    }
-
-    @GetMapping("/requests")
-    public String showRequestsPage() {
-        return "request-doc";
-    }
-
-    @GetMapping("/clearance-tracker")
-    public String showClearanceTrackerPage() {
-        return "clearance-status";
-    }
-
-    @GetMapping("/clearance/track")
-    public String trackClearanceStatus(@RequestParam("lrn") String lrn, Model model) {
-        @SuppressWarnings("null")
-        Optional<Student> studentOpt = studentRepository.findById(lrn);
-        if (studentOpt.isPresent()) {
-            model.addAttribute("student", studentOpt.get());
-        } else {
-            model.addAttribute("error", "No mapping found matching LRN context parameter records.");
-        }
-        return "clearance-status";
-    }
-
-    @GetMapping("/admin-dashboard")
+    // =========================================================
+    // --- MAIN ADMIN DASHBOARD MAPPINGS ---
+    // =========================================================
+    @GetMapping({"/admin/dashboard", "/admin-dashboard"})
     public String showAdminDashboard(HttpSession session, Model model) {
-        User user = (User) session.getAttribute("user");
-        if (user == null || !"ADMIN_PRINCIPAL".equalsIgnoreCase(user.getRoleName()))
-            return "redirect:/login";
+        User loggedInUser = (User) session.getAttribute("user");
+        if (loggedInUser == null) {
+            loggedInUser = (User) session.getAttribute("loggedInUser");
+        }
+        // Fail-safe for manual testing
+        if (loggedInUser == null) {
+            loggedInUser = new User();
+            loggedInUser.setName("Main System Administrator");
+            loggedInUser.setEmail("admin@linhs.edu.ph");
+            loggedInUser.setRoleName("ADMIN");
+        }
+        model.addAttribute("adminUser", loggedInUser);
 
-        model.addAttribute("username", user.getUsername());
-        model.addAttribute("advisers", userRepository.findByRoleName("ADVISER"));
-        model.addAttribute("allStudents", studentRepository.findAll());
+        // Tab 1: Staff accounts (Excluding advisers)
+        List<User> allUsers = userRepository.findAll();
+        List<User> staffUsers = new ArrayList<>();
+        for (User u : allUsers) {
+            if (!"ADVISER".equalsIgnoreCase(u.getRoleName())) {
+                staffUsers.add(u);
+            }
+        }
+        model.addAttribute("staffAccounts", staffUsers);
+
+        // Tab 2: Adviser accounts
+        List<User> advisers = userRepository.findByRoleName("ADVISER");
+        model.addAttribute("adviserAccounts", advisers);
+
         return "admin-dashboard";
     }
 
-    @GetMapping("/adviser-dashboard")
-    public String showAdviserDashboard(HttpSession session, Model model) {
-        User user = (User) session.getAttribute("user");
-        if (user == null || !"ADVISER".equalsIgnoreCase(user.getRoleName()))
-            return "redirect:/login";
-
-        model.addAttribute("username", user.getUsername());
-        model.addAttribute("adviserSection",
-                user.getAssignedSection() != null ? user.getAssignedSection() : "Not Assigned");
-
-        if (user.getAssignedSection() != null) {
-            List<Student> sectionStudents = studentRepository.findBySection(user.getAssignedSection());
-            model.addAttribute("students", sectionStudents);
-        } else {
-            model.addAttribute("students", new ArrayList<Student>());
+    @PostMapping("/admin/account/edit")
+    public String editStaffAccount(@RequestParam("id") Long id,
+                                   @RequestParam("name") String name,
+                                   @RequestParam("email") String email,
+                                   @RequestParam("password") String password) {
+        Optional<User> userOpt = userRepository.findById(id);
+        if (userOpt.isPresent()) {
+            User user = userOpt.get();
+            user.setName(name);
+            user.setEmail(email);
+            if (password != null && !password.trim().isEmpty()) {
+                user.setPassword(password);
+            }
+            userRepository.save(user);
         }
+        return "redirect:/admin-dashboard?success=Account+Updated";
+    }
+
+    @PostMapping("/admin/adviser/create")
+    public String createAdviserAccount(@RequestParam("name") String name,
+                                       @RequestParam("section") String section,
+                                       @RequestParam("email") String email,
+                                       @RequestParam("password") String password) {
+        User adviser = new User();
+        adviser.setName(name);
+        adviser.setAssignedSection(section);
+        adviser.setEmail(email);
+        adviser.setPassword(password);
+        adviser.setRoleName("ADVISER");
+        userRepository.save(adviser);
+        return "redirect:/admin-dashboard?tab=1&success=Adviser+Created";
+    }
+
+    @PostMapping("/admin/adviser/delete")
+    public String deleteAdviserAccount(@RequestParam("id") Long id) {
+        userRepository.deleteById(id);
+        return "redirect:/admin-dashboard?tab=1&success=Adviser+Deleted";
+    }
+
+    // Dummy placeholders for CMS Tab requests (Tab 3)
+    @PostMapping("/admin/cms/update")
+    public String processCmsUpdate(@RequestParam("type") String type, @RequestParam Map<String, String> allParams) {
+        return "redirect:/admin-dashboard?tab=2&success=CMS+Section+Deployed";
+    }
+
+
+    // =========================================================
+    // --- ADVISER DASHBOARD MAPPINGS ---
+    // =========================================================
+    @GetMapping({"/adviser/dashboard", "/adviser-dashboard"})
+    public String showAdviserDashboard(HttpSession session, Model model) {
+        User loggedInUser = (User) session.getAttribute("user");
+        if (loggedInUser == null) {
+            loggedInUser = (User) session.getAttribute("loggedInUser");
+        }
+        
+        // Match user requested initial default credentials if none logged in
+        if (loggedInUser == null || !"ADVISER".equalsIgnoreCase(loggedInUser.getRoleName())) {
+            loggedInUser = new User();
+            loggedInUser.setName("Robert Louis De Gula");
+            loggedInUser.setAssignedSection("Grade 12 - Azurite");
+            loggedInUser.setRoleName("ADVISER");
+        }
+        
+        model.addAttribute("adviser", loggedInUser);
+        String section = loggedInUser.getAssignedSection();
+
+        // Tab 1: Students in this section
+        List<Student> students = studentRepository.findBySection(section);
+        model.addAttribute("students", students);
+
+        // Tab 3: Subjects assigned to this section
+        List<Subject> subjects = subjectRepository.findBySection(section);
+        model.addAttribute("subjects", subjects);
+
+        // Tab 2: Map grades to easily render into the modal matrix
+        List<StudentGrade> allGrades = studentGradeRepository.findAll();
+        model.addAttribute("allGrades", allGrades);
+
         return "adviser-dashboard";
     }
 
-    @GetMapping("/request-document")
-    public String showRequestDocumentForm(Model model) {
-        return "request-doc";
+    @PostMapping("/adviser/student/add")
+    public String addStudentToSection(@RequestParam("name") String name,
+                                      @RequestParam("lrn") String lrn,
+                                      HttpSession session) {
+        User loggedInUser = (User) session.getAttribute("user");
+        if (loggedInUser == null) loggedInUser = (User) session.getAttribute("loggedInUser");
+        String section = (loggedInUser != null) ? loggedInUser.getAssignedSection() : "Grade 12 - Azurite";
+
+        Student student = new Student(lrn, name, section);
+        studentRepository.save(student);
+        return "redirect:/adviser-dashboard?tab=students&success=Student+Registered";
     }
 
-    @PostMapping("/request-document/submit")
-    public String handleDocumentRequestSubmission(
-            @RequestParam("firstName") String firstName,
-            @RequestParam("lastName") String lastName,
-            @RequestParam("contactNumber") String contactNumber,
-            @RequestParam("academicYear") String academicYear,
-            @RequestParam("gradeSection") String gradeSection,
-            @RequestParam("documentType") String documentType,
-            @RequestParam("purpose") String purpose,
-            Model model) {
+    @PostMapping("/adviser/subject/add")
+    public String addSubjectToSection(@RequestParam("name") String name,
+                                      HttpSession session) {
+        User loggedInUser = (User) session.getAttribute("user");
+        if (loggedInUser == null) loggedInUser = (User) session.getAttribute("loggedInUser");
+        String section = (loggedInUser != null) ? loggedInUser.getAssignedSection() : "Grade 12 - Azurite";
 
-        try {
-            DocumentRequest newRequest = new DocumentRequest();
-            newRequest.setFirstName(firstName);
-            newRequest.setLastName(lastName);
-            newRequest.setContactNumber(contactNumber);
-            newRequest.setAcademicYear(academicYear);
-            newRequest.setGradeSection(gradeSection);
-            newRequest.setDocumentType(documentType);
-            newRequest.setPurpose(purpose);
-            newRequest.setStatus("PENDING");
-            newRequest.setRequestedAt(LocalDateTime.now());
-            documentRequestRepository.save(newRequest);
-
-            return "redirect:/registrar-dashboard";
-
-        } catch (Exception e) {
-            model.addAttribute("errorMessage", "System error processing transaction parameters: " + e.getMessage());
-            return "request-doc";
-        }
+        Subject subj = new Subject();
+        subj.setName(name);
+        subj.setSection(section);
+        subjectRepository.save(subj);
+        return "redirect:/adviser-dashboard?tab=subjects&success=Subject+Added";
     }
 
-    @GetMapping("/registrar-dashboard")
-    public String showRegistrarDashboard(HttpSession session, Model model) {
-        User user = (User) session.getAttribute("user");
-        if (user == null || !"REGISTRAR".equalsIgnoreCase(user.getRoleName()))
-            return "redirect:/login";
-
-        model.addAttribute("username", user.getUsername());
-        model.addAttribute("requests", documentRequestRepository.findAll());
-        return "registrar-dashboard";
+    @PostMapping("/adviser/subject/delete")
+    public String deleteSubjectFromSection(@RequestParam("id") Long id) {
+        subjectRepository.deleteById(id);
+        return "redirect:/adviser-dashboard?tab=subjects&success=Subject+Removed";
     }
 
-    @GetMapping("/custodian-dashboard")
-    public String showCustodianDashboard(HttpSession session, Model model) {
-        User user = (User) session.getAttribute("user");
-        if (user == null || !"FACILITIES_ADMIN".equalsIgnoreCase(user.getRoleName()))
-            return "redirect:/login";
-
-        model.addAttribute("username", user.getUsername());
-        model.addAttribute("borrowRecords", borrowRecordRepository.findAll());
-        model.addAttribute("liabilities", facilityLiabilityRepository.findAll());
-        return "custodian-dashboard";
-    }
-    
-    @GetMapping("/lab-dashboard")
-    public String showLabDashboard(HttpSession session, Model model) {
-        User user = (User) session.getAttribute("user");
-        
-        // Ensure only the Lab Admin can access this page
-        if (user == null || !"LAB_ADMIN".equalsIgnoreCase(user.getRoleName())) {
-            return "redirect:/login";
-        }
-
-        // Supply the HTML with the exact variables it is looking for
-        model.addAttribute("adminName", user.getName());
-        model.addAttribute("students", studentRepository.findAll());
-        
-        // Assuming your lab records use the borrowRecordRepository based on your HTML
-        model.addAttribute("activeBorrows", borrowRecordRepository.findAll()); 
-
-        return "lab-dashboard";
-    }
-    
-    @GetMapping("/sports-dashboard")
-    public String showSportsDashboard(HttpSession session, Model model) {
-        User user = (User) session.getAttribute("user");
-        if (user == null || !"SPORTS_ADMIN".equalsIgnoreCase(user.getRoleName()))
-            return "redirect:/login";
-
-        model.addAttribute("username", user.getUsername());
-        model.addAttribute("equipments", sportsEquipmentRepository.findAll());
-        return "sports-dashboard";
-    }
-
-    @GetMapping("/guidance-dashboard")
-    public String showGuidanceDashboard(HttpSession session, Model model) {
-        User user = (User) session.getAttribute("user");
-        if (user == null || !"GUIDANCE_COUNSELOR".equalsIgnoreCase(user.getRoleName()))
-            return "redirect:/login";
-
-        model.addAttribute("username", user.getUsername());
-        model.addAttribute("records", guidanceRecordRepository.findAll());
-        return "guidance-dashboard";
-    }
-
-    @GetMapping("/clinic-dashboard")
-    public String showClinicDashboard(HttpSession session, Model model) {
-        User user = (User) session.getAttribute("user");
-        if (user == null || !"NURSE".equalsIgnoreCase(user.getRoleName()))
-            return "redirect:/login";
-
-        model.addAttribute("username", user.getUsername());
-        model.addAttribute("logs", clinicLogRepository.findAll());
-        return "clinic-dashboard";
-    }
-
-    @GetMapping("/library-dashboard")
-    public String showLibraryDashboard(HttpSession session, Model model) {
-        User user = (User) session.getAttribute("user");
-        if (user == null || !"LIBRARIAN".equalsIgnoreCase(user.getRoleName()))
-            return "redirect:/login";
-
-        model.addAttribute("username", user.getUsername());
-        model.addAttribute("libraryRecords", libraryBorrowRecordRepository.findAll());
-        return "library-dashboard";
-    }
-
-    @GetMapping("/student-liabilities-details")
-    public String showStudentLiabilitiesDetails(@RequestParam("lrn") String lrn, Model model) {
-        @SuppressWarnings("null")
-        Optional<Student> studentOpt = studentRepository.findById(lrn);
-        if (studentOpt.isEmpty()) {
-            model.addAttribute("error", "Student record tracking context missing.");
-            return "error";
-        }
-
-        Student student = studentOpt.get();
-        LiabilityDetailsRow details = new LiabilityDetailsRow(student.getName(), student.getLrn(), "ACTIVE");
-
-        List<BorrowRecord> propertyRecords = borrowRecordRepository.findByStudentLrnAndStatus(lrn, "BORROWED");
-        for (BorrowRecord br : propertyRecords) {
-            details.addOpenItem(
-                    new OpenLiabilityItem("Property Custodian", br.getItemName(), br.getBorrowedAt(), "UNRETURNED"));
-        }
-
-        List<SportsEquipment> sportsRecords = sportsEquipmentRepository.findByStudentLrnAndStatus(lrn, "BORROWED");
-        for (SportsEquipment se : sportsRecords) {
-            details.addOpenItem(new OpenLiabilityItem("Sports & Athletics",
-                    se.getEquipmentName() + " (Qty: " + se.getQuantity() + ")", 
-                    se.getBorrowDate(), 
-                    "UNRETURNED"));
-        }
-
-        List<GuidanceRecord> guidanceRecords = guidanceRecordRepository.findByStudentLrn(lrn);
-        for (GuidanceRecord gr : guidanceRecords) {
-            if (gr.getActionTaken() == null || gr.getActionTaken().trim().isEmpty()) {
-                details.addOpenItem(new OpenLiabilityItem("Guidance Office", gr.getInfractionDescription(), gr.getLogDate(),
-                        "PENDING_RESOLUTION"));
+    @PostMapping("/adviser/grade/save")
+    public String saveStudentGrades(@RequestParam("studentLrn") String studentLrn,
+                                    @RequestParam Map<String, String> params) {
+        for (String key : params.keySet()) {
+            if (key.startsWith("subject_")) {
+                Long subjectId = Long.parseLong(key.replace("subject_", ""));
+                String gradeValue = params.get(key);
+                
+                Optional<Subject> subjOpt = subjectRepository.findById(subjectId);
+                if (subjOpt.isPresent()) {
+                    Subject subj = subjOpt.get();
+                    
+                    // Look for existing grade entry to overwrite or create new
+                    List<StudentGrade> existing = studentGradeRepository.findByStudentLrn(studentLrn);
+                    StudentGrade currentGrade = null;
+                    for (StudentGrade g : existing) {
+                        if (g.getSubjectId().equals(subjectId)) {
+                            currentGrade = g;
+                            break;
+                        }
+                    }
+                    
+                    if (currentGrade == null) {
+                        currentGrade = new StudentGrade();
+                        currentGrade.setStudentLrn(studentLrn);
+                        currentGrade.setSubjectId(subjectId);
+                        currentGrade.setSubjectName(subj.getName());
+                    }
+                    
+                    currentGrade.setGrade(gradeValue); // Safely sets gradeValue string & internal parsing
+                    currentGrade.setRemarks(currentGrade.getFinalGrade() != null && currentGrade.getFinalGrade() >= 75.0 ? "PASSED" : "FAILED");
+                    studentGradeRepository.save(currentGrade);
+                }
             }
         }
-
-        List<LibraryBorrowRecord> libraryRecords = libraryBorrowRecordRepository.findByStudentLrnAndStatus(lrn,
-                "BORROWED");
-        for (LibraryBorrowRecord lbr : libraryRecords) {
-            details.addOpenItem(new OpenLiabilityItem("School Library", "Book: " + lbr.getBookTitle(),
-                    lbr.getBorrowDate(), "OVERDUE_RETAINED"));
-        }
-
-        List<FacilityLiability> physicalRecords = facilityLiabilityRepository.findByStudentLrnAndStatus(lrn,
-                "UNRESOLVED");
-        for (FacilityLiability fl : physicalRecords) {
-            details.addOpenItem(new OpenLiabilityItem("Facilities Damage",
-                    fl.getFacilityName() + " - " + fl.getDamageDescription(), fl.getReportedDate(), "DAMAGE_UNPAID"));
-        }
-
-        model.addAttribute("details", details);
-        return "student-liabilities-details";
-    }
-
-    // Helper View DTOs specific to this controller
-    public static class LiabilityDetailsRow {
-        private final String studentName;
-        private final String lrn;
-        private final String status;
-        private final List<OpenLiabilityItem> openItems = new ArrayList<>();
-
-        public LiabilityDetailsRow(String studentName, String lrn, String status) {
-            this.studentName = studentName;
-            this.lrn = lrn;
-            this.status = status;
-        }
-
-        public String getStudentName() {
-            return studentName;
-        }
-
-        public String getLrn() {
-            return lrn;
-        }
-
-        public String getStatus() {
-            return status;
-        }
-
-        public List<OpenLiabilityItem> getOpenItems() {
-            return openItems;
-        }
-
-        public void addOpenItem(OpenLiabilityItem item) {
-            if (item != null)
-                openItems.add(item);
-        }
-    }
-
-    public static class OpenLiabilityItem {
-        private final String category;
-        private final String description;
-        private final LocalDateTime loggedAt;
-        private final String state;
-
-        public OpenLiabilityItem(String category, String description, LocalDateTime loggedAt, String state) {
-            this.category = category;
-            this.description = description;
-            this.loggedAt = loggedAt;
-            this.state = state;
-        }
-
-        public String getCategory() {
-            return category;
-        }
-
-        public String getDescription() {
-            return description;
-        }
-
-        public LocalDateTime getLoggedAt() {
-            return loggedAt;
-        }
-
-        public String getState() {
-            return state;
-        }
+        return "redirect:/adviser-dashboard?tab=grading&success=Grades+Saved";
     }
 }

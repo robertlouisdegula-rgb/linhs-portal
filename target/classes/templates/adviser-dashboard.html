@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Adviser Dashboard</title>
+    <title>Adviser Dashboard | LINHS Portal</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -23,208 +23,253 @@
         body {
             background-color: var(--dark-bg);
             color: var(--text-main);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
 
-        .navbar {
-            background-color: var(--dark-bg) !important;
-            border-bottom: 1px solid var(--border-color);
+        .dashboard-container {
+            max-w: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
         }
 
-        .card {
+        .panel-card {
             background-color: var(--panel-bg);
             border: 1px solid var(--border-color);
-            color: var(--text-main);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+        }
+
+        .dashboard-header {
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: flex-between;
+            align-items: center;
         }
 
         .nav-tabs {
             border-bottom: 1px solid var(--border-color);
+            gap: 8px;
         }
 
-        .nav-tabs .nav-link {
-            color: var(--text-muted);
-            border: none;
+        .nav-link {
+            color: var(--text-muted) !important;
+            font-weight: 600;
+            border: none !important;
+            padding: 12px 20px;
+            transition: all 0.2s ease;
         }
 
-        .nav-tabs .nav-link.active {
-            background-color: transparent;
-            color: var(--mint-green);
-            border-bottom: 2px solid var(--mint-green);
+        .nav-link:hover {
+            color: var(--text-main) !important;
+            background-color: rgba(255, 255, 255, 0.03);
+            border-radius: 6px 6px 0 0;
         }
 
-        /* --- VISIBILITY FIXES --- */
-        .table,
-        .table th,
-        .table td,
-        .table tr,
-        .table-hover>tbody>tr:hover>* {
-            color: #ffffff !important;
+        .nav-link.active {
+            color: var(--mint-green) !important;
+            background-color: transparent !important;
+            border-bottom: 2px solid var(--mint-green) !important;
         }
 
-        body,
-        .card,
-        h1,
-        h2,
-        h3,
-        h4,
-        h5,
-        h6,
-        span {
-            color: #ffffff !important;
-        }
-
-        .text-muted {
-            color: #b0b0b0 !important;
-        }
-
-        .form-control,
-        .form-select,
-        input,
-        select,
-        textarea {
-            background-color: var(--input-bg) !important;
-            border: 1px solid var(--border-color) !important;
-            color: #ffffff !important;
-        }
-
-        .form-control:focus,
-        .form-select:focus {
-            border-color: var(--mint-green) !important;
-            box-shadow: 0 0 0 0.25rem rgba(32, 201, 151, 0.25) !important;
-        }
-
-        option {
+        .form-control, .form-select {
             background-color: var(--input-bg);
-            color: #ffffff;
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+        }
+
+        .form-control:focus, .form-select:focus {
+            background-color: var(--input-bg);
+            border-color: var(--mint-green);
+            color: var(--text-main);
+            box-shadow: none;
+        }
+
+        .btn-mint {
+            background-color: var(--mint-green);
+            color: #000;
+            font-weight: 700;
+            border: none;
+            transition: all 0.2s;
+        }
+
+        .btn-mint:hover {
+            background-color: var(--mint-hover);
+            color: #000;
+        }
+
+        .table {
+            color: var(--text-main);
+            border-color: var(--border-color);
+        }
+
+        .table th {
+            color: var(--text-muted);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            background-color: rgba(0,0,0,0.2);
+        }
+
+        .modal-content {
+            background-color: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
         }
     </style>
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark px-4">
-        <div class="container-fluid">
-            <a class="navbar-brand fw-bold" href="#"><i class="fas fa-chalkboard-teacher me-2"
-                    style="color: var(--mint-green);"></i>ADVISER PORTAL</a>
-            <div class="d-flex align-items-center">
-                <span class="text-muted me-3"><i class="fas fa-user-circle me-1"></i> <span
-                        th:text="${userName}">Adviser</span></span>
-                <span class="badge bg-secondary me-3" th:text="${assignedSection}">Section Name</span>
-                <a href="/logout" class="btn btn-outline-danger btn-sm"><i class="fas fa-sign-out-alt me-1"></i>
-                    Logout</a>
+
+    <div class="dashboard-container">
+        <div class="dashboard-header d-flex justify-content-between align-items-center w-100">
+            <div>
+                <h1 class="h3 fw-bold m-0"><i class="fa-solid fa-chalkboard-user text-mint-green me-2"></i>Adviser Dashboard Terminal</h1>
+                <div class="text-muted small mt-1">
+                    Faculty Adviser: <span class="text-white fw-semibold" th:text="${adviser.name}">Robert Louis De Gula</span> 
+                    | Tracked Section: <span class="text-warning fw-semibold" th:text="${adviser.assignedSection}">Grade 12 - Azurite</span>
+                </div>
+            </div>
+            <div>
+                <a href="/logout" class="btn btn-outline-danger btn-sm fw-bold"><i class="fa-solid fa-power-off me-1"></i>Sign Out</a>
             </div>
         </div>
-    </nav>
 
-    <div class="container-fluid py-4 px-4">
-        <div th:if="${param.success}"
-            class="alert alert-success bg-success bg-opacity-10 text-success border border-success mb-4">
-            <i class="fas fa-check-circle me-2"></i> Action completed successfully.
-        </div>
-        <div th:if="${param.error}"
-            class="alert alert-danger bg-danger bg-opacity-10 text-danger border border-danger mb-4">
-            <i class="fas fa-exclamation-triangle me-2"></i> An error occurred while processing the request.
+        <div th:if="${param.success}" class="alert alert-success bg-dark border-success text-success text-sm fw-bold mb-4">
+            <i class="fa-solid fa-circle-check me-2"></i><span th:text="${param.success}">Configuration change committed to database tables.</span>
         </div>
 
         <ul class="nav nav-tabs mb-4" id="adviserTabs" role="tablist">
             <li class="nav-item">
-                <button class="nav-link active" id="students-tab" data-bs-toggle="tab" data-bs-target="#students"
-                    type="button" role="tab">
-                    <i class="fas fa-users me-1"></i> Students & Clearance
+                <button class="nav-link active" id="students-tab" data-bs-toggle="tab" data-bs-target="#students-panel" type="button" role="tab">
+                    <i class="fa-solid fa-graduation-cap me-2"></i>Section Roster
                 </button>
             </li>
             <li class="nav-item">
-                <button class="nav-link" id="grades-tab" data-bs-toggle="tab" data-bs-target="#grades" type="button"
-                    role="tab">
-                    <i class="fas fa-star me-1"></i> Grading System
+                <button class="nav-link" id="grading-tab" data-bs-toggle="tab" data-bs-target="#grading-panel" type="button" role="tab">
+                    <i class="fa-solid fa-marker me-2"></i>Grading Ledger
                 </button>
             </li>
             <li class="nav-item">
-                <button class="nav-link" id="subjects-tab" data-bs-toggle="tab" data-bs-target="#subjects" type="button"
-                    role="tab">
-                    <i class="fas fa-book me-1"></i> Manage Subjects
+                <button class="nav-link" id="subjects-tab" data-bs-toggle="tab" data-bs-target="#subjects-panel" type="button" role="tab">
+                    <i class="fa-solid fa-book-bookmark me-2"></i>Subject Curriculums
                 </button>
             </li>
         </ul>
 
         <div class="tab-content" id="adviserTabsContent">
-
-            <div class="tab-pane fade show active" id="students" role="tabpanel">
-                <div class="card p-3 mb-4">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h5 class="fw-bold m-0" style="color: var(--mint-green);">Class Roster & Clearances</h5>
-                        <button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#addStudentModal">
-                            <i class="fas fa-user-plus me-1"></i> Add Student
-                        </button>
+            <div class="tab-pane fade show active" id="students-panel" role="tabpanel">
+                <div class="row">
+                    <div class="col-lg-4 mb-4">
+                        <div class="panel-card h-100">
+                            <h5 class="fw-bold mb-3 text-white"><i class="fa-solid fa-user-plus text-mint-green me-2"></i>Enlist Student Profile</h5>
+                            <form th:action="@{/adviser/student/add}" method="POST">
+                                <div class="mb-3">
+                                    <label class="form-label text-muted small fw-bold">STUDENT FULL NAME</label>
+                                    <input type="text" name="name" required class="form-control" placeholder="Lastname, Firstname M.">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label text-muted small fw-bold">LEARNER REFERENCE NUMBER (LRN)</label>
+                                    <input type="text" name="lrn" required class="form-control" placeholder="12-Digit Unique Identifier">
+                                </div>
+                                <button type="submit" class="btn btn-mint w-100 py-2 mt-2"><i class="fa-solid fa-plus me-1"></i>Commit Registration</button>
+                            </form>
+                        </div>
                     </div>
+                    <div class="col-lg-8 mb-4">
+                        <div class="panel-card h-100">
+                            <h5 class="fw-bold mb-3 text-white"><i class="fa-solid fa-list-ol text-warning me-2"></i>Enrolled Section Student List</h5>
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle">
+                                    <thead>
+                                        <tr>
+                                            <th>Learner Reference Number</th>
+                                            <th>Student Account Name</th>
+                                            <th>Assigned Section Block</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="st : ${students}">
+                                            <td class="font-monospace text-warning small" th:text="${st.lrn}">123456789012</td>
+                                            <td class="fw-semibold text-white" th:text="${st.name}">Student Name</td>
+                                            <td class="text-muted small" th:text="${st.section}">Grade 12 - Azurite</td>
+                                        </tr>
+                                        <tr th:if="${#lists.isEmpty(students)}">
+                                            <td colspan="3" class="text-center text-muted py-4 small">No structural learner records connected to this section entity yet.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
+            <div class="tab-pane fade" id="grading-panel" role="tabpanel">
+                <div class="panel-card">
+                    <h5 class="fw-bold mb-4 text-white"><i class="fa-solid fa-receipt text-mint-green me-2"></i>Section Scholastic Grading Ledger Matrix</h5>
                     <div class="table-responsive">
-                        <table class="table table-dark table-hover">
+                        <table class="table align-middle table-hover">
                             <thead>
                                 <tr>
-                                    <th>LRN</th>
-                                    <th>Student Name</th>
-                                    <th>Facilities</th>
-                                    <th>Guidance</th>
-                                    <th>Library</th>
-                                    <th>Sports</th>
-                                    <th>Lab</th>
-                                    <th>Overall Status</th>
-                                    <th>Actions</th>
+                                    <th>LRN Identification</th>
+                                    <th>Learner Student Name</th>
+                                    <th>Subject Grade Count Summary</th>
+                                    <th class="text-end">Action Deck</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr th:each="liability : ${liabilities}">
-                                    <td class="fw-bold" th:text="${liability.lrn}"></td>
-                                    <td th:text="${liability.studentName}"></td>
-                                    <td><span class="badge"
-                                            th:classappend="${liability.facilityUnresolved > 0 ? 'bg-danger' : 'bg-success'}"
-                                            th:text="${liability.facilityUnresolved}">0</span></td>
-                                    <td><span class="badge"
-                                            th:classappend="${liability.guidanceUnresolved > 0 ? 'bg-info text-dark' : 'bg-success'}"
-                                            th:text="${liability.guidanceUnresolved}">0</span></td>
-                                    <td><span class="badge"
-                                            th:classappend="${liability.libraryUnreturned > 0 ? 'bg-warning text-dark' : 'bg-success'}"
-                                            th:text="${liability.libraryUnreturned}">0</span></td>
-                                    <td><span class="badge"
-                                            th:classappend="${liability.sportsUnreturned > 0 ? 'bg-secondary' : 'bg-success'}"
-                                            th:text="${liability.sportsUnreturned}">0</span></td>
-                                    <td><span class="badge"
-                                            th:classappend="${liability.sciLabUnresolved > 0 ? 'bg-warning text-dark' : 'bg-success'}"
-                                            th:text="${liability.sciLabUnresolved}">0</span></td>
-
+                                <tr th:each="st : ${students}">
+                                    <td class="font-monospace text-muted small" th:text="${st.lrn}">000000000000</td>
+                                    <td class="fw-semibold text-white" th:text="${st.name}">Learner Fullname</td>
                                     <td>
-                                        <form th:action="@{/adviser/update-clearance}" method="POST" class="d-inline">
-                                            <input type="hidden" name="lrn" th:value="${liability.lrn}">
-                                            <select name="status"
-                                                class="form-select form-select-sm d-inline-block w-auto"
-                                                onchange="this.form.submit()">
-                                                <option value="PENDING"
-                                                    th:selected="${liability.overallStatus == 'PENDING'}">PENDING
-                                                </option>
-                                                <option value="CLEARED"
-                                                    th:selected="${liability.overallStatus == 'CLEARED'}">CLEARED
-                                                </option>
-                                            </select>
-                                        </form>
+                                        <span class="badge bg-dark border border-secondary text-light px-2.5 py-1.5 small">
+                                            <i class="fa-solid fa-layer-group text-warning me-1"></i>
+                                            Configured Grades Verified
+                                        </span>
                                     </td>
-                                    <td>
-                                        <button type="button" class="btn btn-sm btn-outline-info" data-bs-toggle="modal"
-                                            data-bs-target="#editStudentModal" th:data-lrn="${liability.lrn}"
-                                            th:data-name="${liability.studentName}"
-                                            onclick="populateEditStudentModal(this)">
-                                            <i class="fas fa-edit"></i>
+                                    <td class="text-end">
+                                        <button class="btn btn-mint btn-sm font-bold px-3" data-bs-toggle="modal" th:data-bs-target="'#gradeModal-' + ${st.lrn}">
+                                            <i class="fa-solid fa-file-signature me-1"></i> Add Grade
                                         </button>
-                                        <form th:action="@{/adviser/delete-student}" method="POST" class="d-inline"
-                                            onsubmit="return confirm('Are you sure you want to completely remove this student record?');">
-                                            <input type="hidden" name="lrn" th:value="${liability.lrn}">
-                                            <button type="submit" class="btn btn-sm btn-outline-danger"><i
-                                                    class="fas fa-trash"></i></button>
-                                        </form>
+
+                                        <div class="modal fade text-start" th:id="'gradeModal-' + ${st.lrn}" tabindex="-1" aria-hidden="true">
+                                            <div class="modal-dialog modal-dialog-centered">
+                                                <div class="modal-content shadow-2xl border border-secondary">
+                                                    <div class="modal-header border-secondary">
+                                                        <h6 class="modal-title fw-bold text-white"><i class="fa-solid fa-signature text-mint-green me-2"></i>Input Marks: <span class="text-warning font-bold" th:text="${st.name}">Learner</span></h6>
+                                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-hidden="true"></button>
+                                                    </div>
+                                                    <form th:action="@{/adviser/grade/save}" method="POST">
+                                                        <div class="modal-body">
+                                                            <input type="hidden" name="studentLrn" th:value="${st.lrn}" />
+                                                            <div th:if="${#lists.isEmpty(subjects)}" class="text-center p-3 text-muted small">
+                                                                <i class="fa-solid fa-triangle-exclamation text-danger d-block mb-2"></i>
+                                                                No subjects registered inside Tab 3 yet. Please initialize subjects first.
+                                                            </div>
+                                                            <div class="space-y-3" th:unless="${#lists.isEmpty(subjects)}">
+                                                                <div th:each="sub : ${subjects}" class="mb-3">
+                                                                    <label class="form-label small fw-bold text-muted mb-1" th:text="${sub.name}">SUBJECT NAME</label>
+                                                                    <input type="number" step="0.01" th:name="'subject_' + ${sub.id}" class="form-control font-monospace" placeholder="e.g., 88.50" min="50" max="100" />
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="modal-footer border-secondary">
+                                                            <button type="button" class="btn btn-dark border btn-sm text-muted" data-bs-toggle="modal">Cancel</button>
+                                                            <button type="submit" class="btn btn-mint btn-sm px-4" th:disabled="${#lists.isEmpty(subjects)}">Commit Grades</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+
                                     </td>
                                 </tr>
-                                <tr th:if="${#lists.isEmpty(liabilities)}">
-                                    <td colspan="9" class="text-center text-muted py-4">No students currently enrolled
-                                        in this section.</td>
+                                <tr th:if="${#lists.isEmpty(students)}">
+                                    <td colspan="4" class="text-center text-muted py-4 small">Add student profiles inside Tab 1 to populate the grading ledger list.</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -232,215 +277,74 @@
                 </div>
             </div>
 
-            <div class="tab-pane fade" id="grades" role="tabpanel">
-                <div class="card p-3">
-                    <h5 class="fw-bold mb-3" style="color: var(--mint-green);">Student Grade Book</h5>
-                    <div class="table-responsive">
-                        <table class="table table-dark table-hover table-bordered border-secondary">
-                            <thead>
-                                <tr>
-                                    <th style="width: 25%;">Student Info</th>
-                                    <th th:each="sub : ${classSubjects}" th:text="${sub.name}" class="text-center">
-                                        Subject</th>
-                                    <th style="width: 10%;" class="text-center">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr th:each="st : ${classroomStudents}">
-                                    <td>
-                                        <div class="fw-bold" th:text="${st.name}"></div>
-                                        <small class="text-muted" th:text="${st.lrn}"></small>
-                                    </td>
-                                    <form th:action="@{/adviser/update-all-grades}" method="POST">
-                                        <input type="hidden" name="lrn" th:value="${st.lrn}">
-
-                                        <td th:each="sub : ${classSubjects}" class="text-center p-1">
-                                            <input type="hidden" name="subjectIds" th:value="${sub.id}">
-                                            <input type="text" name="grades"
-                                                class="form-control form-control-sm text-center border-0 bg-transparent text-white"
-                                                th:value="${classGrades.?[subjectId == __${sub.id}__ and studentLrn == __${st.lrn}__].size() > 0 ? classGrades.?[subjectId == __${sub.id}__ and studentLrn == __${st.lrn}__][0].grade : ''}"
-                                                placeholder="---">
-                                        </td>
-
-                                        <td class="text-center">
-                                            <button type="submit" class="btn btn-sm btn-success w-100"><i
-                                                    class="fas fa-save"></i> Save</button>
-                                        </td>
-                                    </form>
-                                </tr>
-                                <tr th:if="${#lists.isEmpty(classroomStudents) or #lists.isEmpty(classSubjects)}">
-                                    <td colspan="100%" class="text-center text-muted py-4">Please ensure you have added
-                                        both students and subjects to view the grading matrix.</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <div class="tab-pane fade" id="subjects" role="tabpanel">
-                <div class="card p-3 mb-4">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h5 class="fw-bold m-0" style="color: var(--mint-green);">Curriculum Subjects</h5>
-                        <form th:action="@{/adviser/add-subject}" method="POST" class="d-flex gap-2">
-                            <input type="text" name="subjectName" class="form-control form-control-sm"
-                                placeholder="Subject Title..." required>
-                            <button type="submit" class="btn btn-sm btn-success text-nowrap"><i class="fas fa-plus"></i>
-                                Add</button>
-                        </form>
-                    </div>
-                    <table class="table table-dark table-hover">
-                        <thead>
-                            <tr>
-                                <th>Subject Code / Name</th>
-                                <th class="text-end">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr th:each="subject : ${classSubjects}">
-                                <td th:text="${subject.name}"></td>
-                                <td class="text-end">
-                                    <button type="button" class="btn btn-sm btn-outline-info" data-bs-toggle="modal"
-                                        data-bs-target="#editSubjectModal" th:data-id="${subject.id}"
-                                        th:data-name="${subject.name}" onclick="populateEditSubjectModal(this)">
-                                        <i class="fas fa-edit"></i> Edit
-                                    </button>
-                                    <form th:action="@{/adviser/delete-subject}" method="POST" class="d-inline"
-                                        onsubmit="return confirm('Deleting a subject will clear all grades associated with it. Continue?');">
-                                        <input type="hidden" name="subjectId" th:value="${subject.id}">
-                                        <button type="submit" class="btn btn-sm btn-outline-danger"><i
-                                                class="fas fa-trash"></i> Delete</button>
-                                    </form>
-                                </td>
-                            </tr>
-                            <tr th:if="${#lists.isEmpty(classSubjects)}">
-                                <td colspan="2" class="text-muted text-center py-4">No subjects registered for this
-                                    section yet.</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-        </div>
-    </div>
-
-    <div class="modal fade" id="addStudentModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content"
-                style="background-color: var(--panel-bg); color: var(--text-main); border: 1px solid var(--border-color);">
-                <div class="modal-header border-bottom border-secondary">
-                    <h5 class="modal-title" style="color: var(--mint-green);">Add New Student</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-                <form th:action="@{/adviser/add-student}" method="POST">
-                    <div class="modal-body">
-                        <div class="mb-3">
-                            <label class="form-label">Student Name</label>
-                            <input type="text" name="name" class="form-control" required
-                                placeholder="Lastname, Firstname">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">LRN</label>
-                            <input type="text" name="lrn" class="form-control" required placeholder="12-digit number">
+            <div class="tab-pane fade" id="subjects-panel" role="tabpanel">
+                <div class="row">
+                    <div class="col-lg-4 mb-4">
+                        <div class="panel-card h-100">
+                            <h5 class="fw-bold mb-3 text-white"><i class="fa-solid fa-folder-plus text-mint-green me-2"></i>Append New Course</h5>
+                            <form th:action="@{/adviser/subject/add}" method="POST">
+                                <div class="mb-3">
+                                    <label class="form-label text-muted small fw-bold">SUBJECT NOMENCLATURE / NAME</label>
+                                    <input type="text" name="name" required class="form-control" placeholder="e.g., General Mathematics">
+                                    <p class="text-[10px] text-muted mt-1">This course component attaches automatically to your section exclusively.</p>
+                                </div>
+                                <button type="submit" class="btn btn-mint w-100 py-2 mt-2"><i class="fa-solid fa-square-check me-1"></i>Save Curriculum Link</button>
+                            </form>
                         </div>
                     </div>
-                    <div class="modal-footer border-top border-secondary">
-                        <button type="submit" class="btn btn-success w-100">Enroll Student</button>
+                    <div class="col-lg-8 mb-4">
+                        <div class="panel-card h-100">
+                            <h5 class="fw-bold mb-3 text-white"><i class="fa-solid fa-book text-warning me-2"></i>Registered Active Track Courses</h5>
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle">
+                                    <thead>
+                                        <tr>
+                                            <th>Database Subject Entry Identity ID</th>
+                                            <th>Linked Subject Title</th>
+                                            <th class="text-end">Destructive Action Interface</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="sb : ${subjects}">
+                                            <td class="font-monospace text-muted small" th:text="${sb.id}">1</td>
+                                            <td class="fw-bold text-white" th:text="${sb.name}">Subject Name Description</td>
+                                            <td class="text-end">
+                                                <form th:action="@{/adviser/subject/delete}" method="POST" onsubmit="return confirm('Completely remove this track subject parameter and cascade clear related grade matrices?');">
+                                                    <input type="hidden" name="id" th:value="${sb.id}" />
+                                                    <button type="submit" class="btn btn-outline-danger btn-sm px-3 font-bold">
+                                                        <i class="fa-solid fa-trash-can me-1"></i> Disconnect
+                                                    </button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                        <tr th:if="${#lists.isEmpty(subjects)}">
+                                            <td colspan="3" class="text-center text-muted py-4 small">No course subject profiles allocated for this section cluster yet.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="editStudentModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content"
-                style="background-color: var(--panel-bg); color: var(--text-main); border: 1px solid var(--border-color);">
-                <div class="modal-header border-bottom border-secondary">
-                    <h5 class="modal-title" style="color: var(--mint-green);">Edit Student Profile</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
-                <form th:action="@{/adviser/edit-student}" method="POST">
-                    <div class="modal-body">
-                        <input type="hidden" name="originalLrn" id="editOriginalLrn">
-                        <div class="mb-3">
-                            <label class="form-label">Student Name</label>
-                            <input type="text" name="name" id="editStudentName" class="form-control" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">LRN</label>
-                            <input type="text" name="lrn" id="editStudentLrn" class="form-control" required>
-                        </div>
-                    </div>
-                    <div class="modal-footer border-top border-secondary">
-                        <button type="submit" class="btn btn-info w-100">Save Changes</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="editSubjectModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content"
-                style="background-color: var(--panel-bg); color: var(--text-main); border: 1px solid var(--border-color);">
-                <div class="modal-header border-bottom border-secondary">
-                    <h5 class="modal-title" style="color: var(--mint-green);">Edit Subject</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-                <form th:action="@{/adviser/edit-subject}" method="POST">
-                    <div class="modal-body">
-                        <input type="hidden" name="subjectId" id="editSubjectId">
-                        <div class="mb-3">
-                            <label class="form-label">Subject Title</label>
-                            <input type="text" name="subjectName" id="editSubjectName" class="form-control" required>
-                        </div>
-                    </div>
-                    <div class="modal-footer border-top border-secondary">
-                        <button type="submit" class="btn btn-info w-100">Save Update</button>
-                    </div>
-                </form>
             </div>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        function populateEditStudentModal(btn) {
-            document.getElementById('editOriginalLrn').value = btn.getAttribute('data-lrn');
-            document.getElementById('editStudentLrn').value = btn.getAttribute('data-lrn');
-            document.getElementById('editStudentName').value = btn.getAttribute('data-name');
-        }
-
-        function populateEditSubjectModal(btn) {
-            document.getElementById('editSubjectId').value = btn.getAttribute('data-id');
-            document.getElementById('editSubjectName').value = btn.getAttribute('data-name');
-        }
-
+        // Track tab status state seamlessly across user dashboard configurations
         document.addEventListener("DOMContentLoaded", function () {
-            try {
-                if (typeof bootstrap !== 'undefined') {
-                    const activeTabId = localStorage.getItem('activeAdviserTab');
-                    if (activeTabId) {
-                        const tabElement = document.querySelector(`button[data-bs-target="${activeTabId}"]`);
-                        if (tabElement) {
-                            tabElement.click();
-                        }
-                    } else {
-                        localStorage.setItem('activeAdviserTab', '#students');
-                    }
-
-                    document.querySelectorAll('button[data-bs-toggle="tab"]').forEach(tab => {
-                        tab.addEventListener('shown.bs.tab', function (e) {
-                            const targetId = e.target.getAttribute('data-bs-target');
-                            localStorage.setItem('activeAdviserTab', targetId);
-                        });
-                    });
-                }
-            } catch (error) {
-                console.error("Error initializing tabs:", error);
+            const activeTabId = localStorage.getItem('activeAdviserTabStr');
+            if (activeTabId) {
+                const tabTrigger = new bootstrap.Tab(document.querySelector('#' + activeTabId));
+                if(tabTrigger) tabTrigger.show();
             }
+
+            document.querySelectorAll('button[data-bs-toggle="tab"]').forEach(tab => {
+                tab.addEventListener('shown.bs.tab', function (e) {
+                    localStorage.setItem('activeAdviserTabStr', e.target.id);
+                });
+            });
         });
     </script>
 </body>
