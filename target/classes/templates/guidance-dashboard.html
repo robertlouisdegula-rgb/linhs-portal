@@ -107,8 +107,7 @@
         <div class="container-fluid px-4">
             <a class="navbar-brand d-flex align-items-center gap-2" href="#">
                 <i class="fas fa-user-shield text-info fs-4"></i>
-                <span class="fw-bold tracking-tight">LINHS <span
-                        class="text-info text-xs font-mono">GUIDANCE</span></span>
+                <span class="fw-bold tracking-tight">LINHS <span class="text-info text-xs font-mono">GUIDANCE</span></span>
             </a>
             <div class="d-flex align-items-center gap-3">
                 <div class="text-end d-none d-md-block">
@@ -121,42 +120,31 @@
     </nav>
 
     <div class="dashboard-container">
-        <div th:if="${successMessage}"
-            class="alert alert-success alert-dismissible fade show bg-opacity-10 text-success border border-success"
-            role="alert">
-            <i class="fas fa-check-circle me-2"></i><span th:text="${successMessage}">Success encounter update
-                saved.</span>
+        <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show bg-opacity-10 text-success border border-success" role="alert">
+            <i class="fas fa-check-circle me-2"></i><span th:text="${successMessage}">Success encounter update saved.</span>
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
 
         <div class="row g-4">
             <div class="col-lg-4">
                 <div class="panel-card">
-                    <h5 class="mb-4 font-bold text-lg d-flex align-items-center gap-2"
-                        style="color: var(--mint-green);">
+                    <h5 class="mb-4 font-bold text-lg d-flex align-items-center gap-2" style="color: var(--mint-green);">
                         <i class="fas fa-edit"></i> File Guidance Case Profile
                     </h5>
                     <form th:action="@{/guidance/log}" method="POST">
                         <input type="hidden" name="studentName" class="hiddenStudentName" value="" />
                         <div class="mb-3">
-                            <label class="form-label text-xs font-semibold text-muted">Select Case Related
-                                Student</label>
-                            <select name="lrn" class="form-select select2-setup" onchange="updateHiddenName(this)"
-                                required>
+                            <label class="form-label text-xs font-semibold text-muted">Select Case Related Student</label>
+                            <select name="lrn" class="form-select select2-setup" onchange="updateHiddenName(this)" required>
                                 <option value="" disabled selected>Select student context registry...</option>
-                                <option th:each="student : ${students}" th:value="${student.lrn}"
-                                    th:text="${student.name} + ' (' + ${student.lrn} + ')'"></option>
+                                <option th:each="student : ${students}" th:value="${student.lrn}" th:text="${student.name} + ' (' + ${student.lrn} + ')'"></option>
                             </select>
                         </div>
                         <div class="mb-4">
-                            <label class="form-label text-xs font-semibold text-muted">Incident Narrative / Counseling
-                                Resolution Notes</label>
-                            <textarea name="incidentDetails" class="form-control" rows="4"
-                                placeholder="Document behavioral infractions, tracking case updates, or guidance resolution metrics..."
-                                required></textarea>
+                            <label class="form-label text-xs font-semibold text-muted">Incident Narrative / Counseling Resolution Notes</label>
+                            <textarea name="incidentDetails" class="form-control" rows="4" placeholder="Document behavioral infractions, tracking case updates, or guidance resolution metrics..." required></textarea>
                         </div>
-                        <button type="submit" class="btn btn-mint w-100 py-2"><i class="fas fa-save me-1"></i> Log Case
-                            Profile Record</button>
+                        <button type="submit" class="btn btn-mint w-100 py-2"><i class="fas fa-save me-1"></i> Log Case Profile Record</button>
                     </form>
                 </div>
             </div>
@@ -165,8 +153,7 @@
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h4 class="m-0 fw-bold tracking-tight">Chronological Incident / Counseling Matrix</h4>
                     <div class="d-flex gap-2">
-                        <button class="section-btn active" id="btn-logs" onclick="showSection('logs')">Historical
-                            Logs</button>
+                        <button class="section-btn active" id="btn-logs" onclick="showSection('logs')">Historical Logs</button>
                     </div>
                 </div>
 
@@ -187,13 +174,11 @@
                                     <td th:text="${log.studentName}"></td>
                                     <td th:text="${log.incidentDetails}"></td>
                                     <td>
-                                        <span class="badge bg-info" th:
-                                            text="${log.loggedAt != null ? #temporals.format(log.loggedAt, 'yyyy-MM-dd | hh:mm a') : 'N/A'}"></span>
+                                        <span class="badge bg-info" th:text="${log.loggedAt != null ? #temporals.format(log.loggedAt, 'yyyy-MM-dd | hh:mm a') : 'N/A'}"></span>
                                     </td>
                                 </tr>
-                                <tr th:if="${#lists.isEmpty(guidanceLogs)}">
-                                    <td colspan="4" class="text-muted py-4 text-center">No counseling or disciplinary
-                                        records have been inputted today.</td>
+                                <tr th:if="${guidanceLogs == null or #lists.isEmpty(guidanceLogs)}">
+                                    <td colspan="4" class="text-muted py-4 text-center">No counseling or disciplinary records have been inputted today.</td>
                                 </tr>
                             </tbody>
                         </table>
