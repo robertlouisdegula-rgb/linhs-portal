@@ -149,8 +149,36 @@ public class PageController {
     }
 
     @GetMapping("/teacher-portal")
-    public String showTeacherPortal() {
-        return "dashboard";
+    public String showTeacherPortal(HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        
+        // 1. If not authenticated, redirect straight to the login page
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+        // 2. If already authenticated, bypass login and go directly to their respective dashboard
+        String role = user.getRoleName() != null ? user.getRoleName().toUpperCase() : "";
+        switch (role) {
+            case "ADMIN_PRINCIPAL":
+                return "redirect:/admin-dashboard";
+            case "ADVISER":
+                return "redirect:/adviser-dashboard";
+            case "REGISTRAR":
+                return "redirect:/registrar-dashboard";
+            case "FACILITIES_ADMIN":
+                return "redirect:/custodian-dashboard";
+            case "SPORTS_ADMIN":
+                return "redirect:/sports-dashboard";
+            case "GUIDANCE_COUNSELOR":
+                return "redirect:/guidance-dashboard";
+            case "NURSE":
+                return "redirect:/clinic-dashboard";
+            case "LIBRARIAN":
+                return "redirect:/library-dashboard";
+            default:
+                return "redirect:/login";
+        }
     }
 
     // ===== CLEARANCE AND REQUESTS =====
