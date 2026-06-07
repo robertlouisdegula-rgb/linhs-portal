@@ -318,51 +318,56 @@ public class PageController {
     }
 
     @PostMapping("/admin/cms/update")
-    public String processCmsUpdate(@RequestParam("type") String type,
-                                @RequestParam(value = "title", required = false) String title,
-                                @RequestParam(value = "content", required = false) String content,
-                                @RequestParam(value = "caption", required = false) String caption,
-                                @RequestParam(value = "fileAttachment", required = false) MultipartFile fileAttachment) {
-        try {
-            String savedPath = "";
-            
-            if (fileAttachment != null && !fileAttachment.isEmpty()) {
-                String filename = System.currentTimeMillis() + "_" + fileAttachment.getOriginalFilename();
-                String uploadDir = System.getProperty("user.dir") + "/src/main/resources/static/uploads/";
-                
-                java.io.File dir = new java.io.File(uploadDir);
-                if (!dir.exists()) {
-                    dir.mkdirs();
-                }
-                
-                java.nio.file.Path path = java.nio.file.Paths.get(uploadDir + filename);
-                java.nio.file.Files.write(path, fileAttachment.getBytes());
-                
-                savedPath = "/uploads/" + filename;
-            }
-
-            if ("announcement".equalsIgnoreCase(type)) {
-                Announcement ann = new Announcement();
-                ann.setTitle(title);
-                ann.setContent(content);
-                announcementRepository.save(ann);
-            } else if ("resource".equalsIgnoreCase(type)) {
-                ResourceHub res = new ResourceHub();
-                res.setTitle(title);
-                res.setLink(savedPath); 
-                resourceHubRepository.save(res);
-            } else if ("gallery".equalsIgnoreCase(type)) {
-                Gallery img = new Gallery();
-                img.setCaption(caption);
-                img.setId(savedPath); 
-                galleryRepository.save(img);
-            }
-        } catch (Exception e) {
-            return "redirect:/admin-dashboard?tab=2&error=File+Upload+Failed";
-        }
+public String processCmsUpdate(@RequestParam("type") String type,
+                               @RequestParam(value = "title", required = false) String title,
+                               @RequestParam(value = "content", required = false) String content,
+                               @RequestParam(value = "caption", required = false) String caption,
+                               @RequestParam(value = "fileAttachment", required = false) MultipartFile fileAttachment,
+                               RedirectAttributes redirectAttributes) { // Added for safer notification redirects
+    try {
+        String savedPath = "";
         
-        return "redirect:/admin-dashboard?tab=2&success=CMS+Section+Deployed";
+        // Handle file parsing and system storage
+        if (fileAttachment != null && !fileAttachment.isEmpty()) {
+            String filename = System.currentTimeMillis() + "_" + fileAttachment.getOriginalFilename();
+            String uploadDir = System.getProperty("user.dir") + "/src/main/resources/static/uploads/";
+            
+            java.io.File dir = new java.io.File(uploadDir);
+            if (!dir.exists()) {
+                dir.mkdirs();
+            }
+            
+            java.nio.file.Path path = java.nio.file.Paths.get(uploadDir + filename);
+            java.nio.file.Files.write(path, fileAttachment.getBytes());
+            
+            savedPath = "/uploads/" + filename;
+        }
+
+        if ("announcement".equalsIgnoreCase(type)) {
+            Announcement ann = new Announcement();
+            ann.setTitle(title);
+            ann.setContent(content);
+            announcementRepository.save(ann);
+        } else if ("resource".equalsIgnoreCase(type)) {
+            ResourceHub res = new ResourceHub();
+            res.setTitle(title);
+            // Matches 'fileUrl' parameter inside ResourceHub entity structure
+            res.setFileUrl(savedPath); 
+            resourceHubRepository.save(res);
+        } else if ("gallery".equalsIgnoreCase(type)) {
+            Gallery img = new Gallery();
+            img.setCaption(caption);
+            // Matches 'imageUrl' parameter inside Gallery entity structure
+            img.setImageUrl(savedPath); 
+            galleryRepository.save(img);
+        }
+    } catch (Exception e) {
+        e.printStackTrace(); // Prints exact tracing stream to console if upload blocks
+        return "redirect:/admin-dashboard?tab=2&error=File+Upload+Failed";
     }
+    
+    return "redirect:/admin-dashboard?tab=2&success=CMS+Section+Deployed";
+}
 
     // =========================================================
     // --- ADVISER DASHBOARD & FEATURES ---
