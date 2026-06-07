@@ -369,6 +369,40 @@ public String processCmsUpdate(@RequestParam("type") String type,
     return "redirect:/admin-dashboard?tab=2&success=CMS+Section+Deployed";
 }
 
+@PostMapping("/admin/adviser/create")
+public String createAdviserAccount(@RequestParam("name") String name,
+                                   @RequestParam("section") String section,
+                                   @RequestParam("email") String email,
+                                   @RequestParam("password") String password,
+                                   RedirectAttributes redirectAttributes) {
+    try {
+        // 1. Create a new User entity
+        User newAdviser = new User();
+        newAdviser.setName(name);
+        newAdviser.setAssignedSection(section);
+        newAdviser.setEmail(email);
+        newAdviser.setPassword(password); // AuthService will encrypt this
+        
+        // 2. CRITICAL: Hardcode the role so the login system knows where to route them
+        newAdviser.setRoleName("ADVISER");
+
+        // 3. Save using your AuthService (which handles the BCrypt password encoding)
+        User savedUser = authService.registerUser(newAdviser);
+
+        if (savedUser == null) {
+            // AuthService returns null if the email already exists
+            return "redirect:/admin-dashboard?tab=1&error=Email+address+is+already+in+use.";
+        }
+
+        // Success redirect back to Tab 1 (Adviser Accounts)
+        return "redirect:/admin-dashboard?tab=1&success=Adviser+Account+Successfully+Created.";
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        return "redirect:/admin-dashboard?tab=1&error=Failed+to+create+adviser+account.";
+    }
+}
+
     // =========================================================
     // --- ADVISER DASHBOARD & FEATURES ---
     // =========================================================
