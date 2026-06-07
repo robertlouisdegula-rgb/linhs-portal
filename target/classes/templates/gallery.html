@@ -26,11 +26,9 @@
         }
         .swiper-button-next:after, .swiper-button-prev:after { font-size: 18px !important; font-weight: bold; }
         .swiper-pagination-bullet-active { background: #10b981 !important; }
-        .swiper-pagination-bullet { background: #4b5563; }
     </style>
 </head>
 <body class="bg-darkBg text-white antialiased font-sans">
-
     <nav class="flex items-center justify-between px-8 py-4 border-b border-zinc-800 bg-darkBg/90 backdrop-blur sticky top-0 z-50">
         <a href="/" class="flex items-center gap-3 w-1/3 group">
             <img src="/lumbanglogo.jpg" alt="LINHS Logo" class="w-10 h-10 object-cover rounded-full">
@@ -39,31 +37,31 @@
                 <p class="text-[10px] text-zinc-400">Lumbang Integrated NHS</p>
             </div>
         </a>
-        <div class="hidden md:flex absolute left-1/2 -translate-x-1/2 items-center gap-6 text-sm text-zinc-300">
+        <div class="hidden md:flex absolute left-1/2 -translate-x-1/2 items-center gap-6 text-xs font-semibold tracking-wide uppercase text-zinc-400">
             <a href="/" class="hover:text-emeraldAccent transition">Home</a>
             <a href="/about" class="hover:text-emeraldAccent transition">About</a>
-            <a href="/announcements" class="hover:text-emeraldAccent transition">Announcements</a>
+            <a href="/announcements" class="hover:text-emeraldAccent transition">Notice Board</a>
+            <a href="/gallery" class="text-emeraldAccent">Gallery</a>
             <a href="/resources" class="hover:text-emeraldAccent transition">Resources</a>
-            <a href="/gallery" class="text-emeraldAccent font-semibold">Gallery</a>
         </div>
-        <div class="flex justify-end w-1/3">
-            <a href="/teacher-portal" class="border border-emeraldAccent/30 text-emeraldAccent bg-emeraldAccent/5 hover:bg-emeraldAccent/20 px-4 py-1.5 rounded-lg text-xs font-semibold transition flex items-center gap-1.5">
+        <div class="w-1/3 flex justify-end">
+            <a href="/login" class="border border-emeraldAccent/30 text-emeraldAccent bg-emeraldAccent/5 hover:bg-emeraldAccent/20 px-4 py-1.5 rounded-lg text-xs font-semibold transition flex items-center gap-1.5">
                 <span>→</span> Teacher Portal
             </a>
         </div>
     </nav>
 
-    <main class="max-w-5xl mx-auto px-4 py-16 text-center">
-        <h2 class="text-3xl font-extrabold tracking-tight text-emeraldAccent mb-2">Campus Life</h2>
-        <p class="text-zinc-400 mb-12">Snapshots of excellence, culture, and events across our institution.</p>
+    <main class="max-w-6xl mx-auto px-4 py-16 text-center">
+        <h2 class="text-3xl font-extrabold tracking-tight text-emeraldAccent mb-4">Visual Heritage</h2>
+        <p class="text-zinc-400 mb-10 max-w-2xl mx-auto">Explore the vibrant campus life, academic milestones, and community events that shape the Lumbang Integrated National High School experience.</p>
         
-        <div th:unless="${#lists.isEmpty(galleryItems)}" class="swiper myGallery SwiperContainer select-none max-w-4xl mx-auto">
+        <div th:unless="${#lists.isEmpty(galleryItems)}" class="swiper myGallery max-w-4xl mx-auto rounded-2xl overflow-hidden shadow-2xl border border-zinc-800">
             <div class="swiper-wrapper">
-                <div th:each="item : ${galleryItems}" class="swiper-slide px-4">
-                    <div class="bg-cardBg aspect-video rounded-2xl border border-zinc-800 overflow-hidden flex flex-col items-center justify-center text-zinc-400 relative shadow-2xl transition hover:border-emeraldAccent/30 group">
-                        <img th:src="${item.imagePath}" th:alt="${item.title}" class="w-full h-full object-cover absolute inset-0 z-0 opacity-60 group-hover:opacity-80 transition" />
+                <div th:each="item : ${galleryItems}" class="swiper-slide bg-cardBg aspect-[16/9] relative group">
+                    <div class="absolute inset-0 w-full h-full">
+                        <img th:src="${item.imageUrl}" alt="Gallery Image" class="w-full h-full object-cover group-hover:scale-105 duration-700 ease-in-out opacity-80 transition" />
                         <div class="relative z-10 p-8 flex flex-col items-center bg-gradient-to-t from-darkBg via-transparent to-transparent w-full h-full justify-end">
-                            <span th:text="${item.title}" class="text-lg font-medium tracking-wide text-white drop-shadow-md">Asset Caption</span>
+                            <span th:text="${item.caption}" class="text-lg font-medium tracking-wide text-white drop-shadow-md">Asset Caption</span>
                         </div>
                     </div>
                 </div>
