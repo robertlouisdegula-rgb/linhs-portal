@@ -26,161 +26,215 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
         }
 
-        .navbar {
-            background-color: var(--dark-bg) !important;
-            border-bottom: 1px solid var(--border-color);
+        .sidebar {
+            background-color: var(--panel-bg);
+            border-right: 1px solid var(--border-color);
+            min-height: 100vh;
+            padding: 20px;
         }
 
-        .dashboard-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 2rem 1rem;
+        .sidebar-brand {
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: var(--mint-green);
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
-        .panel-card {
+        .nav-link {
+            color: var(--text-muted);
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-bottom: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background-color: rgba(32, 201, 151, 0.1);
+            color: var(--mint-green);
+        }
+
+        .main-content {
+            padding: 30px;
+        }
+
+        .card {
             background-color: var(--panel-bg);
             border: 1px solid var(--border-color);
             border-radius: 12px;
-            padding: 1.5rem;
-            margin-bottom: 2rem;
+            margin-bottom: 20px;
         }
 
-        .form-control,
-        .form-select {
+        .card-header {
+            background-color: transparent;
+            border-bottom: 1px solid var(--border-color);
+            padding: 15px 20px;
+            font-weight: 600;
+        }
+
+        .form-control, .form-select {
             background-color: var(--input-bg);
             border: 1px solid var(--border-color);
             color: var(--text-main);
         }
 
-        .form-control:focus,
-        .form-select:focus {
+        .form-control:focus, .form-select:focus {
             background-color: var(--input-bg);
             border-color: var(--mint-green);
             color: var(--text-main);
             box-shadow: 0 0 0 0.25rem rgba(32, 201, 151, 0.25);
         }
 
-        .btn-mint {
+        .btn-primary {
             background-color: var(--mint-green);
+            border-color: var(--mint-green);
             color: #000;
             font-weight: 600;
         }
 
-        .btn-mint:hover {
+        .btn-primary:hover {
             background-color: var(--mint-hover);
+            border-color: var(--mint-hover);
             color: #000;
         }
 
         .table {
             color: var(--text-main);
-            border-color: var(--border-color);
+            margin-bottom: 0;
         }
 
         .table th {
-            font-weight: 600;
-            text-transform: uppercase;
-            font-size: 0.8rem;
-            letter-spacing: 0.5px;
+            border-bottom-color: var(--border-color);
             color: var(--text-muted);
-            border-bottom-width: 2px;
+            font-weight: 500;
+            text-transform: uppercase;
+            font-size: 0.85rem;
         }
 
+        .table td {
+            border-bottom-color: var(--border-color);
+            vertical-align: middle;
+        }
+
+        .badge-cleared { background-color: rgba(32, 201, 151, 0.2); color: var(--mint-green); padding: 5px 10px; border-radius: 6px; font-size: 0.8rem; }
+        .badge-pending { background-color: rgba(255, 152, 0, 0.2); color: var(--accent-orange); padding: 5px 10px; border-radius: 6px; font-size: 0.8rem; }
+
         .section-btn {
-            background: none;
+            background: transparent;
             border: 1px solid var(--border-color);
             color: var(--text-muted);
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
+            padding: 8px 16px;
+            border-radius: 8px;
+            margin-right: 10px;
+            margin-bottom: 20px;
             transition: all 0.2s;
         }
 
         .section-btn.active {
-            background-color: rgba(32, 201, 151, 0.1);
+            background: var(--mint-green);
+            color: #000;
             border-color: var(--mint-green);
-            color: var(--mint-green);
+            font-weight: 600;
+        }
+
+        .student-table-container {
+            display: none;
         }
     </style>
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container-fluid px-4">
-            <a class="navbar-brand d-flex align-items-center gap-2" href="#">
-                <i class="fas fa-building text-success fs-4"></i>
-                <span class="fw-bold tracking-tight">LINHS <span class="text-success text-xs font-mono">FACILITIES</span></span>
-            </a>
-            <div class="d-flex align-items-center gap-3">
-                <div class="text-end d-none d-md-block">
-                    <div class="text-sm font-semibold" th:text="${adminName}">Facilities Admin</div>
-                    <div class="text-xs text-muted">Property & Custodian Officer</div>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-2 sidebar d-none d-md-block">
+                <div class="sidebar-brand">
+                    <i class="fas fa-building"></i> Facilities
                 </div>
-                <a href="/logout" class="btn btn-sm btn-outline-danger"><i class="fas fa-sign-out-alt"></i></a>
-            </div>
-        </div>
-    </nav>
-
-    <div class="dashboard-container">
-        <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show bg-opacity-10 text-success border border-success" role="alert">
-            <i class="fas fa-check-circle me-2"></i><span th:text="${successMessage}">Success message placement holder.</span>
-            <button type="submit" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-
-        <div class="row g-4">
-            <div class="col-lg-4">
-                <div class="panel-card">
-                    <h5 class="mb-4 font-bold text-lg d-flex align-items-center gap-2" style="color: var(--mint-green);">
-                        <i class="fas fa-plus-circle"></i> Log Property/Facility Hold
-                    </h5>
-                    <form th:action="@{/facilities/log}" method="POST">
-                        <input type="hidden" name="studentName" class="hiddenStudentName" value="" />
-                        <div class="mb-3">
-                            <label class="form-label text-xs font-semibold text-muted">Select Target Accountable Student</label>
-                            <select name="lrn" class="form-select select2-setup" onchange="updateHiddenName(this)" required>
-                                <option value="" disabled selected>Choose student registry...</option>
-                                <option th:each="student : ${students}" th:value="${student.lrn}" th:text="${student.name} + ' (' + ${student.lrn} + ')'"></option>
-                            </select>
-                        </div>
-                        <div class="mb-4">
-                            <label class="form-label text-xs font-semibold text-muted">Unreturned Asset / Damage Facility Details</label>
-                            <textarea name="facilityDetails" class="form-control" rows="4" placeholder="Specify item details, serial code, or missing property asset logs..." required></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-mint w-100 py-2"><i class="fas fa-file-invoice me-1"></i> File Accountability Hold</button>
-                    </form>
+                <div class="nav flex-column">
+                    <a href="/admin/dashboard" class="nav-link" th:if="${session.user != null and #strings.toString(session.user.role) == 'ADMIN'}">
+                        <i class="fas fa-arrow-left me-2"></i> Back to Admin
+                    </a>
+                    <a href="#" class="nav-link active">
+                        <i class="fas fa-tools me-2"></i> Dashboard
+                    </a>
+                    <a href="/logout" class="nav-link text-danger mt-5">
+                        <i class="fas fa-sign-out-alt me-2"></i> Logout
+                    </a>
                 </div>
             </div>
 
-            <div class="col-lg-8">
+            <div class="col-md-10 main-content">
                 <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h4 class="m-0 fw-bold tracking-tight">Active Clearances Accountability Ledger</h4>
-                    <div class="d-flex gap-2">
-                        <button class="section-btn active" id="btn-active" onclick="showSection('active')">Active Holds</button>
+                    <h2 class="mb-0">Facilities & Equipment Control</h2>
+                    <div class="text-muted">
+                        Logged in as: <strong class="text-white" th:text="${session.user != null ? session.user.name : 'Staff'}">Staff</strong>
                     </div>
                 </div>
 
-                <div class="panel-card student-table-container" id="table-active">
-                    <div class="table-responsive">
-                        <table class="table table-dark table-hover align-middle m-0">
+                <div th:if="${successMessage}" class="alert alert-success bg-success text-white border-0" th:text="${successMessage}"></div>
+                <div th:if="${errorMessage}" class="alert alert-danger bg-danger text-white border-0" th:text="${errorMessage}"></div>
+
+                <div class="mb-3">
+                    <button class="section-btn active" id="btn-liabilities" onclick="showSection('liabilities')">Manage Liabilities</button>
+                    <button class="section-btn" id="btn-students" onclick="showSection('students')">View All Students</button>
+                </div>
+
+                <div id="table-liabilities" class="student-table-container" style="display: block;">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <i class="fas fa-exclamation-circle me-2"></i> Flag Student Liability
+                        </div>
+                        <div class="card-body">
+                            <form th:action="@{/facilities/log}" method="POST" class="row g-3">
+                                <input type="hidden" name="hiddenStudentName" class="hiddenStudentName">
+                                <div class="col-md-4">
+                                    <label class="form-label text-muted small">Select Student</label>
+                                    <select name="studentId" class="form-select" required onchange="updateHiddenName(this)">
+                                        <option value="" disabled selected>Search / Select Student...</option>
+                                        <option th:each="student : ${students}" th:value="${student.id}" th:text="${student.fullName} + ' (' + ${student.lrn} + ')'"></option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label text-muted small">Item / Property Name</label>
+                                    <input type="text" name="itemName" class="form-control" required placeholder="e.g., Lab Key, Projector...">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label text-muted small">Issue Details</label>
+                                    <input type="text" name="issueDetails" class="form-control" required placeholder="e.g., Unreturned, Damaged...">
+                                </div>
+                                <div class="col-12 mt-3 text-end">
+                                    <button type="submit" class="btn btn-primary px-4"><i class="fas fa-flag me-2"></i> Submit Liability</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="fas fa-list me-2"></i> Active Property Holds
+                        </div>
+                        <table class="table table-hover table-borderless">
                             <thead>
                                 <tr>
-                                    <th>LRN</th>
+                                    <th>Date Logged</th>
                                     <th>Student Name</th>
-                                    <th>Property Item / Hold Details</th>
-                                    <th>Logged At</th>
+                                    <th>Item Name</th>
+                                    <th>Issue Details</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr th:each="log : ${activeFacilities}">
-                                    <td class="font-mono text-xs fw-bold" th:text="${log.lrn}"></td>
-                                    <td th:text="${log.studentName}"></td>
-                                    <td th:text="${log.facilityDetails}"></td>
+                                <tr th:each="facility : ${activeFacilities}">
+                                    <td th:text="${#temporals.format(facility.dateReported, 'MMM dd, yyyy')}">Date</td>
+                                    <td th:text="${facility.studentName}">Name</td>
+                                    <td th:text="${facility.itemName}">Item</td>
+                                    <td th:text="${facility.issueDetails}">Details</td>
                                     <td>
-                                        <span class="badge bg-info" th:text="${log.loggedAt != null ? #temporals.format(log.loggedAt, 'yyyy-MM-dd | hh:mm a') : 'N/A'}"></span>
-                                    </td>
-                                    <td>
-                                        <form th:action="@{/facilities/clear}" method="POST">
-                                            <input type="hidden" name="id" th:value="${log.id}" />
-                                            <button type="submit" class="btn btn-sm btn-outline-success"><i class="fas fa-check-circle me-1"></i> Clear Record</button>
+                                        <form th:action="@{/facilities/resolve}" method="POST">
+                                            <input type="hidden" name="id" th:value="${facility.id}">
+                                            <button type="submit" class="btn btn-sm btn-outline-success">Mark Resolved</button>
                                         </form>
                                     </td>
                                 </tr>
@@ -191,6 +245,46 @@
                         </table>
                     </div>
                 </div>
+
+                <div id="table-students" class="student-table-container">
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="fas fa-users me-2"></i> All Students Lab Clearance
+                        </div>
+                        <table class="table table-hover table-borderless">
+                            <thead>
+                                <tr>
+                                    <th>LRN</th>
+                                    <th>Full Name</th>
+                                    <th>Grade & Section</th>
+                                    <th>Clearance Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="student : ${students}">
+                                    <td th:text="${student.lrn}">LRN</td>
+                                    <td th:text="${student.fullName}">Name</td>
+                                    <td th:text="${student.gradeLevel} + ' - ' + ${student.section}">Section</td>
+                                    <td>
+                                        <span th:class="${student.labClearance != null and #strings.toString(student.labClearance) == 'CLEARED' ? 'badge-cleared' : 'badge-pending'}"
+                                              th:text="${student.labClearance != null ? student.labClearance : 'PENDING'}">STATUS</span>
+                                    </td>
+                                    <td>
+                                        <form th:action="@{/facilities/update-clearance}" method="POST" class="d-inline">
+                                            <input type="hidden" name="studentId" th:value="${student.id}">
+                                            <select name="status" class="form-select form-select-sm d-inline w-auto" onchange="this.form.submit()">
+                                                <option th:selected="${student.labClearance != null and #strings.toString(student.labClearance) == 'PENDING'}" value="PENDING">Pending</option>
+                                                <option th:selected="${student.labClearance != null and #strings.toString(student.labClearance) == 'CLEARED'}" value="CLEARED">Cleared</option>
+                                            </select>
+                                        </form>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
