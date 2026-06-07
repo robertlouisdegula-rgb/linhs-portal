@@ -134,7 +134,7 @@
                                     <th class="p-4">Email ID</th>
                                     <th class="p-4 text-right">Destructive Action</th>
                                 </tr>
-                            </tbody>
+                            </thead>
                             <tbody class="divide-y divide-panelBorder">
                                 <tr th:each="adv : ${adviserAccounts}" class="hover:bg-zinc-900/50 transition">
                                     <td class="p-4 font-semibold text-white" th:text="${adv.name}">Robert Louis De Gula</td>
@@ -188,20 +188,34 @@
 
                     <div class="bg-darkBg border border-panelBorder rounded-lg p-5">
                         <h4 class="text-sm font-bold text-goldAccent mb-3"><i class="fa-solid fa-folder-open"></i> Upload Downloadable File Hub Resources</h4>
-                        <form th:action="@{/admin/cms/update}" method="POST" class="space-y-3">
+                        <form th:action="@{/admin/cms/update}" method="POST" enctype="multipart/form-data" class="space-y-3">
                             <input type="hidden" name="type" value="resource" />
-                            <input type="text" name="title" placeholder="Resource Document Title Name" class="w-full bg-cardBg border border-panelBorder rounded p-2 text-xs text-white focus:border-emeraldAccent focus:outline-none" />
-                            <input type="text" name="link" placeholder="External Asset Download URL Destination" class="w-full bg-cardBg border border-panelBorder rounded p-2 text-xs text-white focus:border-emeraldAccent focus:outline-none" />
-                            <button type="submit" class="bg-zinc-800 hover:bg-emeraldAccent text-zinc-300 hover:text-darkBg border border-panelBorder text-xs font-bold px-3 py-2 rounded transition">Link Resource Item</button>
+                            <input type="text" name="title" required placeholder="Resource Document Title Name" class="w-full bg-cardBg border border-panelBorder rounded p-2 text-xs text-white focus:border-emeraldAccent focus:outline-none" />
+                            
+                            <div class="relative border border-dashed border-zinc-700 rounded-lg p-3 bg-cardBg hover:border-emeraldAccent transition duration-150">
+                                <input type="file" name="fileAttachment" required class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
+                                <div class="flex items-center justify-between text-xs text-zinc-400">
+                                    <span class="flex items-center gap-2"><i class="fa-solid fa-file-arrow-up text-emeraldAccent"></i> Choose Document File...</span>
+                                    <span class="text-[10px] bg-zinc-800 px-2 py-0.5 rounded border border-zinc-700">Browse Device</span>
+                                </div>
+                            </div>
+                            <button type="submit" class="bg-zinc-800 hover:bg-emeraldAccent text-zinc-300 hover:text-darkBg border border-panelBorder text-xs font-bold px-3 py-2 rounded transition">Commit Local Upload</button>
                         </form>
                     </div>
 
                     <div class="bg-darkBg border border-panelBorder rounded-lg p-5">
                         <h4 class="text-sm font-bold text-goldAccent mb-3"><i class="fa-solid fa-images"></i> Inject Institutional Gallery Image Cards</h4>
-                        <form th:action="@{/admin/cms/update}" method="POST" class="space-y-3">
+                        <form th:action="@{/admin/cms/update}" method="POST" enctype="multipart/form-data" class="space-y-3">
                             <input type="hidden" name="type" value="gallery" />
-                            <input type="text" name="caption" placeholder="Enter Photo Description Caption Summary" class="w-full bg-cardBg border border-panelBorder rounded p-2 text-xs text-white focus:border-emeraldAccent focus:outline-none" />
-                            <input type="text" name="url" placeholder="Source Image Matrix URL Address" class="w-full bg-cardBg border border-panelBorder rounded p-2 text-xs text-white focus:border-emeraldAccent focus:outline-none" />
+                            <input type="text" name="caption" required placeholder="Enter Photo Description Caption Summary" class="w-full bg-cardBg border border-panelBorder rounded p-2 text-xs text-white focus:border-emeraldAccent focus:outline-none" />
+                            
+                            <div class="relative border border-dashed border-zinc-700 rounded-lg p-3 bg-cardBg hover:border-emeraldAccent transition duration-150">
+                                <input type="file" name="fileAttachment" accept="image/*" required class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
+                                <div class="flex items-center justify-between text-xs text-zinc-400">
+                                    <span class="flex items-center gap-2"><i class="fa-solid fa-image text-emeraldAccent"></i> Choose Local Image...</span>
+                                    <span class="text-[10px] bg-zinc-800 px-2 py-0.5 rounded border border-zinc-700">Browse Device</span>
+                                </div>
+                            </div>
                             <button type="submit" class="bg-zinc-800 hover:bg-emeraldAccent text-zinc-300 hover:text-darkBg border border-panelBorder text-xs font-bold px-3 py-2 rounded transition">Deploy Photo Card</button>
                         </form>
                     </div>
@@ -247,7 +261,6 @@
             document.getElementById('tab-panel-' + index).classList.remove('hidden');
             document.getElementById('tab-panel-' + index).classList.add('block');
 
-            // Toggle active classes across selection items
             for (let i = 0; i < 3; i++) {
                 let btn = document.getElementById('tab-btn-' + i);
                 if (i === index) {
@@ -272,7 +285,6 @@
             document.getElementById('editStaffModal').classList.add('hidden');
         }
 
-        // Auto restore previous tab position across refreshes safely
         document.addEventListener("DOMContentLoaded", function() {
             let active = localStorage.getItem('adminActiveTab');
             if (active !== null) {

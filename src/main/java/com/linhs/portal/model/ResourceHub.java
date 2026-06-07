@@ -17,4 +17,8 @@ public class ResourceHub {
     public void setTitle(String title) { this.title = title; }
     public String getFileUrl() { return fileUrl; }
     public void setFileUrl(String fileUrl) { this.fileUrl = fileUrl; }
+    public void setLink(String savedPath) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'setLink'");
+    }
 }

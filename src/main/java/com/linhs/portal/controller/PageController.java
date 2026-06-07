@@ -1,13 +1,11 @@
 package com.linhs.portal.controller;
 
-import com.linhs.portal.model.*;
-import com.linhs.portal.repository.*;
-import com.linhs.portal.service.AuthService;
+// Core Java & Spring Imports
 import jakarta.servlet.http.HttpSession;
-
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDateTime;
@@ -15,6 +13,39 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
+// Application Model Imports
+import com.linhs.portal.model.Announcement;
+import com.linhs.portal.model.BorrowRecord;
+import com.linhs.portal.model.ClinicLog;
+import com.linhs.portal.model.DocumentRequest;
+import com.linhs.portal.model.FacilityLiability;
+import com.linhs.portal.model.Gallery;
+import com.linhs.portal.model.GuidanceRecord;
+import com.linhs.portal.model.LibraryBorrowRecord;
+import com.linhs.portal.model.ResourceHub;
+import com.linhs.portal.model.SportsEquipment;
+import com.linhs.portal.model.Student;
+import com.linhs.portal.model.StudentGrade;
+import com.linhs.portal.model.Subject;
+import com.linhs.portal.model.User;
+
+// Application Repository & Service Imports
+import com.linhs.portal.repository.AnnouncementRepository;
+import com.linhs.portal.repository.BorrowRecordRepository;
+import com.linhs.portal.repository.ClinicLogRepository;
+import com.linhs.portal.repository.DocumentRequestRepository;
+import com.linhs.portal.repository.FacilityLiabilityRepository;
+import com.linhs.portal.repository.GalleryRepository;
+import com.linhs.portal.repository.GuidanceRecordRepository;
+import com.linhs.portal.repository.LibraryBorrowRecordRepository;
+import com.linhs.portal.repository.ResourceHubRepository;
+import com.linhs.portal.repository.SportsEquipmentRepository;
+import com.linhs.portal.repository.StudentGradeRepository;
+import com.linhs.portal.repository.StudentRepository;
+import com.linhs.portal.repository.SubjectRepository;
+import com.linhs.portal.repository.UserRepository;
+import com.linhs.portal.service.AuthService;
 
 @Controller
 public class PageController {
@@ -35,6 +66,7 @@ public class PageController {
     private final AnnouncementRepository announcementRepository;
     private final LibraryBorrowRecordRepository libraryBorrowRecordRepository;
 
+    // Single Constructor for Dependency Injection (No @Autowired needed)
     public PageController(AuthService authService,
             UserRepository userRepository,
             StudentRepository studentRepository,
@@ -120,7 +152,6 @@ public class PageController {
         }
     }
 
-    // --- REWRITTEN LOGOUT FOR FLASH MESSAGES ---
     @GetMapping({"/logout", "/signout"})
     public String logout(HttpSession session, RedirectAttributes redirectAttributes) {
         session.invalidate();
@@ -230,7 +261,6 @@ public class PageController {
         
         model.addAttribute("adminUser", user);
 
-        // Fetching Staff & Advisers
         List<User> allUsers = userRepository.findAll();
         List<User> staffUsers = new ArrayList<>();
         for (User u : allUsers) {
@@ -246,16 +276,17 @@ public class PageController {
 
     @PostMapping("/admin/account/edit")
     public String editStaffAccount(@RequestParam("id") Long id,
-                                   @RequestParam("name") String name,
-                                   @RequestParam("email") String email,
-                                   @RequestParam("password") String password) {
+                                @RequestParam("name") String name,
+                                @RequestParam("email") String email,
+                                @RequestParam("password") String password) {
         Optional<User> userOpt = userRepository.findById(id);
         if (userOpt.isPresent()) {
             User user = userOpt.get();
             user.setName(name);
-            user.setEmail(email);
+            user.setEmail(email.trim().toLowerCase());
             if (password != null && !password.trim().isEmpty()) {
-                user.setPassword(password);
+                // FIXED: Encapsulate using security password encoder hash schema matches authentication expectation
+                user.setPassword(authService.encodePassword(password));
             }
             userRepository.save(user);
         }
@@ -264,15 +295,18 @@ public class PageController {
 
     @PostMapping("/admin/adviser/create")
     public String createAdviserAccount(@RequestParam("name") String name,
-                                       @RequestParam("section") String section,
-                                       @RequestParam("email") String email,
-                                       @RequestParam("password") String password) {
+                                    @RequestParam("section") String section,
+                                    @RequestParam("email") String email,
+                                    @RequestParam("password") String password) {
         User adviser = new User();
         adviser.setName(name);
         adviser.setAssignedSection(section);
-        adviser.setEmail(email);
-        adviser.setPassword(password);
+        adviser.setEmail(email.trim().toLowerCase());
+        
+        // FIXED: Explicitly run string through BCrypt encoder before updating runtime database
+        adviser.setPassword(authService.encodePassword(password));
         adviser.setRoleName("ADVISER");
+        
         userRepository.save(adviser);
         return "redirect:/admin-dashboard?tab=1&success=Adviser+Created";
     }
@@ -284,21 +318,49 @@ public class PageController {
     }
 
     @PostMapping("/admin/cms/update")
-    public String processCmsUpdate(@RequestParam("type") String type, @RequestParam Map<String, String> allParams) {
-        // Safe mapping that avoids compiler errors
-        if ("announcement".equalsIgnoreCase(type)) {
-            Announcement ann = new Announcement();
-            // Assign fields if your Announcement model supports them
-            announcementRepository.save(ann);
-        } else if ("resource".equalsIgnoreCase(type)) {
-            ResourceHub res = new ResourceHub();
-            // Assign fields if your ResourceHub model supports them
-            resourceHubRepository.save(res);
-        } else if ("gallery".equalsIgnoreCase(type)) {
-            Gallery img = new Gallery();
-            // Assign fields if your Gallery model supports them
-            galleryRepository.save(img);
+    public String processCmsUpdate(@RequestParam("type") String type,
+                                @RequestParam(value = "title", required = false) String title,
+                                @RequestParam(value = "content", required = false) String content,
+                                @RequestParam(value = "caption", required = false) String caption,
+                                @RequestParam(value = "fileAttachment", required = false) MultipartFile fileAttachment) {
+        try {
+            String savedPath = "";
+            
+            if (fileAttachment != null && !fileAttachment.isEmpty()) {
+                String filename = System.currentTimeMillis() + "_" + fileAttachment.getOriginalFilename();
+                String uploadDir = System.getProperty("user.dir") + "/src/main/resources/static/uploads/";
+                
+                java.io.File dir = new java.io.File(uploadDir);
+                if (!dir.exists()) {
+                    dir.mkdirs();
+                }
+                
+                java.nio.file.Path path = java.nio.file.Paths.get(uploadDir + filename);
+                java.nio.file.Files.write(path, fileAttachment.getBytes());
+                
+                savedPath = "/uploads/" + filename;
+            }
+
+            if ("announcement".equalsIgnoreCase(type)) {
+                Announcement ann = new Announcement();
+                ann.setTitle(title);
+                ann.setContent(content);
+                announcementRepository.save(ann);
+            } else if ("resource".equalsIgnoreCase(type)) {
+                ResourceHub res = new ResourceHub();
+                res.setTitle(title);
+                res.setLink(savedPath); 
+                resourceHubRepository.save(res);
+            } else if ("gallery".equalsIgnoreCase(type)) {
+                Gallery img = new Gallery();
+                img.setCaption(caption);
+                img.setId(savedPath); 
+                galleryRepository.save(img);
+            }
+        } catch (Exception e) {
+            return "redirect:/admin-dashboard?tab=2&error=File+Upload+Failed";
         }
+        
         return "redirect:/admin-dashboard?tab=2&success=CMS+Section+Deployed";
     }
 
@@ -324,23 +386,29 @@ public class PageController {
 
     @PostMapping("/adviser/student/add")
     public String addStudentToSection(@RequestParam("name") String name,
-                                      @RequestParam("lrn") String lrn,
-                                      HttpSession session) {
+                                    @RequestParam("lrn") String lrn,
+                                    HttpSession session) {
         User loggedInUser = (User) session.getAttribute("user");
         String section = (loggedInUser != null && loggedInUser.getAssignedSection() != null) 
-                         ? loggedInUser.getAssignedSection() : "Not Assigned";
+                        ? loggedInUser.getAssignedSection() : "Not Assigned";
 
         Student student = new Student(lrn, name, section);
         studentRepository.save(student);
         return "redirect:/adviser-dashboard?tab=students&success=Student+Registered";
     }
 
+    @PostMapping("/adviser/student/delete")
+    public String deleteStudentFromSection(@RequestParam("lrn") String lrn) {
+        studentRepository.deleteById(lrn);
+        return "redirect:/adviser-dashboard?tab=students&success=Student+Removed";
+    }
+
     @PostMapping("/adviser/subject/add")
     public String addSubjectToSection(@RequestParam("name") String name,
-                                      HttpSession session) {
+                                    HttpSession session) {
         User loggedInUser = (User) session.getAttribute("user");
         String section = (loggedInUser != null && loggedInUser.getAssignedSection() != null) 
-                         ? loggedInUser.getAssignedSection() : "Not Assigned";
+                        ? loggedInUser.getAssignedSection() : "Not Assigned";
 
         Subject subj = new Subject();
         subj.setName(name);
@@ -393,7 +461,7 @@ public class PageController {
     }
 
     // =========================================================
-    // --- OTHER DASHBOARDS (UNCHANGED) ---
+    // --- OTHER DASHBOARDS ---
     // =========================================================
 
     @GetMapping("/request-document")
