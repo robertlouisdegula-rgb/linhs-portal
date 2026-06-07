@@ -285,7 +285,6 @@ public class PageController {
             user.setName(name);
             user.setEmail(email.trim().toLowerCase());
             if (password != null && !password.trim().isEmpty()) {
-                // FIXED: Encapsulate using security password encoder hash schema matches authentication expectation
                 user.setPassword(authService.encodePassword(password));
             }
             userRepository.save(user);
@@ -293,22 +292,33 @@ public class PageController {
         return "redirect:/admin-dashboard?success=Account+Updated";
     }
 
+    // FIXED: Correct Adviser Registration routing securely
     @PostMapping("/admin/adviser/create")
     public String createAdviserAccount(@RequestParam("name") String name,
-                                    @RequestParam("section") String section,
-                                    @RequestParam("email") String email,
-                                    @RequestParam("password") String password) {
-        User adviser = new User();
-        adviser.setName(name);
-        adviser.setAssignedSection(section);
-        adviser.setEmail(email.trim().toLowerCase());
-        
-        // FIXED: Explicitly run string through BCrypt encoder before updating runtime database
-        adviser.setPassword(authService.encodePassword(password));
-        adviser.setRoleName("ADVISER");
-        
-        userRepository.save(adviser);
-        return "redirect:/admin-dashboard?tab=1&success=Adviser+Created";
+                                       @RequestParam("section") String section,
+                                       @RequestParam("email") String email,
+                                       @RequestParam("password") String password,
+                                       RedirectAttributes redirectAttributes) {
+        try {
+            User newAdviser = new User();
+            newAdviser.setName(name);
+            newAdviser.setAssignedSection(section);
+            newAdviser.setEmail(email);
+            newAdviser.setPassword(password); // Will be encrypted by AuthService
+            newAdviser.setRoleName("ADVISER");
+
+            User savedUser = authService.registerUser(newAdviser);
+
+            if (savedUser == null) {
+                return "redirect:/admin-dashboard?tab=1&error=Email+address+is+already+in+use.";
+            }
+
+            return "redirect:/admin-dashboard?tab=1&success=Adviser+Account+Successfully+Created.";
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "redirect:/admin-dashboard?tab=1&error=Failed+to+create+adviser+account.";
+        }
     }
 
     @PostMapping("/admin/adviser/delete")
@@ -317,91 +327,53 @@ public class PageController {
         return "redirect:/admin-dashboard?tab=1&success=Adviser+Deleted";
     }
 
+    // FIXED: File paths correctly updating FileUrl & ImageUrl parameters
     @PostMapping("/admin/cms/update")
-public String processCmsUpdate(@RequestParam("type") String type,
-                               @RequestParam(value = "title", required = false) String title,
-                               @RequestParam(value = "content", required = false) String content,
-                               @RequestParam(value = "caption", required = false) String caption,
-                               @RequestParam(value = "fileAttachment", required = false) MultipartFile fileAttachment,
-                               RedirectAttributes redirectAttributes) { // Added for safer notification redirects
-    try {
-        String savedPath = "";
-        
-        // Handle file parsing and system storage
-        if (fileAttachment != null && !fileAttachment.isEmpty()) {
-            String filename = System.currentTimeMillis() + "_" + fileAttachment.getOriginalFilename();
-            String uploadDir = System.getProperty("user.dir") + "/src/main/resources/static/uploads/";
+    public String processCmsUpdate(@RequestParam("type") String type,
+                                   @RequestParam(value = "title", required = false) String title,
+                                   @RequestParam(value = "content", required = false) String content,
+                                   @RequestParam(value = "caption", required = false) String caption,
+                                   @RequestParam(value = "fileAttachment", required = false) MultipartFile fileAttachment) {
+        try {
+            String savedPath = "";
             
-            java.io.File dir = new java.io.File(uploadDir);
-            if (!dir.exists()) {
-                dir.mkdirs();
+            if (fileAttachment != null && !fileAttachment.isEmpty()) {
+                String filename = System.currentTimeMillis() + "_" + fileAttachment.getOriginalFilename();
+                String uploadDir = System.getProperty("user.dir") + "/src/main/resources/static/uploads/";
+                
+                java.io.File dir = new java.io.File(uploadDir);
+                if (!dir.exists()) {
+                    dir.mkdirs();
+                }
+                
+                java.nio.file.Path path = java.nio.file.Paths.get(uploadDir + filename);
+                java.nio.file.Files.write(path, fileAttachment.getBytes());
+                
+                savedPath = "/uploads/" + filename;
             }
-            
-            java.nio.file.Path path = java.nio.file.Paths.get(uploadDir + filename);
-            java.nio.file.Files.write(path, fileAttachment.getBytes());
-            
-            savedPath = "/uploads/" + filename;
-        }
 
-        if ("announcement".equalsIgnoreCase(type)) {
-            Announcement ann = new Announcement();
-            ann.setTitle(title);
-            ann.setContent(content);
-            announcementRepository.save(ann);
-        } else if ("resource".equalsIgnoreCase(type)) {
-            ResourceHub res = new ResourceHub();
-            res.setTitle(title);
-            // Matches 'fileUrl' parameter inside ResourceHub entity structure
-            res.setFileUrl(savedPath); 
-            resourceHubRepository.save(res);
-        } else if ("gallery".equalsIgnoreCase(type)) {
-            Gallery img = new Gallery();
-            img.setCaption(caption);
-            // Matches 'imageUrl' parameter inside Gallery entity structure
-            img.setImageUrl(savedPath); 
-            galleryRepository.save(img);
+            if ("announcement".equalsIgnoreCase(type)) {
+                Announcement ann = new Announcement();
+                ann.setTitle(title);
+                ann.setContent(content);
+                announcementRepository.save(ann);
+            } else if ("resource".equalsIgnoreCase(type)) {
+                ResourceHub res = new ResourceHub();
+                res.setTitle(title);
+                res.setFileUrl(savedPath); 
+                resourceHubRepository.save(res);
+            } else if ("gallery".equalsIgnoreCase(type)) {
+                Gallery img = new Gallery();
+                img.setCaption(caption);
+                img.setImageUrl(savedPath); 
+                galleryRepository.save(img);
+            }
+        } catch (Exception e) {
+            return "redirect:/admin-dashboard?tab=2&error=File+Upload+Failed";
         }
-    } catch (Exception e) {
-        e.printStackTrace(); // Prints exact tracing stream to console if upload blocks
-        return "redirect:/admin-dashboard?tab=2&error=File+Upload+Failed";
-    }
-    
-    return "redirect:/admin-dashboard?tab=2&success=CMS+Section+Deployed";
-}
-
-@PostMapping("/admin/adviser/create")
-public String createAdviserAccount(@RequestParam("name") String name,
-                                   @RequestParam("section") String section,
-                                   @RequestParam("email") String email,
-                                   @RequestParam("password") String password,
-                                   RedirectAttributes redirectAttributes) {
-    try {
-        // 1. Create a new User entity
-        User newAdviser = new User();
-        newAdviser.setName(name);
-        newAdviser.setAssignedSection(section);
-        newAdviser.setEmail(email);
-        newAdviser.setPassword(password); // AuthService will encrypt this
         
-        // 2. CRITICAL: Hardcode the role so the login system knows where to route them
-        newAdviser.setRoleName("ADVISER");
-
-        // 3. Save using your AuthService (which handles the BCrypt password encoding)
-        User savedUser = authService.registerUser(newAdviser);
-
-        if (savedUser == null) {
-            // AuthService returns null if the email already exists
-            return "redirect:/admin-dashboard?tab=1&error=Email+address+is+already+in+use.";
-        }
-
-        // Success redirect back to Tab 1 (Adviser Accounts)
-        return "redirect:/admin-dashboard?tab=1&success=Adviser+Account+Successfully+Created.";
-
-    } catch (Exception e) {
-        e.printStackTrace();
-        return "redirect:/admin-dashboard?tab=1&error=Failed+to+create+adviser+account.";
+        return "redirect:/admin-dashboard?tab=2&success=CMS+Section+Deployed";
     }
-}
 
     // =========================================================
     // --- ADVISER DASHBOARD & FEATURES ---
