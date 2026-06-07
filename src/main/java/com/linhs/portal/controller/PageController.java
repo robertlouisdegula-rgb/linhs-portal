@@ -105,6 +105,8 @@ public class PageController {
                     return "redirect:/clinic-dashboard";
                 case "LIBRARIAN":
                     return "redirect:/library-dashboard";
+                case "LAB_ADMIN": 
+                    return "redirect:/lab-dashboard";
                 default:
                     model.addAttribute("error", "Role mapping context unresolved.");
                     return "login";
@@ -149,7 +151,7 @@ public class PageController {
     }
 
     @GetMapping("/teacher-portal")
-    public String showTeacherPortal(HttpSession session) {
+    public String showTeacherPortal(HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");
         
         // 1. If not authenticated, redirect straight to the login page
@@ -160,25 +162,28 @@ public class PageController {
         // 2. If already authenticated, bypass login and go directly to their respective dashboard
         String role = user.getRoleName() != null ? user.getRoleName().toUpperCase() : "";
         switch (role) {
-            case "ADMIN_PRINCIPAL":
-                return "redirect:/admin-dashboard";
-            case "ADVISER":
-                return "redirect:/adviser-dashboard";
-            case "REGISTRAR":
-                return "redirect:/registrar-dashboard";
-            case "FACILITIES_ADMIN":
-                return "redirect:/custodian-dashboard";
-            case "SPORTS_ADMIN":
-                return "redirect:/sports-dashboard";
-            case "GUIDANCE_COUNSELOR":
-                return "redirect:/guidance-dashboard";
-            case "NURSE":
-                return "redirect:/clinic-dashboard";
-            case "LIBRARIAN":
-                return "redirect:/library-dashboard";
-            default:
-                return "redirect:/login";
-        }
+                case "ADMIN_PRINCIPAL":
+                    return "redirect:/admin-dashboard";
+                case "ADVISER":
+                    return "redirect:/adviser-dashboard";
+                case "REGISTRAR":
+                    return "redirect:/registrar-dashboard";
+                case "FACILITIES_ADMIN":
+                    return "redirect:/custodian-dashboard";
+                case "SPORTS_ADMIN":
+                    return "redirect:/sports-dashboard";
+                case "GUIDANCE_COUNSELOR":
+                    return "redirect:/guidance-dashboard";
+                case "NURSE":
+                    return "redirect:/clinic-dashboard";
+                case "LIBRARIAN":
+                    return "redirect:/library-dashboard";
+                case "LAB_ADMIN": 
+                    return "redirect:/lab-dashboard";
+                default:
+                    model.addAttribute("error", "Role mapping context unresolved.");
+                    return "login";
+            }
     }
 
     // ===== CLEARANCE AND REQUESTS =====
@@ -299,7 +304,26 @@ public class PageController {
         model.addAttribute("liabilities", facilityLiabilityRepository.findAll());
         return "custodian-dashboard";
     }
+    
+    @GetMapping("/lab-dashboard")
+    public String showLabDashboard(HttpSession session, Model model) {
+        User user = (User) session.getAttribute("user");
+        
+        // Ensure only the Lab Admin can access this page
+        if (user == null || !"LAB_ADMIN".equalsIgnoreCase(user.getRoleName())) {
+            return "redirect:/login";
+        }
 
+        // Supply the HTML with the exact variables it is looking for
+        model.addAttribute("adminName", user.getName());
+        model.addAttribute("students", studentRepository.findAll());
+        
+        // Assuming your lab records use the borrowRecordRepository based on your HTML
+        model.addAttribute("activeBorrows", borrowRecordRepository.findAll()); 
+
+        return "lab-dashboard";
+    }
+    
     @GetMapping("/sports-dashboard")
     public String showSportsDashboard(HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");

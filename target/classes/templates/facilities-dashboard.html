@@ -153,7 +153,7 @@
                     <i class="fas fa-building"></i> Facilities
                 </div>
                 <div class="nav flex-column">
-                    <a href="/admin/dashboard" class="nav-link" th:if="${session.user != null and #strings.toString(session.user.role) == 'ADMIN'}">
+                    <a href="/admin/dashboard" class="nav-link" th:if="${session.user?.role?.name() == 'ADMIN'}">
                         <i class="fas fa-arrow-left me-2"></i> Back to Admin
                     </a>
                     <a href="#" class="nav-link active">
@@ -169,7 +169,7 @@
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h2 class="mb-0">Facilities & Equipment Control</h2>
                     <div class="text-muted">
-                        Logged in as: <strong class="text-white" th:text="${session.user != null ? session.user.name : 'Staff'}">Staff</strong>
+                        Logged in as: <strong class="text-white" th:text="${session.user?.name ?: 'Staff'}">Staff</strong>
                     </div>
                 </div>
 
@@ -238,7 +238,7 @@
                                         </form>
                                     </td>
                                 </tr>
-                                <tr th:if="${activeFacilities == null or #lists.isEmpty(activeFacilities)}">
+                                <tr th:if="${#lists.isEmpty(activeFacilities)}">
                                     <td colspan="5" class="text-muted py-4 text-center">No active facility property holds or unreturned items.</td>
                                 </tr>
                             </tbody>
@@ -267,15 +267,15 @@
                                     <td th:text="${student.fullName}">Name</td>
                                     <td th:text="${student.gradeLevel} + ' - ' + ${student.section}">Section</td>
                                     <td>
-                                        <span th:class="${student.labClearance != null and #strings.toString(student.labClearance) == 'CLEARED' ? 'badge-cleared' : 'badge-pending'}"
-                                              th:text="${student.labClearance != null ? student.labClearance : 'PENDING'}">STATUS</span>
+                                        <span th:class="${student.labClearance?.name() == 'CLEARED' ? 'badge-cleared' : 'badge-pending'}"
+                                              th:text="${student.labClearance?.name() ?: 'PENDING'}">STATUS</span>
                                     </td>
                                     <td>
                                         <form th:action="@{/facilities/update-clearance}" method="POST" class="d-inline">
                                             <input type="hidden" name="studentId" th:value="${student.id}">
                                             <select name="status" class="form-select form-select-sm d-inline w-auto" onchange="this.form.submit()">
-                                                <option th:selected="${student.labClearance != null and #strings.toString(student.labClearance) == 'PENDING'}" value="PENDING">Pending</option>
-                                                <option th:selected="${student.labClearance != null and #strings.toString(student.labClearance) == 'CLEARED'}" value="CLEARED">Cleared</option>
+                                                <option th:selected="${student.labClearance?.name() == 'PENDING' or student.labClearance == null}" value="PENDING">Pending</option>
+                                                <option th:selected="${student.labClearance?.name() == 'CLEARED'}" value="CLEARED">Cleared</option>
                                             </select>
                                         </form>
                                     </td>

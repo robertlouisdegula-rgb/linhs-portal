@@ -118,27 +118,6 @@
             vertical-align: middle;
         }
 
-        .badge-cleared { background-color: rgba(32, 201, 151, 0.2); color: var(--mint-green); padding: 5px 10px; border-radius: 6px; font-size: 0.8rem; }
-        .badge-pending { background-color: rgba(255, 152, 0, 0.2); color: var(--accent-orange); padding: 5px 10px; border-radius: 6px; font-size: 0.8rem; }
-
-        .section-btn {
-            background: transparent;
-            border: 1px solid var(--border-color);
-            color: var(--text-muted);
-            padding: 8px 16px;
-            border-radius: 8px;
-            margin-right: 10px;
-            margin-bottom: 20px;
-            transition: all 0.2s;
-        }
-
-        .section-btn.active {
-            background: var(--mint-green);
-            color: #000;
-            border-color: var(--mint-green);
-            font-weight: 600;
-        }
-
         .student-table-container {
             display: none;
         }
@@ -153,7 +132,7 @@
                     <i class="fas fa-shield-heart"></i> LINHS Clinic
                 </div>
                 <div class="nav flex-column">
-                    <a href="/admin/dashboard" class="nav-link" th:if="${session.user != null and #strings.toString(session.user.role) == 'ADMIN'}">
+                    <a href="/admin/dashboard" class="nav-link" th:if="${session.user?.role?.name() == 'ADMIN'}">
                         <i class="fas fa-arrow-left me-2"></i> Back to Admin
                     </a>
                     <a href="#" class="nav-link active">
@@ -169,7 +148,7 @@
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h2 class="mb-0">Nurse Station Dashboard</h2>
                     <div class="text-muted">
-                        Logged in as: <strong class="text-white" th:text="${session.user != null ? session.user.name : 'Staff'}">Staff</strong>
+                        Logged in as: <strong class="text-white" th:text="${session.user?.name ?: 'Staff'}">Staff</strong>
                     </div>
                 </div>
 
@@ -225,7 +204,7 @@
                                 <td th:text="${log.reason}">Reason</td>
                                 <td th:text="${log.actionTaken}">Action Taken</td>
                             </tr>
-                            <tr th:if="${clinicLogs == null or #lists.isEmpty(clinicLogs)}">
+                            <tr th:if="${#lists.isEmpty(clinicLogs)}">
                                 <td colspan="4" class="text-muted py-4 text-center">No chronological medical clinical encounter profiles saved in database logs today.</td>
                             </tr>
                         </tbody>
