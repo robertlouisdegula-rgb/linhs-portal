@@ -295,10 +295,10 @@ public class PageController {
     // FIXED: Correct Adviser Registration routing securely
     @PostMapping("/admin/adviser/create")
     public String createAdviserAccount(@RequestParam("name") String name,
-                                       @RequestParam("section") String section,
-                                       @RequestParam("email") String email,
-                                       @RequestParam("password") String password,
-                                       RedirectAttributes redirectAttributes) {
+                                    @RequestParam("section") String section,
+                                    @RequestParam("email") String email,
+                                    @RequestParam("password") String password,
+                                    RedirectAttributes redirectAttributes) {
         try {
             User newAdviser = new User();
             newAdviser.setName(name);
@@ -330,10 +330,10 @@ public class PageController {
     // FIXED: File paths correctly updating FileUrl & ImageUrl parameters
     @PostMapping("/admin/cms/update")
     public String processCmsUpdate(@RequestParam("type") String type,
-                                   @RequestParam(value = "title", required = false) String title,
-                                   @RequestParam(value = "content", required = false) String content,
-                                   @RequestParam(value = "caption", required = false) String caption,
-                                   @RequestParam(value = "fileAttachment", required = false) MultipartFile fileAttachment) {
+                                @RequestParam(value = "title", required = false) String title,
+                                @RequestParam(value = "content", required = false) String content,
+                                @RequestParam(value = "caption", required = false) String caption,
+                                @RequestParam(value = "fileAttachment", required = false) MultipartFile fileAttachment) {
         try {
             String savedPath = "";
             
@@ -373,6 +373,56 @@ public class PageController {
         }
         
         return "redirect:/admin-dashboard?tab=2&success=CMS+Section+Deployed";
+    }
+
+    // ==========================================
+    // RESOURCE HUB: FILE UPLOAD AND DELETE LOGIC
+    // ==========================================
+
+    @PostMapping("/admin/resource/add")
+    public String addResourceUpload(@RequestParam("title") String title,
+                                    @RequestParam("file") MultipartFile file) {
+        if (file.isEmpty()) {
+            return "redirect:/admin-dashboard?error=Please+select+a+valid+file+to+upload";
+        }
+        try {
+            // 1. Define folder where files will be saved
+            String uploadDir = "src/main/resources/static/uploads/resources/";
+            java.io.File dir = new java.io.File(uploadDir);
+            if (!dir.exists()) {
+                dir.mkdirs(); // Create the folder if it doesn't exist
+            }
+
+            // 2. Clean the file name and add a timestamp so files don't overwrite each other
+            String originalFileName = file.getOriginalFilename();
+            String cleanFileName = System.currentTimeMillis() + "_" + originalFileName.replaceAll("[^a-zA-Z0-9\\.\\-]", "_");
+
+            // 3. Save the physical file to your computer/server
+            java.nio.file.Path path = java.nio.file.Paths.get(uploadDir + cleanFileName);
+            java.nio.file.Files.copy(file.getInputStream(), path, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+
+            // 4. Save the file's path to the database so it shows up on the portal
+            ResourceHub resource = new ResourceHub();
+            resource.setTitle(title);
+            resource.setFileUrl("/uploads/resources/" + cleanFileName);
+            resourceHubRepository.save(resource);
+
+            return "redirect:/admin-dashboard?success=Resource+File+Uploaded+Successfully";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "redirect:/admin-dashboard?error=Failed+to+upload+resource+file";
+        }
+    }
+
+    @PostMapping("/admin/resource/delete")
+    public String deleteResource(@RequestParam("id") Long id) {
+        try {
+            resourceHubRepository.deleteById(id);
+            return "redirect:/admin-dashboard?success=Resource+Deleted+Successfully";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "redirect:/admin-dashboard?error=Failed+to+delete+resource";
+        }
     }
 
     // =========================================================
