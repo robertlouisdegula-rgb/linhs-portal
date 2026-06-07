@@ -271,8 +271,10 @@ public class PageController {
         model.addAttribute("staffAccounts", staffUsers);
         model.addAttribute("adviserAccounts", userRepository.findByRoleName("ADVISER"));
 
-        // 👉 ADD THIS EXACT LINE HERE SO THE TABLE CAN LOAD YOUR FILES!
+        // CONNECTED DATA MODELS FOR THE PUBLIC PORTAL EDITOR
         model.addAttribute("resources", resourceHubRepository.findAll());
+        model.addAttribute("announcements", announcementRepository.findAll());
+        model.addAttribute("galleryItems", galleryRepository.findAll());
 
         return "admin-dashboard";
     }
@@ -341,8 +343,9 @@ public class PageController {
             String savedPath = "";
             
             if (fileAttachment != null && !fileAttachment.isEmpty()) {
-                String filename = System.currentTimeMillis() + "_" + fileAttachment.getOriginalFilename();
-                String uploadDir = System.getProperty("user.dir") + "/src/main/resources/static/uploads/";
+                String subFolder = "gallery".equalsIgnoreCase(type) ? "gallery/" : "uploads/";
+                String filename = System.currentTimeMillis() + "_" + fileAttachment.getOriginalFilename().replaceAll("[^a-zA-Z0-9\\.\\-]", "_");
+                String uploadDir = "src/main/resources/static/uploads/" + subFolder;
                 
                 java.io.File dir = new java.io.File(uploadDir);
                 if (!dir.exists()) {
@@ -352,7 +355,7 @@ public class PageController {
                 java.nio.file.Path path = java.nio.file.Paths.get(uploadDir + filename);
                 java.nio.file.Files.write(path, fileAttachment.getBytes());
                 
-                savedPath = "/uploads/" + filename;
+                savedPath = "/uploads/" + subFolder + filename;
             }
 
             if ("announcement".equalsIgnoreCase(type)) {
@@ -372,6 +375,7 @@ public class PageController {
                 galleryRepository.save(img);
             }
         } catch (Exception e) {
+            e.printStackTrace();
             return "redirect:/admin-dashboard?tab=2&error=File+Upload+Failed";
         }
         
@@ -386,7 +390,7 @@ public class PageController {
     public String addResourceUpload(@RequestParam("title") String title,
                                     @RequestParam("file") MultipartFile file) {
         if (file.isEmpty()) {
-            return "redirect:/admin-dashboard?error=Please+select+a+valid+file+to+upload";
+            return "redirect:/admin-dashboard?tab=2&error=Please+select+a+valid+file+to+upload";
         }
         try {
             // 1. Define folder where files will be saved
@@ -410,10 +414,10 @@ public class PageController {
             resource.setFileUrl("/uploads/resources/" + cleanFileName);
             resourceHubRepository.save(resource);
 
-            return "redirect:/admin-dashboard?success=Resource+File+Uploaded+Successfully";
+            return "redirect:/admin-dashboard?tab=2&success=Resource+File+Uploaded+Successfully";
         } catch (Exception e) {
             e.printStackTrace();
-            return "redirect:/admin-dashboard?error=Failed+to+upload+resource+file";
+            return "redirect:/admin-dashboard?tab=2&error=Failed+to+upload+resource+file";
         }
     }
 
@@ -421,10 +425,10 @@ public class PageController {
     public String deleteResource(@RequestParam("id") Long id) {
         try {
             resourceHubRepository.deleteById(id);
-            return "redirect:/admin-dashboard?success=Resource+Deleted+Successfully";
+            return "redirect:/admin-dashboard?tab=2&success=Resource+Deleted+Successfully";
         } catch (Exception e) {
             e.printStackTrace();
-            return "redirect:/admin-dashboard?error=Failed+to+delete+resource";
+            return "redirect:/admin-dashboard?tab=2&error=Failed+to+delete+resource";
         }
     }
 
