@@ -1,386 +1,160 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Adviser Dashboard | LINHS Portal</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>LINHS - Main Admin Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        :root {
-            --dark-bg: #090d0a;       /* Deep rich dark background */
-            --panel-bg: #111612;      /* Midnight green surface cards */
-            --border-color: #2a2a2a;  /* Structured divider boundaries */
-            --mint-green: #10b981;    /* Vibrant emerald active highlights */
-            --mint-hover: #059669;    /* Hover state adjustment */
-            --text-main: #ffffff;     /* Set to crisp pure white for high contrast */
-            --text-muted: #a3a3a3;    /* Lighter grey text for clear label visibility */
-            --input-bg: #1a1f1b;      /* High contrast fill for inputs */
-            --accent-orange: #fbbf24;  
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        darkBg: '#090d0a',
+                        cardBg: '#111612',
+                        emeraldAccent: '#10b981',
+                        goldAccent: '#fbbf24',
+                        dangerRed: '#ef4444',
+                        panelBorder: '#1f2937'
+                    }
+                }
+            }
         }
-
-        body {
-            background-color: var(--dark-bg);
-            color: var(--text-main);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        /* Card and Modal Panels */
-        .card, .modal-content {
-            background-color: var(--panel-bg);
-            border-color: var(--border-color);
-            color: var(--text-main);
-        }
-        
-        .modal-header {
-            border-bottom: 1px solid var(--border-color);
-        }
-        .modal-footer {
-            border-top: 1px solid var(--border-color);
-        }
-
-        /* Input Fields */
-        .form-control, .form-select {
-            background-color: var(--input-bg);
-            border: 1px solid var(--border-color);
-            color: var(--text-main);
-        }
-        .form-control:focus, .form-select:focus {
-            background-color: var(--input-bg);
-            border-color: var(--mint-green);
-            color: var(--text-main);
-            box-shadow: 0 0 0 0.25rem rgba(16, 185, 129, 0.25);
-        }
-        .form-label {
-            color: var(--text-muted);
-            font-weight: 500;
-        }
-
-        /* Custom Tabs */
-        .nav-tabs {
-            border-bottom: 1px solid var(--border-color);
-        }
-        .nav-tabs .nav-link {
-            color: var(--text-muted);
-            border: none;
-            padding: 1rem 1.5rem;
-            font-weight: 500;
-            transition: all 0.2s ease;
-        }
-        .nav-tabs .nav-link:hover {
-            color: var(--text-main);
-            border: none;
-        }
-        .nav-tabs .nav-link.active {
-            color: var(--mint-green);
-            background-color: transparent;
-            border: none;
-            border-bottom: 2px solid var(--mint-green);
-        }
-
-        /* Buttons */
-        .btn-mint {
-            background-color: var(--mint-green);
-            color: #000;
-            font-weight: 600;
-            border: none;
-        }
-        .btn-mint:hover {
-            background-color: var(--mint-hover);
-            color: #fff;
-        }
-        .btn-outline-mint {
-            border: 1px solid var(--mint-green);
-            color: var(--mint-green);
-            background: transparent;
-        }
-        .btn-outline-mint:hover {
-            background: var(--mint-green);
-            color: #000;
-        }
-        .btn-close-white {
-            filter: invert(1) grayscale(100%) brightness(200%);
-        }
-
-        /* Tables */
-        .table {
-            color: var(--text-main);
-        }
-        .table-dark {
-            background-color: transparent;
-        }
-        .table-dark th {
-            background-color: #1a1f1b;
-            border-color: var(--border-color);
-            color: var(--text-muted);
-            font-weight: 600;
-            text-transform: uppercase;
-            font-size: 0.85rem;
-            letter-spacing: 0.5px;
-        }
-        .table-dark td {
-            background-color: transparent;
-            border-color: var(--border-color);
-            color: var(--text-main);
-            vertical-align: middle;
-        }
-        .table-hover tbody tr:hover td {
-            background-color: #161b18;
-            color: var(--mint-green);
-        }
-        
-        .badge-passed {
-            background-color: rgba(16, 185, 129, 0.2);
-            color: var(--mint-green);
-            border: 1px solid rgba(16, 185, 129, 0.3);
-        }
-        .badge-failed {
-            background-color: rgba(239, 68, 68, 0.2);
-            color: #ef4444;
-            border: 1px solid rgba(239, 68, 68, 0.3);
-        }
-    </style>
+    </script>
 </head>
 
-<body>
-    <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: var(--panel-bg); border-bottom: 1px solid var(--border-color);">
-        <div class="container-fluid px-4">
-            <a class="navbar-brand d-flex align-items-center" href="#">
-                <i class="fa-solid fa-leaf text-success me-2 fs-4"></i>
-                <span class="fw-bold tracking-wide">LINHS PORTAL</span>
-            </a>
-            <div class="d-flex align-items-center">
-                <span class="text-muted me-3 d-none d-md-inline">Adviser: <strong class="text-light" th:text="${adviser.name}">Name</strong></span>
-                <a href="/logout" class="btn btn-outline-danger btn-sm"><i class="fa-solid fa-right-from-bracket me-1"></i>Sign Out</a>
-            </div>
-        </div>
-    </nav>
+<body class="bg-darkBg text-zinc-100 font-sans min-h-screen selection:bg-emeraldAccent selection:text-darkBg">
 
-    <div class="container-fluid py-4 px-lg-5">
-
-        <div th:if="${param.success}" class="alert alert-success alert-dismissible fade show" role="alert" style="background-color: rgba(16, 185, 129, 0.2); border: 1px solid var(--mint-green); color: var(--mint-green);">
-            <i class="fa-solid fa-circle-check me-2"></i><span th:text="${param.success}"></span>
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-        <div th:if="${param.error}" class="alert alert-danger alert-dismissible fade show" role="alert" style="background-color: rgba(239, 68, 68, 0.2); border: 1px solid #ef4444; color: #ef4444;">
-            <i class="fa-solid fa-circle-exclamation me-2"></i><span th:text="${param.error}"></span>
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-
-        <div class="p-4 shadow-sm mb-4 rounded d-flex justify-content-between align-items-center" style="background-color: var(--panel-bg); border: 1px solid var(--border-color);">
+    <div class="max-w-7xl mx-auto px-4 py-8">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-panelBorder pb-6 mb-8 gap-4">
             <div>
-                <h4 class="mb-1 fw-bold"><i class="fa-solid fa-chalkboard-user me-2 text-success"></i>Adviser Dashboard</h4>
-                <p class="mb-0 text-muted">Welcome back, <span class="text-light" th:text="${adviser.name}">Teacher</span>! Manage your advisory class below.</p>
+                <h1 class="text-3xl font-extrabold text-white tracking-tight flex items-center gap-3">
+                    <i class="fa-solid fa-shield-halved text-emeraldAccent"></i> Main Admin Terminal
+                </h1>
+                <p class="text-zinc-400 text-sm mt-1">
+                    System Director Account: <span class="text-goldAccent font-semibold" th:text="${adminUser.name}">Administrator</span>
+                </p>
             </div>
-            <div class="text-end">
-                <span class="d-block text-muted small text-uppercase">Assigned Section</span>
-                <span class="badge" style="background-color: rgba(251, 191, 36, 0.2); color: var(--accent-orange); border: 1px solid rgba(251, 191, 36, 0.3); font-size: 1rem; padding: 0.5rem 1rem;" th:text="${adviser.assignedSection}">Section Name</span>
+            <a href="/logout" class="bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-bold px-4 py-2.5 rounded-lg transition border border-zinc-700 flex items-center gap-2">
+                <i class="fa-solid fa-right-from-bracket text-dangerRed"></i> Terminate Admin Session
+            </a>
+        </div>
+
+        <div th:if="${param.success}" class="mb-6 p-4 bg-emeraldAccent/10 border border-emeraldAccent/30 text-emeraldAccent text-sm font-semibold rounded-lg flex items-center gap-2">
+            <i class="fa-solid fa-circle-check"></i> <span th:text="${param.success}">System process completed successfully.</span>
+        </div>
+
+        <div th:if="${param.error}" class="mb-6 p-4 bg-dangerRed/10 border border-dangerRed/30 text-dangerRed text-sm font-semibold rounded-lg flex items-center gap-2">
+            <i class="fa-solid fa-circle-xmark"></i> <span th:text="${param.error}">System process encountered an error.</span>
+        </div>
+
+        <div class="flex border-b border-panelBorder mb-6 gap-2">
+            <button onclick="switchTab(0)" id="tab-btn-0" class="px-5 py-3 font-bold text-sm border-b-2 tracking-wide transition-all duration-200 flex items-center gap-2 text-emeraldAccent border-emeraldAccent">
+                <i class="fa-solid fa-user-gear"></i> Staff Accounts
+            </button>
+            <button onclick="switchTab(1)" id="tab-btn-1" class="px-5 py-3 font-bold text-sm border-b-2 tracking-wide transition-all duration-200 flex items-center gap-2 text-zinc-400 border-transparent hover:text-white">
+                <i class="fa-solid fa-chalkboard-user"></i> Adviser Accounts
+            </button>
+            <button onclick="switchTab(2)" id="tab-btn-2" class="px-5 py-3 font-bold text-sm border-b-2 tracking-wide transition-all duration-200 flex items-center gap-2 text-zinc-400 border-transparent hover:text-white">
+                <i class="fa-solid fa-sliders"></i> Portal Editor (CMS)
+            </button>
+        </div>
+
+        <div id="tab-panel-0" class="tab-content block">
+            <div class="bg-cardBg border border-panelBorder rounded-xl p-6 shadow-xl">
+                <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-users-cog text-emeraldAccent"></i> Manage Core Staff & Management Credentials
+                </h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm text-zinc-300">
+                        <thead class="bg-darkBg text-xs uppercase text-zinc-400 border-b border-panelBorder">
+                            <tr>
+                                <th class="p-4">Assigned Name</th>
+                                <th class="p-4">Login Security Email</th>
+                                <th class="p-4">System Identity Role</th>
+                                <th class="p-4 text-right">Action Interface</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-panelBorder">
+                            <tr th:each="staff : ${staffAccounts}" class="hover:bg-zinc-900/50 transition">
+                                <td class="p-4 font-semibold text-white" th:text="${staff.name}">Staff Name</td>
+                                <td class="p-4 font-mono text-zinc-400 text-xs" th:text="${staff.email}">email@domain.com</td>
+                                <td class="p-4">
+                                    <span class="px-2.5 py-1 bg-zinc-800 text-goldAccent text-xs font-bold rounded border border-zinc-700" th:text="${staff.roleName}">ROLE</span>
+                                </td>
+                                <td class="p-4 text-right">
+                                    <button th:data-id="${staff.id}" th:data-name="${staff.name}" th:data-email="${staff.email}" onclick="openEditStaffModal(this)" class="text-xs bg-emeraldAccent/10 hover:bg-emeraldAccent text-emeraldAccent hover:text-darkBg font-bold px-3 py-1.5 rounded transition border border-emeraldAccent/30">
+                                        <i class="fa-solid fa-user-pen"></i> Rewrite
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
 
-        <div class="card shadow-sm mb-4">
-            <div class="card-header p-0" style="background-color: transparent; border-bottom: none;">
-                <ul class="nav nav-tabs px-3 pt-3" id="adviserTabs" role="tablist">
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="students-tab" data-bs-toggle="tab" data-bs-target="#students" type="button" role="tab"><i class="fa-solid fa-users me-2"></i>My Students</button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="subjects-tab" data-bs-toggle="tab" data-bs-target="#subjects" type="button" role="tab"><i class="fa-solid fa-book me-2"></i>Class Subjects</button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="grading-tab" data-bs-toggle="tab" data-bs-target="#grading" type="button" role="tab"><i class="fa-solid fa-pen-to-square me-2"></i>Grade Entry</button>
-                    </li>
-                </ul>
-            </div>
-            
-            <div class="card-body p-4">
-                <div class="tab-content" id="adviserTabsContent">
-                    
-                    <div class="tab-pane fade show active" id="students" role="tabpanel" tabindex="0">
-                        <div class="d-flex justify-content-between align-items-center mb-4">
-                            <h5 class="mb-0 fw-bold"><i class="fa-solid fa-user-graduate me-2 text-success"></i>Student Roster</h5>
-                            <button class="btn btn-mint btn-sm px-3" data-bs-toggle="modal" data-bs-target="#addStudentModal">
-                                <i class="fa-solid fa-plus me-1"></i> Add Student
-                            </button>
+        <div id="tab-panel-1" class="tab-content hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="bg-cardBg border border-panelBorder rounded-xl p-6 shadow-xl h-fit">
+                    <h3 class="text-base font-bold text-white mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-user-plus text-emeraldAccent"></i> Register New Adviser Account
+                    </h3>
+                    <form th:action="@{/admin/adviser/create}" method="POST" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-zinc-400 mb-1">Adviser Name</label>
+                            <input type="text" name="name" required placeholder="e.g., Robert Louis De Gula" class="w-full bg-darkBg border border-panelBorder rounded-lg p-2.5 text-sm text-white focus:border-emeraldAccent focus:outline-none">
                         </div>
-                        
-                        <div class="table-responsive">
-                            <table class="table table-dark table-hover align-middle">
-                                <thead>
-                                    <tr>
-                                        <th>LRN</th>
-                                        <th>Student Name</th>
-                                        <th class="text-end">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr th:each="student : ${students}">
-                                        <td th:text="${student.lrn}" class="font-monospace text-muted">123456789012</td>
-                                        <td class="fw-bold" th:text="${student.name}">Juan Dela Cruz</td>
-                                        <td class="text-end">
-                                            <form action="/adviser/student/delete" method="POST" class="d-inline" onsubmit="return confirm('Remove student from section?');">
-                                                <input type="hidden" name="lrn" th:value="${student.lrn}">
-                                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Remove Student"><i class="fa-solid fa-trash"></i></button>
-                                            </form>
-                                        </td>
-                                    </tr>
-                                    <tr th:if="${#lists.isEmpty(students)}">
-                                        <td colspan="3" class="text-center py-4 text-muted">No students registered in this section yet.</td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-zinc-400 mb-1">Assigned Section Name</label>
+                            <input type="text" name="section" required placeholder="e.g., Grade 12 - Azurite" class="w-full bg-darkBg border border-panelBorder rounded-lg p-2.5 text-sm text-white focus:border-emeraldAccent focus:outline-none">
                         </div>
-                        
-                        <div class="modal fade" id="addStudentModal" tabindex="-1" aria-hidden="true">
-                            <div class="modal-dialog modal-dialog-centered">
-                                <div class="modal-content border-0 shadow">
-                                    <form action="/adviser/student/add" method="POST">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title fw-bold"><i class="fa-solid fa-user-plus me-2 text-success"></i>Enroll New Student</h5>
-                                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                                        </div>
-                                        <div class="modal-body">
-                                            <div class="mb-3">
-                                                <label class="form-label">Learner Reference Number (LRN)</label>
-                                                <input type="text" name="lrn" class="form-control" placeholder="12-digit LRN" required pattern="\d{12}">
-                                            </div>
-                                            <div class="mb-3">
-                                                <label class="form-label">Full Name</label>
-                                                <input type="text" name="name" class="form-control" placeholder="Last Name, First Name" required>
-                                            </div>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn text-muted" data-bs-dismiss="modal">Cancel</button>
-                                            <button type="submit" class="btn btn-mint px-4"><i class="fa-solid fa-check me-1"></i> Register</button>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-zinc-400 mb-1">Login Email Address</label>
+                            <input type="email" name="email" required placeholder="name@linhs.edu.ph" class="w-full bg-darkBg border border-panelBorder rounded-lg p-2.5 text-sm text-white focus:border-emeraldAccent focus:outline-none">
                         </div>
-                    </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-zinc-400 mb-1">Security Account Password</label>
+                            <input type="password" name="password" required placeholder="••••••••" class="w-full bg-darkBg border border-panelBorder rounded-lg p-2.5 text-sm text-white focus:border-emeraldAccent focus:outline-none">
+                        </div>
+                        <button type="submit" class="w-full bg-emeraldAccent hover:bg-emeraldAccent/90 text-darkBg font-extrabold text-xs tracking-wider uppercase py-3 rounded-lg shadow-md transition">
+                            <i class="fa-solid fa-square-plus"></i> Save Faculty Record
+                        </button>
+                    </form>
+                </div>
 
-                    <div class="tab-pane fade" id="subjects" role="tabpanel" tabindex="0">
-                        <div class="row">
-                            <div class="col-md-4 mb-4 mb-md-0">
-                                <div class="card shadow-none h-100" style="background-color: var(--input-bg);">
-                                    <div class="card-body">
-                                        <h6 class="fw-bold mb-3"><i class="fa-solid fa-folder-plus me-2 text-success"></i>Register Subject</h6>
-                                        <form action="/adviser/subject/add" method="POST">
-                                            <div class="mb-3">
-                                                <label class="form-label small">Subject Descriptive Title</label>
-                                                <input type="text" name="name" class="form-control form-control-sm" placeholder="e.g., General Mathematics" required>
-                                            </div>
-                                            <button type="submit" class="btn btn-mint btn-sm w-100"><i class="fa-solid fa-plus me-1"></i>Add Subject</button>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-8">
-                                <h6 class="fw-bold mb-3"><i class="fa-solid fa-list-check me-2 text-success"></i>Active Subjects for <span th:text="${adviser.assignedSection}">Section</span></h6>
-                                <table class="table table-dark table-hover align-middle mt-3">
-                                    <thead>
-                                        <tr>
-                                            <th>Subject Title</th>
-                                            <th class="text-end">Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr th:each="subject : ${subjects}">
-                                            <td class="fw-bold text-light" th:text="${subject.name}">Mathematics</td>
-                                            <td class="text-end">
-                                                <form action="/adviser/subject/delete" method="POST" onsubmit="return confirm('Delete this subject permanently?');">
-                                                    <input type="hidden" name="id" th:value="${subject.id}">
-                                                    <button type="submit" class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash me-1"></i>Drop</button>
-                                                </form>
-                                            </td>
-                                        </tr>
-                                        <tr th:if="${#lists.isEmpty(subjects)}">
-                                            <td colspan="2" class="text-center py-4 text-muted">No subjects assigned yet.</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="tab-pane fade" id="grading" role="tabpanel" tabindex="0">
-                        <div class="alert alert-secondary d-flex align-items-center mb-4" style="background-color: rgba(251, 191, 36, 0.1); border-color: rgba(251, 191, 36, 0.2); color: #fcd34d;">
-                            <i class="fa-solid fa-circle-info fs-4 me-3"></i>
-                            <div>
-                                <h6 class="mb-1 fw-bold">Academic Grading Protocol</h6>
-                                <p class="mb-0 small text-light">Select a student below to encode their final grades across all registered subjects. Changes are saved immediately upon submission.</p>
-                            </div>
-                        </div>
-
-                        <table class="table table-dark table-hover align-middle">
-                            <thead>
+                <div class="bg-cardBg border border-panelBorder rounded-xl p-6 shadow-xl lg:col-span-2">
+                    <h3 class="text-base font-bold text-white mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-address-book text-goldAccent"></i> Active Faculty Advisership Roster
+                    </h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm text-zinc-300">
+                            <thead class="bg-darkBg text-xs uppercase text-zinc-400 border-b border-panelBorder">
                                 <tr>
-                                    <th>LRN</th>
-                                    <th>Student Name</th>
-                                    <th class="text-center">Current Status</th>
-                                    <th class="text-end">Action</th>
+                                    <th class="p-4">Adviser Name</th>
+                                    <th class="p-4">Monitored Section</th>
+                                    <th class="p-4">Email ID</th>
+                                    <th class="p-4 text-right">Destructive Action</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <tr th:each="student : ${students}">
-                                    <td th:text="${student.lrn}" class="font-monospace text-muted"></td>
-                                    <td class="fw-bold" th:text="${student.name}"></td>
-                                    <td class="text-center">
-                                        <span class="badge badge-passed"><i class="fa-solid fa-check me-1"></i>Active</span>
+                            <tbody class="divide-y divide-panelBorder">
+                                <tr th:each="adv : ${adviserAccounts}" class="hover:bg-zinc-900/50 transition">
+                                    <td class="p-4 font-semibold text-white" th:text="${adv.name}">Robert Louis De Gula</td>
+                                    <td class="p-4 text-emeraldAccent font-bold" th:text="${adv.assignedSection}">Grade 12 - Azurite</td>
+                                    <td class="p-4 font-mono text-zinc-400 text-xs" th:text="${adv.email}">robert@linhs.edu.ph</td>
+                                    <td class="p-4 text-right">
+                                        <form th:action="@{/admin/adviser/delete}" method="POST" onsubmit="return confirm('Revoke completely and remove this advisor account item from the entity tables?');">
+                                            <input type="hidden" name="id" th:value="${adv.id}" />
+                                            <button type="submit" class="text-xs bg-dangerRed/10 hover:bg-dangerRed text-dangerRed hover:text-white px-2.5 py-1.5 font-bold rounded transition border border-dangerRed/20">
+                                                <i class="fa-solid fa-trash-can"></i> Expunge Account
+                                            </button>
+                                        </form>
                                     </td>
-                                    <td class="text-end">
-                                        <button class="btn btn-sm btn-outline-mint" data-bs-toggle="modal" th:attr="data-bs-target='#gradeModal' + ${student.lrn}">
-                                            <i class="fa-solid fa-calculator me-1"></i>Encode Grades
-                                        </button>
-
-                                        <div class="modal fade" th:id="'gradeModal' + ${student.lrn}" tabindex="-1" aria-hidden="true">
-                                            <div class="modal-dialog modal-dialog-centered modal-lg">
-                                                <div class="modal-content border-0 shadow-lg text-start">
-                                                    <form action="/adviser/grade/save" method="POST">
-                                                        <input type="hidden" name="studentLrn" th:value="${student.lrn}">
-                                                        
-                                                        <div class="modal-header">
-                                                            <h5 class="modal-title fw-bold">
-                                                                <i class="fa-solid fa-user-pen me-2 text-success"></i>Academic Record: <span class="text-light" th:text="${student.name}"></span>
-                                                            </h5>
-                                                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                        </div>
-                                                        <div class="modal-body p-4">
-                                                            
-                                                            <div th:if="${#lists.isEmpty(subjects)}" class="alert alert-warning text-dark border-0">
-                                                                <i class="fa-solid fa-triangle-exclamation me-2"></i>Please add subjects to your section first before grading.
-                                                            </div>
-
-                                                            <div class="table-responsive" th:unless="${#lists.isEmpty(subjects)}">
-                                                                <table class="table table-dark table-bordered table-sm align-middle mb-0">
-                                                                    <thead style="background-color: var(--input-bg);">
-                                                                        <tr>
-                                                                            <th class="py-2 px-3">Subject Name</th>
-                                                                            <th class="py-2 px-3 text-center" style="width: 150px;">Final Grade</th>
-                                                                        </tr>
-                                                                    </thead>
-                                                                    <tbody>
-                                                                        <tr th:each="subject : ${subjects}">
-                                                                            <td class="fw-bold px-3" th:text="${subject.name}">Math</td>
-                                                                            <td class="px-3">
-                                                                                <input type="number" step="0.01" min="0" max="100" class="form-control form-control-sm text-center fw-bold text-success" th:name="'subject_' + ${subject.id}" placeholder="--">
-                                                                            </td>
-                                                                        </tr>
-                                                                    </tbody>
-                                                                </table>
-                                                            </div>
-                                                        </div>
-                                                        <div class="modal-footer">
-                                                            <button type="button" class="btn text-muted" data-bs-dismiss="modal">Close</button>
-                                                            <button type="submit" class="btn btn-mint btn-sm px-4"><i class="fa-solid fa-floppy-disk me-1"></i>Commit & Save Changes</button>
-                                                        </div>
-                                                    </form>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                    </td>
+                                </tr>
+                                <tr th:if="${#lists.isEmpty(adviserAccounts)}">
+                                    <td colspan="4" class="p-8 text-center text-zinc-500 text-xs font-semibold">No assigned active advisory records found in database tables.</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -388,23 +162,139 @@
                 </div>
             </div>
         </div>
+
+        <div id="tab-panel-2" class="tab-content hidden">
+            <div class="bg-cardBg border border-panelBorder rounded-xl p-6 shadow-xl">
+                <h3 class="text-lg font-bold text-white mb-2 flex items-center gap-2">
+                    <i class="fa-solid fa-earth-asia text-emeraldAccent"></i> Public Portal Content System Editor
+                </h3>
+                <p class="text-zinc-400 text-xs mb-6">Modify live configurations for elements targeting prospective students, parents, and community guests.</p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-darkBg border border-panelBorder rounded-lg p-5">
+                        <h4 class="text-sm font-bold text-goldAccent mb-3"><i class="fa-solid fa-circle-info"></i> Rewrite 'About Us' System Narrative</h4>
+                        <form th:action="@{/admin/cms/update}" method="POST" class="space-y-3">
+                            <input type="hidden" name="type" value="about" />
+                            <textarea name="content" rows="3" placeholder="Define school mission, vision parameters, and historical updates..." class="w-full bg-cardBg border border-panelBorder rounded p-2 text-xs text-white focus:border-emeraldAccent focus:outline-none"></textarea>
+                            <button type="submit" class="bg-zinc-800 hover:bg-emeraldAccent text-zinc-300 hover:text-darkBg border border-panelBorder text-xs font-bold px-3 py-2 rounded transition">Push Content Live</button>
+                        </form>
+                    </div>
+
+                    <div class="bg-darkBg border border-panelBorder rounded-lg p-5">
+                        <h4 class="text-sm font-bold text-goldAccent mb-3"><i class="fa-solid fa-bullhorn"></i> Broadcast Live Announcement Card</h4>
+                        <form th:action="@{/admin/cms/update}" method="POST" class="space-y-3">
+                            <input type="hidden" name="type" value="announcement" />
+                            <input type="text" name="title" placeholder="Announcement Title" class="w-full bg-cardBg border border-panelBorder rounded p-2 text-xs text-white focus:border-emeraldAccent focus:outline-none" />
+                            <textarea name="content" rows="2" placeholder="Write comprehensive circular or message text here..." class="w-full bg-cardBg border border-panelBorder rounded p-2 text-xs text-white focus:border-emeraldAccent focus:outline-none"></textarea>
+                            <button type="submit" class="bg-zinc-800 hover:bg-emeraldAccent text-zinc-300 hover:text-darkBg border border-panelBorder text-xs font-bold px-3 py-2 rounded transition">Publish Stream</button>
+                        </form>
+                    </div>
+
+                    <div class="bg-darkBg border border-panelBorder rounded-lg p-5">
+                        <h4 class="text-sm font-bold text-goldAccent mb-3"><i class="fa-solid fa-folder-open"></i> Upload Downloadable File Hub Resources</h4>
+                        <form th:action="@{/admin/cms/update}" method="POST" enctype="multipart/form-data" class="space-y-3">
+                            <input type="hidden" name="type" value="resource" />
+                            <input type="text" name="title" required placeholder="Resource Document Title Name" class="w-full bg-cardBg border border-panelBorder rounded p-2 text-xs text-white focus:border-emeraldAccent focus:outline-none" />
+                            
+                            <div class="relative border border-dashed border-zinc-700 rounded-lg p-3 bg-cardBg hover:border-emeraldAccent transition duration-150">
+                                <input type="file" name="fileAttachment" required class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
+                                <div class="flex items-center justify-between text-xs text-zinc-400">
+                                    <span class="flex items-center gap-2"><i class="fa-solid fa-file-arrow-up text-emeraldAccent"></i> Choose Document File...</span>
+                                    <span class="text-[10px] bg-zinc-800 px-2 py-0.5 rounded border border-zinc-700">Browse Device</span>
+                                </div>
+                            </div>
+                            <button type="submit" class="bg-zinc-800 hover:bg-emeraldAccent text-zinc-300 hover:text-darkBg border border-panelBorder text-xs font-bold px-3 py-2 rounded transition">Commit Local Upload</button>
+                        </form>
+                    </div>
+
+                    <div class="bg-darkBg border border-panelBorder rounded-lg p-5">
+                        <h4 class="text-sm font-bold text-goldAccent mb-3"><i class="fa-solid fa-images"></i> Inject Institutional Gallery Image Cards</h4>
+                        <form th:action="@{/admin/cms/update}" method="POST" enctype="multipart/form-data" class="space-y-3">
+                            <input type="hidden" name="type" value="gallery" />
+                            <input type="text" name="caption" required placeholder="Enter Photo Description Caption Summary" class="w-full bg-cardBg border border-panelBorder rounded p-2 text-xs text-white focus:border-emeraldAccent focus:outline-none" />
+                            
+                            <div class="relative border border-dashed border-zinc-700 rounded-lg p-3 bg-cardBg hover:border-emeraldAccent transition duration-150">
+                                <input type="file" name="fileAttachment" accept="image/*" required class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
+                                <div class="flex items-center justify-between text-xs text-zinc-400">
+                                    <span class="flex items-center gap-2"><i class="fa-solid fa-image text-emeraldAccent"></i> Choose Local Image...</span>
+                                    <span class="text-[10px] bg-zinc-800 px-2 py-0.5 rounded border border-zinc-700">Browse Device</span>
+                                </div>
+                            </div>
+                            <button type="submit" class="bg-zinc-800 hover:bg-emeraldAccent text-zinc-300 hover:text-darkBg border border-panelBorder text-xs font-bold px-3 py-2 rounded transition">Deploy Photo Card</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // Track floating tab status seamlessly across user dashboard refreshes
-        document.addEventListener("DOMContentLoaded", function () {
-            const activeTabId = localStorage.getItem('activeAdviserTabStr');
-            if (activeTabId) {
-                const tabTrigger = new bootstrap.Tab(document.querySelector('#' + activeTabId));
-                if(tabTrigger) tabTrigger.show();
-            }
+    <div id="editStaffModal" class="fixed inset-0 bg-black/80 backdrop-blur-xs flex items-center justify-center hidden p-4 z-50">
+        <div class="bg-cardBg border border-panelBorder rounded-xl max-w-md w-full p-6 shadow-2xl animate-in fade-in zoom-in-95 duration-150">
+            <h3 class="text-base font-bold text-white mb-4 flex items-center gap-2">
+                <i class="fa-solid fa-user-gear text-emeraldAccent"></i> Alter System Staff Credentials
+            </h3>
+            <form th:action="@{/admin/account/edit}" method="POST" class="space-y-4">
+                <input type="hidden" id="editStaffId" name="id" />
+                <div>
+                    <label class="block text-xs font-bold uppercase text-zinc-400 mb-1">Display Profile Name</label>
+                    <input type="text" id="editStaffName" name="name" required class="w-full bg-darkBg border border-panelBorder rounded-lg p-2.5 text-sm text-white focus:border-emeraldAccent focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase text-zinc-400 mb-1">Login Identity Email</label>
+                    <input type="email" id="editStaffEmail" name="email" required class="w-full bg-darkBg border border-panelBorder rounded-lg p-2.5 text-sm text-white focus:border-emeraldAccent focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase text-zinc-400 mb-1">Overwrite Security Password</label>
+                    <input type="password" name="password" placeholder="Leave empty to retain configuration" class="w-full bg-darkBg border border-panelBorder rounded-lg p-2.5 text-sm text-white focus:border-emeraldAccent focus:outline-none">
+                    <p class="text-[10px] text-zinc-500 mt-1">Leave field blank unless you want to update the active password string record.</p>
+                </div>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeEditStaffModal()" class="px-4 py-2 text-xs font-bold text-zinc-400 hover:text-white transition">Dismiss</button>
+                    <button type="submit" class="px-4 py-2 text-xs bg-emeraldAccent text-darkBg font-extrabold rounded-lg hover:bg-emeraldAccent/90 transition">Apply Overwrites</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
-            document.querySelectorAll('button[data-bs-toggle="tab"]').forEach(tab => {
-                tab.addEventListener('shown.bs.tab', function (e) {
-                    localStorage.setItem('activeAdviserTabStr', e.target.id);
-                });
+    <script>
+        function switchTab(index) {
+            document.querySelectorAll('.tab-content').forEach((el) => {
+                el.classList.add('hidden');
+                el.classList.remove('block');
             });
+            document.getElementById('tab-panel-' + index).classList.remove('hidden');
+            document.getElementById('tab-panel-' + index).classList.add('block');
+
+            for (let i = 0; i < 3; i++) {
+                let btn = document.getElementById('tab-btn-' + i);
+                if (i === index) {
+                    btn.classList.add('text-emeraldAccent', 'border-emeraldAccent');
+                    btn.classList.remove('text-zinc-400', 'border-transparent', 'hover:text-white');
+                } else {
+                    btn.classList.remove('text-emeraldAccent', 'border-emeraldAccent');
+                    btn.classList.add('text-zinc-400', 'border-transparent', 'hover:text-white');
+                }
+            }
+            localStorage.setItem('adminActiveTab', index);
+        }
+
+        function openEditStaffModal(button) {
+            document.getElementById('editStaffId').value = button.getAttribute('data-id');
+            document.getElementById('editStaffName').value = button.getAttribute('data-name');
+            document.getElementById('editStaffEmail').value = button.getAttribute('data-email');
+            document.getElementById('editStaffModal').classList.remove('hidden');
+        }
+
+        function closeEditStaffModal() {
+            document.getElementById('editStaffModal').classList.add('hidden');
+        }
+
+        // Auto restore previous tab position across refreshes safely
+        document.addEventListener("DOMContentLoaded", function() {
+            let active = localStorage.getItem('adminActiveTab');
+            if (active !== null) {
+                switchTab(parseInt(active));
+            }
         });
     </script>
 </body>
