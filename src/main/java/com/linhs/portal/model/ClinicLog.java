@@ -20,7 +20,6 @@ public class ClinicLog {
     @Column(name = "reason", nullable = false, columnDefinition = "TEXT")
     private String reason;
 
-    // ---> ADDED THIS MISSING FIELD <---
     @Column(name = "medicine_given")
     private String medicineGiven;
 
@@ -38,7 +37,7 @@ public class ClinicLog {
         this.loggedAt = loggedAt;
     }
 
-    // Getters and Setters
+    // Standard Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -51,10 +50,29 @@ public class ClinicLog {
     public String getReason() { return reason; }
     public void setReason(String reason) { this.reason = reason; }
 
-    // ---> ADDED PROPER GETTER AND SETTER <---
     public String getMedicineGiven() { return medicineGiven; }
     public void setMedicineGiven(String medicineGiven) { this.medicineGiven = medicineGiven; }
 
     public LocalDateTime getLoggedAt() { return loggedAt; }
     public void setLoggedAt(LocalDateTime loggedAt) { this.loggedAt = loggedAt; }
+
+    // =========================================================
+    // --- BRIDGE ALIASES TO MATCH NURSE-DASHBOARD EXPECTATIONS ---
+    // =========================================================
+
+    public LocalDateTime getVisitDate() { 
+        return this.loggedAt; 
+    }
+    
+    public void setVisitDate(LocalDateTime visitDate) { 
+        this.loggedAt = visitDate; 
+    }
+
+    public String getActionTaken() { 
+        return this.medicineGiven; 
+    }
+    
+    public void setActionTaken(String actionTaken) { 
+        this.medicineGiven = actionTaken; 
+    }
 }

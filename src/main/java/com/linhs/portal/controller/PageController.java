@@ -640,6 +640,27 @@ public class PageController {
         return "clinic-dashboard";
     }
 
+    @PostMapping("/clinic/log/add")
+    public String addClinicLog(@RequestParam("studentLrn") String studentLrn,
+                            @RequestParam("studentName") String studentName,
+                            @RequestParam("reason") String reason,
+                            @RequestParam("actionTaken") String actionTaken) {
+        try {
+            ClinicLog log = new ClinicLog();
+            log.setStudentLrn(studentLrn);
+            log.setStudentName(studentName);
+            log.setReason(reason);
+            log.setActionTaken(actionTaken);
+            log.setVisitDate(LocalDateTime.now());
+            
+            clinicLogRepository.save(log);
+            return "redirect:/clinic-dashboard?success=Student+Clinic+Record+Saved";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "redirect:/clinic-dashboard?error=Failed+to+save+clinic+record";
+        }
+    }
+
     @GetMapping("/library-dashboard")
     public String showLibraryDashboard(HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");
