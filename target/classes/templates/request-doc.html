@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,20 +8,20 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --dark-bg: #0d0d0d;
-            --panel-bg: #161616;
-            --border-color: #2a2a2a;
+            --dark-bg: #09090b;
+            --panel-bg: #141417;
+            --border-color: #2d2d30;
             --mint-green: #20c997;
             --mint-hover: #1aa078;
             --text-main: #ffffff;
-            --text-muted: #b0b0b0;
-            --input-bg: #0a0a0a;
+            --text-muted: #d4d4d8;
+            --input-bg: #09090b;
         }
 
         body {
             background-color: var(--dark-bg);
             color: var(--text-main);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -36,7 +35,7 @@
             border-radius: 12px;
             padding: 40px;
             width: 100%;
-            max-width: 600px;
+            max-width: 650px;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
         }
 
@@ -48,23 +47,31 @@
         .brand-header i {
             font-size: 2.5rem;
             color: var(--mint-green);
-            margin-bottom: 10px;
+            margin-bottom: 15px;
         }
 
         .brand-header h3 {
             font-weight: 700;
             letter-spacing: -0.5px;
+            color: #ffffff;
         }
 
-        /* FIXED: Forced text color to white for visibility */
+        .form-label {
+            color: #ffffff !important;
+            font-weight: 500;
+        }
+
+        /* Forces text color to bright white inside inputs */
         .form-control, .form-select {
             background-color: var(--input-bg);
             border: 1px solid var(--border-color);
             color: #ffffff !important; 
+            border-radius: 8px;
+            padding: 12px;
         }
 
         .form-control::placeholder {
-            color: var(--text-muted);
+            color: #a1a1aa !important;
         }
 
         .form-control:focus, .form-select:focus {
@@ -74,7 +81,7 @@
             box-shadow: 0 0 0 0.25rem rgba(32, 201, 151, 0.15);
         }
 
-        /* Ensure dropdown options are readable */
+        /* Dropdown options forced to dark background with white text */
         option {
             background-color: var(--panel-bg);
             color: #ffffff;
@@ -83,9 +90,9 @@
         .btn-primary {
             background-color: var(--mint-green);
             border: none;
-            color: #000;
+            color: #000000 !important;
             font-weight: 600;
-            padding: 12px;
+            padding: 14px;
             width: 100%;
             border-radius: 8px;
             transition: all 0.3s ease;
@@ -93,59 +100,58 @@
 
         .btn-primary:hover {
             background-color: var(--mint-hover);
-            color: #fff;
+            color: #000000 !important;
         }
     </style>
 </head>
-
 <body>
     <div class="request-container">
         <div class="brand-header">
             <i class="fas fa-file-signature"></i>
             <h3>Request a Document</h3>
-            <p class="text-muted small">Submit a formal request to the Registrar's Office</p>
+            <p class="text-muted small" style="color: var(--text-muted);">Submit a formal request to the Registrar's Office</p>
         </div>
 
-        <div th:if="${param.success}" class="alert alert-success bg-success bg-opacity-25 text-success border-success mb-4 text-center">
-            <i class="fas fa-check-circle me-1"></i> Document request submitted successfully! Please wait for an email regarding release.
+        <div th:if="${successMessage}" class="alert alert-success bg-success bg-opacity-25 text-success border-success mb-4 text-center">
+            <i class="fas fa-check-circle me-1"></i> <span th:text="${successMessage}">Document request submitted successfully!</span>
         </div>
-        <div th:if="${param.error}" class="alert alert-danger bg-danger bg-opacity-25 text-danger border-danger mb-4 text-center">
-            <i class="fas fa-exclamation-circle me-1"></i> Failed to submit request. Please verify your details.
+        <div th:if="${errorMessage}" class="alert alert-danger bg-danger bg-opacity-25 text-danger border-danger mb-4 text-center">
+            <i class="fas fa-exclamation-circle me-1"></i> <span th:text="${errorMessage}">Failed to submit request.</span>
         </div>
 
-        <form action="/public/request-doc" method="POST" class="row g-3">
+        <form action="/request-document/submit" method="POST" class="row g-3">
             <div class="col-md-6">
-                <label class="form-label font-semibold" style="color: var(--mint-green);">First Name</label>
+                <label class="form-label">First Name</label>
                 <input type="text" name="firstName" class="form-control" placeholder="e.g., Juan" required>
             </div>
             
             <div class="col-md-6">
-                <label class="form-label font-semibold" style="color: var(--mint-green);">Last Name</label>
+                <label class="form-label">Last Name</label>
                 <input type="text" name="lastName" class="form-control" placeholder="e.g., Dela Cruz" required>
             </div>
 
             <div class="col-md-6">
-                <label class="form-label font-semibold" style="color: var(--mint-green);">Student LRN</label>
+                <label class="form-label">Student LRN</label>
                 <input type="text" name="studentLrn" class="form-control" placeholder="12-digit LRN" required>
             </div>
 
             <div class="col-md-6">
-                <label class="form-label font-semibold" style="color: var(--mint-green);">Email Address</label>
-                <input type="email" name="contactNumber" class="form-control" placeholder="Enter valid email" required>
+                <label class="form-label">Email Address</label>
+                <input type="email" name="emailAddress" class="form-control" placeholder="Enter valid email" required>
             </div>
 
             <div class="col-md-6">
-                <label class="form-label font-semibold" style="color: var(--mint-green);">Academic Year</label>
+                <label class="form-label">Academic Year</label>
                 <input type="text" name="academicYear" class="form-control" placeholder="e.g., 2023-2024" required>
             </div>
 
             <div class="col-md-6">
-                <label class="form-label font-semibold" style="color: var(--mint-green);">Grade & Section</label>
+                <label class="form-label">Grade & Section</label>
                 <input type="text" name="gradeSection" class="form-control" placeholder="e.g., 10 - Rizal" required>
             </div>
 
             <div class="col-12">
-                <label class="form-label font-semibold" style="color: var(--mint-green);">Type of Document</label>
+                <label class="form-label">Type of Document</label>
                 <select name="documentType" class="form-select" required>
                     <option value="" disabled selected>Select Document...</option>
                     <option value="Certificate of Enrollment">Certificate of Enrollment</option>
@@ -160,7 +166,7 @@
             </div>
 
             <div class="col-12">
-                <label class="form-label font-semibold" style="color: var(--mint-green);">Official Purpose</label>
+                <label class="form-label">Official Purpose</label>
                 <textarea name="purpose" class="form-control" rows="3" placeholder="Type intent reason (e.g., Scholarship application, Transfer)" required></textarea>
             </div>
 
@@ -169,10 +175,9 @@
             </div>
 
             <div class="col-12 text-center mt-3">
-                <a href="/login" class="text-muted text-decoration-none" style="font-size: 0.9rem;"><i class="fas fa-arrow-left me-1"></i> Return to Main Portal Login</a>
+                <a href="/login" style="color: var(--text-muted); text-decoration: none; font-size: 0.9rem;"><i class="fas fa-arrow-left me-1"></i> Return to Main Portal Login</a>
             </div>
         </form>
     </div>
 </body>
-
 </html>

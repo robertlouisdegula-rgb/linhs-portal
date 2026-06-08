@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,14 +8,14 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --dark-bg: #0d0d0d;
-            --panel-bg: #161616;
-            --border-color: #2a2a2a;
+            --dark-bg: #09090b;
+            --panel-bg: #141417;
+            --border-color: #2d2d30;
             --mint-green: #20c997;
             --mint-hover: #1aa078;
-            --text-main: #f8f9fa;
-            --text-muted: #8b8b8b;
-            --input-bg: #0a0a0a;
+            --text-main: #ffffff;
+            --text-muted: #d4d4d8;
+            --input-bg: #09090b;
             --accent-orange: #ff9800;
         }
 
@@ -31,6 +30,15 @@
             border-bottom: 1px solid var(--border-color);
         }
 
+        .navbar-brand {
+            color: var(--text-main) !important;
+        }
+
+        .session-user-text {
+            color: #ffffff !important;
+            font-weight: 600;
+        }
+
         .dashboard-card {
             background-color: var(--panel-bg);
             border: 1px solid var(--border-color);
@@ -40,23 +48,36 @@
             box-shadow: 0 4px 20px rgba(0,0,0,0.4);
         }
 
+        .dashboard-card h5, .dashboard-card h4 {
+            color: #ffffff !important;
+        }
+
+        .form-label {
+            color: #ffffff !important;
+            font-weight: 500;
+        }
+
         .form-control, .form-select {
             background-color: var(--input-bg);
             border: 1px solid var(--border-color);
-            color: var(--text-main);
+            color: #ffffff !important;
             border-radius: 8px;
+        }
+
+        .form-control::placeholder {
+            color: #a1a1aa !important;
         }
 
         .form-control:focus, .form-select:focus {
             background-color: var(--input-bg);
             border-color: var(--mint-green);
-            color: var(--text-main);
+            color: #ffffff !important;
             box-shadow: 0 0 0 0.25rem rgba(32, 201, 151, 0.25);
         }
 
         .btn-mint {
             background-color: var(--mint-green);
-            color: #000;
+            color: #000000 !important;
             font-weight: 600;
             border-radius: 8px;
             transition: all 0.2s ease;
@@ -64,7 +85,7 @@
 
         .btn-mint:hover {
             background-color: var(--mint-hover);
-            color: #000;
+            color: #000000 !important;
         }
 
         .section-btn {
@@ -78,39 +99,53 @@
             transition: all 0.2s;
         }
 
+        .section-btn:hover {
+            color: #ffffff;
+            border-color: #52525b;
+        }
+
         .section-btn.active {
             background-color: rgba(32, 201, 151, 0.1);
-            color: var(--mint-green);
+            color: var(--mint-green) !important;
             border-color: var(--mint-green);
         }
 
         .table {
-            color: var(--text-main);
+            color: #ffffff !important;
             vertical-align: middle;
         }
 
         .table th {
             border-bottom: 2px solid var(--border-color);
-            color: var(--text-muted);
+            color: #ffffff !important;
             font-weight: 600;
             text-transform: uppercase;
             font-size: 0.85rem;
+            background-color: transparent;
         }
 
         .table td {
             border-bottom: 1px solid var(--border-color);
+            color: #ffffff !important;
+            background-color: transparent;
+        }
+
+        .text-muted-custom {
+            color: #d4d4d8 !important;
         }
     </style>
 </head>
-
 <body>
+
     <nav class="navbar navbar-expand-lg navbar-dark px-4 py-3">
         <div class="container-fluid">
             <span class="navbar-brand fw-bold text-uppercase tracking-wider">
-                <i class="fas fa-tools me-2 text-success"></i>LINHS Facilities Portal
+                <i class="fas fa-tools me-2 text-warning"></i>LINHS Property & Facilities Portal
             </span>
             <div class="d-flex align-items-center">
-                <span class="text-muted me-3" th:text="${session.user != null ? session.user.name : 'Logistics Admin'}">Admin</span>
+                <span class="session-user-text me-3">
+                    <i class="fas fa-user-cog me-1"></i> Logged in as: <span th:text="${session.user != null ? session.user.name : 'Property Custodian'}">Facilities Admin</span>
+                </span>
                 <a href="/logout" class="btn btn-outline-danger btn-sm rounded-3"><i class="fas fa-sign-out-alt me-1"></i> Exit</a>
             </div>
         </div>
@@ -120,31 +155,35 @@
         <div class="row">
             <div class="col-xl-4 col-lg-5">
                 <div class="dashboard-card">
-                    <h5 class="fw-bold mb-4" style="color: var(--mint-green);"><i class="fas fa-exclamation-triangle me-2"></i>Log Property Liability</h5>
-                    <form th:action="@{/facilities/report-liability}" method="POST">
+                    <h5 class="fw-bold mb-4" style="color: var(--mint-green) !important;"><i class="fas fa-exclamation-triangle me-2"></i>Report Property Liability</h5>
+                    <form th:action="@{/facilities/add-liability}" method="POST">
+                        
                         <div class="mb-3">
-                            <label class="form-label text-muted small">Select Target Student</label>
-                            <select name="studentLrn" class="form-select" onchange="updateHiddenName(this)" required>
-                                <option value="" disabled selected>Choose target student...</option>
+                            <label class="form-label">Accountable Student Profile</label>
+                            <select name="studentLrn" class="form-select" onchange="updateHiddenFacilitiesName(this)" required>
+                                <option value="" disabled selected>Select student context...</option>
                                 <th:block th:each="secEntry : ${sectionsMap}">
-                                    <optgroup th:label="${secEntry.key}">
+                                    <optgroup th:label="${secEntry.key}" style="background-color: #141417; color: #ffffff;">
                                         <option th:each="student : ${secEntry.value}" 
                                                 th:value="${student.lrn}" 
                                                 th:text="${student.name} + ' (' + ${student.lrn} + ')'"></option>
                                     </optgroup>
                                 </th:block>
                             </select>
-                            <input type="hidden" name="studentName" class="hiddenStudentName">
+                            <input type="hidden" name="studentName" id="hiddenFacilitiesName">
                         </div>
+
                         <div class="mb-3">
-                            <label class="form-label text-muted small">Asset or Facility Name</label>
-                            <input type="text" name="facilityOrItem" class="form-control" placeholder="e.g., Computer Unit 14, Science Lab Glassware" required>
+                            <label class="form-label">Facility / Property Name</label>
+                            <input type="text" name="facilityName" class="form-control" placeholder="e.g., Computer Lab 2, Science Beaker, Armchair" required>
                         </div>
+
                         <div class="mb-3">
-                            <label class="form-label text-muted small">Damage Incidient Details</label>
-                            <textarea name="description" class="form-control" rows="3" placeholder="Describe the physical damages or unresolved accountabilities..." required></textarea>
+                            <label class="form-label">Damage Case Description</label>
+                            <textarea name="damageDescription" class="form-control" rows="3" placeholder="Describe property condition or liability issues clearly..." required></textarea>
                         </div>
-                        <button type="submit" class="btn btn-mint w-100 py-2 mt-2"><i class="fas fa-save me-2"></i>File Liability Flag</button>
+
+                        <button type="submit" class="btn btn-mint w-100 py-2 mt-2"><i class="fas fa-file-invoice me-2"></i>File Liability Record</button>
                     </form>
                 </div>
             </div>
@@ -153,12 +192,12 @@
                 <div class="dashboard-card">
                     <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
                         <div>
-                            <h5 class="fw-bold mb-1">Laboratory & Property Clearance Control</h5>
-                            <p class="text-muted small mb-0">Toggle sections and audit structural clearance indicators instantly.</p>
+                            <h5 class="fw-bold mb-1">Laboratory Clearance Configuration</h5>
+                            <p class="text-muted-custom small mb-0">Toggle section button states to change dynamic laboratory accountability lists.</p>
                         </div>
                         <div class="position-relative" style="width: 280px;">
-                            <i class="fas fa-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
-                            <input type="text" id="dashboardSearch" class="form-control ps-5 rounded-pill" placeholder="Search students by LRN or Name...">
+                            <i class="fas fa-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted-custom"></i>
+                            <input type="text" id="dashboardSearch" class="form-control ps-5" placeholder="Search roster records...">
                         </div>
                     </div>
 
@@ -167,8 +206,8 @@
                                 th:id="'btn-' + ${#strings.replace(secEntry.key, ' ', '_')}"
                                 th:classappend="${stat.index == 0} ? 'active' : ''"
                                 class="section-btn"
-                                th:onclick="showSection([[${#strings.replace(secEntry.key, ' ', '_')}]])">
-                            <i class="fas fa-folder me-1"></i> <span th:text="${secEntry.key}"></span>
+                                th:onclick="showFacilitiesSection([[${#strings.replace(secEntry.key, ' ', '_')}]])">
+                            <span th:text="${secEntry.key}">Section</span>
                         </button>
                     </div>
 
@@ -177,34 +216,35 @@
                          class="student-table-container table-responsive" 
                          th:style="${stat.index == 0} ? 'display: block;' : 'display: none;'">
                         
-                        <table class="table alignment-middle">
+                        <table class="table">
                             <thead>
                                 <tr>
-                                    <th>LRN Identification</th>
+                                    <th>LRN String Code</th>
                                     <th>Student Full Name</th>
-                                    <th class="text-end">Laboratory Status Flags</th>
+                                    <th class="text-end" style="width: 200px;">Clearance Management</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr th:each="student : ${secEntry.value}" class="student-row">
-                                    <td class="fw-bold text-success search-lrn" th:text="${student.lrn}"></td>
-                                    <td class="search-name" th:text="${student.name}"></td>
+                                    <td class="fw-bold text-mint search-lrn" th:text="${student.lrn}">LRN</td>
+                                    <td class="search-name text-white fw-medium" th:text="${student.name}">Student Name</td>
                                     <td class="text-end">
-                                        <form th:action="@{/facilities/update-clearance}" method="POST" class="d-inline-block">
+                                        <form th:action="@{/facilities/update-clearance}" method="POST" style="display: inline-block; width: 100%;">
                                             <input type="hidden" name="studentLrn" th:value="${student.lrn}">
-                                            <select name="status" class="form-select form-select-sm d-inline-block w-auto border-secondary" onchange="this.form.submit()">
-                                                <option th:selected="${student.labClearance == null || student.labClearance.name() == 'PENDING'}" value="PENDING">Pending Accountability</option>
-                                                <option th:selected="${student.labClearance?.name() == 'CLEARED'}" value="CLEARED">Cleared Status</option>
+                                            <select name="status" class="form-select form-select-sm backend-update-select" onchange="this.form.submit()">
+                                                <option th:selected="${student.labClearance == null || student.labClearance?.name() == 'PENDING'}" value="PENDING">❌ Pending</option>
+                                                <option th:selected="${student.labClearance?.name() == 'CLEARED'}" value="CLEARED">✅ Cleared</option>
                                             </select>
                                         </form>
                                     </td>
                                 </tr>
-                                <tr th:if="${#lists.isEmpty(secEntry.value)}" class="no-data-row">
-                                    <td colspan="3" class="text-muted text-center py-4">No rostered students found within this program module.</td>
+                                <tr th:if="${#lists.isEmpty(secEntry.value)}">
+                                    <td colspan="3" class="text-muted-custom text-center py-4">No student records found allocated inside this section space loop mapping.</td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
+
                 </div>
             </div>
         </div>
@@ -212,7 +252,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        function showSection(sectionId) {
+        function showFacilitiesSection(sectionId) {
             document.querySelectorAll('.student-table-container').forEach(el => el.style.display = 'none');
             document.querySelectorAll('.section-btn').forEach(el => el.classList.remove('active'));
             
@@ -222,23 +262,20 @@
             const activeBtn = document.getElementById('btn-' + sectionId);
             if(activeBtn) activeBtn.classList.add('active');
 
-            // Reset current search text on section change to prevent view mismatches
             document.getElementById('dashboardSearch').value = '';
             document.querySelectorAll('.student-row').forEach(row => row.style.display = '');
         }
 
-        function updateHiddenName(selectElement) {
+        function updateHiddenFacilitiesName(selectElement) {
+            if (selectElement.selectedIndex === -1) return;
             const selectedText = selectElement.options[selectElement.selectedIndex].text;
             const nameOnly = selectedText.substring(0, selectedText.lastIndexOf(' ('));
-            selectElement.closest('form').querySelector('.hiddenStudentName').value = nameOnly;
+            document.getElementById('hiddenFacilitiesName').value = nameOnly;
         }
 
-        // Live Search Input Logic targeting across tables
         document.getElementById('dashboardSearch').addEventListener('keyup', function () {
             let filter = this.value.toLowerCase().trim();
-            // Target the student rows inside the currently displayed table layout
-            let activeContainer = document.querySelector('.student-table-container[style*="display: block"]');
-            if (!activeContainer) activeContainer = document.querySelector('.student-table-container:not([style*="display: none"])');
+            let activeContainer = document.querySelector('.student-table-container[style*="display: block"]') || document.querySelector('.student-table-container:not([style*="display: none"])');
             
             if (activeContainer) {
                 let rows = activeContainer.querySelectorAll('.student-row');
