@@ -40,7 +40,7 @@ public class FacilityLiability {
     public void setReportedAt(LocalDateTime reportedAt) { this.reportedAt = reportedAt; }
 
     // =========================================================
-    // --- BRIDGE METHODS TO MATCH CONTROLLER EXPECTATIONS ---
+    // --- BRIDGE METHODS TO MATCH CONTROLLER & HTML EXPECTATIONS ---
     // =========================================================
     public String getFacilityName() { return facilityOrItem; }
     public void setFacilityName(String facilityName) { this.facilityOrItem = facilityName; }
@@ -50,4 +50,13 @@ public class FacilityLiability {
 
     public LocalDateTime getReportedDate() { return reportedAt; }
     public void setReportedDate(LocalDateTime reportedDate) { this.reportedAt = reportedDate; }
+
+    public String getItemName() { return facilityOrItem; }
+    public void setItemName(String itemName) { this.facilityOrItem = itemName; }
+
+    public String getIssueDetails() { return description; }
+    public void setIssueDetails(String issueDetails) { this.description = issueDetails; }
+
+    public LocalDateTime getDateReported() { return reportedAt; }
+    public void setDateReported(LocalDateTime dateReported) { this.reportedAt = dateReported; }
 }

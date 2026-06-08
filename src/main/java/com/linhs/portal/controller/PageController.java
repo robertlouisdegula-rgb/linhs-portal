@@ -576,16 +576,55 @@ public class PageController {
         return "registrar-dashboard";
     }
 
-    @GetMapping("/custodian-dashboard")
+    @GetMapping({"/custodian-dashboard", "/facilities-dashboard"})
     public String showCustodianDashboard(HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");
         if (user == null || !"FACILITIES_ADMIN".equalsIgnoreCase(user.getRoleName()))
             return "redirect:/login";
 
         model.addAttribute("username", user.getUsername());
+        model.addAttribute("students", studentRepository.findAll()); 
+        model.addAttribute("activeFacilities", facilityLiabilityRepository.findAll()); 
         model.addAttribute("borrowRecords", borrowRecordRepository.findAll());
-        model.addAttribute("liabilities", facilityLiabilityRepository.findAll());
-        return "custodian-dashboard";
+        return "facilities-dashboard"; // Maps cleanly to your facilities-dashboard.html file
+    }
+
+    @PostMapping("/facilities/log")
+    public String logFacilityLiability(@RequestParam("studentLrn") String studentLrn,
+                                       @RequestParam("hiddenStudentName") String studentName,
+                                       @RequestParam("itemName") String itemName,
+                                       @RequestParam("issueDetails") String issueDetails) {
+        try {
+            FacilityLiability liability = new FacilityLiability();
+            liability.setStudentLrn(studentLrn);
+            liability.setStudentName(studentName);
+            liability.setItemName(itemName);
+            liability.setIssueDetails(issueDetails);
+            liability.setStatus("UNRESOLVED");
+            liability.setDateReported(LocalDateTime.now());
+            
+            facilityLiabilityRepository.save(liability);
+            return "redirect:/custodian-dashboard?successMessage=Liability+Logged+Successfully";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "redirect:/custodian-dashboard?errorMessage=Failed+To+Log+Liability";
+        }
+    }
+
+    @PostMapping("/facilities/resolve")
+    public String resolveFacilityLiability(@RequestParam("id") Long id) {
+        try {
+            Optional<FacilityLiability> liabilityOpt = facilityLiabilityRepository.findById(id);
+            if (liabilityOpt.isPresent()) {
+                FacilityLiability liability = liabilityOpt.get();
+                liability.setStatus("RESOLVED");
+                facilityLiabilityRepository.save(liability);
+            }
+            return "redirect:/custodian-dashboard?successMessage=Liability+Marked+As+Resolved";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "redirect:/custodian-dashboard?errorMessage=Failed+To+Resolve+Liability";
+        }
     }
     
     @GetMapping("/lab-dashboard")
