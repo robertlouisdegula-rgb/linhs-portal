@@ -9,14 +9,14 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --dark-bg: #090d0a;       /* Deep rich dark background */
-            --panel-bg: #111612;      /* Midnight green surface cards */
-            --border-color: #2a2a2a;  /* Structured divider boundaries */
-            --mint-green: #10b981;    /* Vibrant emerald active highlights */
-            --mint-hover: #059669;    /* Hover state adjustment */
-            --text-main: #ffffff;     /* Set to crisp pure white for high contrast */
-            --text-muted: #a3a3a3;    /* Lighter grey text for clear label visibility */
-            --input-bg: #1a1f1b;      /* High contrast fill for inputs */
+            --dark-bg: #090d0a;       
+            --panel-bg: #111612;      
+            --border-color: #2a2a2a;  
+            --mint-green: #10b981;    
+            --mint-hover: #059669;    
+            --text-main: #ffffff;     
+            --text-muted: #a3a3a3;    
+            --input-bg: #1a1f1b;      
             --accent-orange: #fbbf24;  
         }
 
@@ -26,21 +26,15 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-        /* Card and Modal Panels */
         .card, .modal-content {
             background-color: var(--panel-bg);
             border-color: var(--border-color);
             color: var(--text-main);
         }
         
-        .modal-header {
-            border-bottom: 1px solid var(--border-color);
-        }
-        .modal-footer {
-            border-top: 1px solid var(--border-color);
-        }
+        .modal-header { border-bottom: 1px solid var(--border-color); }
+        .modal-footer { border-top: 1px solid var(--border-color); }
 
-        /* Input Fields */
         .form-control, .form-select {
             background-color: var(--input-bg);
             border: 1px solid var(--border-color);
@@ -52,15 +46,9 @@
             color: var(--text-main);
             box-shadow: 0 0 0 0.25rem rgba(16, 185, 129, 0.25);
         }
-        .form-label {
-            color: var(--text-muted);
-            font-weight: 500;
-        }
+        .form-label { color: var(--text-muted); font-weight: 500; }
 
-        /* Custom Tabs */
-        .nav-tabs {
-            border-bottom: 1px solid var(--border-color);
-        }
+        .nav-tabs { border-bottom: 1px solid var(--border-color); }
         .nav-tabs .nav-link {
             color: var(--text-muted);
             border: none;
@@ -68,10 +56,7 @@
             font-weight: 500;
             transition: all 0.2s ease;
         }
-        .nav-tabs .nav-link:hover {
-            color: var(--text-main);
-            border: none;
-        }
+        .nav-tabs .nav-link:hover { color: var(--text-main); border: none; }
         .nav-tabs .nav-link.active {
             color: var(--mint-green);
             background-color: transparent;
@@ -79,37 +64,14 @@
             border-bottom: 2px solid var(--mint-green);
         }
 
-        /* Buttons */
-        .btn-mint {
-            background-color: var(--mint-green);
-            color: #000;
-            font-weight: 600;
-            border: none;
-        }
-        .btn-mint:hover {
-            background-color: var(--mint-hover);
-            color: #fff;
-        }
-        .btn-outline-mint {
-            border: 1px solid var(--mint-green);
-            color: var(--mint-green);
-            background: transparent;
-        }
-        .btn-outline-mint:hover {
-            background: var(--mint-green);
-            color: #000;
-        }
-        .btn-close-white {
-            filter: invert(1) grayscale(100%) brightness(200%);
-        }
+        .btn-mint { background-color: var(--mint-green); color: #000; font-weight: 600; border: none; }
+        .btn-mint:hover { background-color: var(--mint-hover); color: #fff; }
+        .btn-outline-mint { border: 1px solid var(--mint-green); color: var(--mint-green); background: transparent; }
+        .btn-outline-mint:hover { background: var(--mint-green); color: #000; }
+        .btn-close-white { filter: invert(1) grayscale(100%) brightness(200%); }
 
-        /* Tables Override */
-        .table {
-            color: var(--text-main) !important;
-        }
-        .table-dark {
-            background-color: transparent !important;
-        }
+        .table { color: var(--text-main) !important; }
+        .table-dark { background-color: transparent !important; }
         .table-dark th {
             background-color: #1a1f1b !important;
             border-color: var(--border-color) !important;
@@ -125,46 +87,21 @@
             color: var(--text-main) !important;
             vertical-align: middle;
         }
-        .table-hover tbody tr:hover td {
-            background-color: #161b18 !important;
-            color: var(--mint-green) !important;
-        }
+        .table-hover tbody tr:hover td { background-color: #161b18 !important; color: var(--mint-green) !important; }
         
-        .badge-passed {
-            background-color: rgba(16, 185, 129, 0.2);
-            color: var(--mint-green);
-            border: 1px solid rgba(16, 185, 129, 0.3);
-        }
-        .badge-failed {
-            background-color: rgba(239, 68, 68, 0.2);
-            color: #ef4444;
-            border: 1px solid rgba(239, 68, 68, 0.3);
-        }
+        .badge-passed { background-color: rgba(16, 185, 129, 0.2); color: var(--mint-green); border: 1px solid rgba(16, 185, 129, 0.3); }
+        .badge-failed { background-color: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); }
 
-        /* Accordion Dark Theme Override */
-        .accordion-item {
-            background-color: transparent;
-            border: 1px solid var(--border-color);
-        }
-        .accordion-button {
-            background-color: var(--input-bg);
-            color: var(--text-main);
-        }
+        .accordion-item { background-color: transparent; border: 1px solid var(--border-color); }
+        .accordion-button { background-color: var(--input-bg); color: var(--text-main); }
         .accordion-button:not(.collapsed) {
             background-color: #161b18;
             color: var(--mint-green);
             box-shadow: inset 0 -1px 0 var(--border-color);
         }
-        .accordion-button:focus {
-            box-shadow: none;
-            border-color: var(--border-color);
-        }
-        .accordion-button::after {
-            filter: invert(1) grayscale(100%) brightness(200%);
-        }
-        .accordion-button:not(.collapsed)::after {
-            filter: invert(0.6) sepia(1) saturate(3) hue-rotate(110deg);
-        }
+        .accordion-button:focus { box-shadow: none; border-color: var(--border-color); }
+        .accordion-button::after { filter: invert(1) grayscale(100%) brightness(200%); }
+        .accordion-button:not(.collapsed)::after { filter: invert(0.6) sepia(1) saturate(3) hue-rotate(110deg); }
     </style>
 </head>
 
@@ -183,7 +120,6 @@
     </nav>
 
     <div class="container-fluid py-4 px-lg-5">
-
         <div th:if="${param.success}" class="alert alert-success alert-dismissible fade show" role="alert" style="background-color: rgba(16, 185, 129, 0.2); border: 1px solid var(--mint-green); color: var(--mint-green);">
             <i class="fa-solid fa-circle-check me-2"></i><span th:text="${param.success}"></span>
             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -444,15 +380,11 @@
                                                         <span class="badge" th:classappend="${grade.remarks == 'PASSED'} ? 'badge-passed' : 'badge-failed'" th:text="${grade.remarks}">PASSED</span>
                                                     </td>
                                                 </tr>
-                                                <tr>
-                                                    <td colspan="3" class="px-4 py-4 text-center text-muted small" style="display: none;">No grades have been encoded for this student yet.</td>
-                                                </tr>
                                             </tbody>
                                         </table>
                                     </div>
                                 </div>
                             </div>
-
                             <div th:if="${#lists.isEmpty(students)}" class="text-center py-5 text-muted border border-secondary rounded border-dashed" style="border-style: dashed !important;">
                                 <i class="fa-solid fa-folder-open fs-2 mb-3 opacity-50"></i>
                                 <p class="mb-0">No students are currently registered in your section to display records.</p>
@@ -468,10 +400,15 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
+            // FIXED: Added a safety check before trying to initialize a Bootstrap Tab. 
+            // If the old saved tab doesn't exist anymore, it won't crash your dashboard!
             const activeTabId = localStorage.getItem('activeAdviserTabStr');
             if (activeTabId) {
-                const tabTrigger = new bootstrap.Tab(document.querySelector('#' + activeTabId));
-                if(tabTrigger) tabTrigger.show();
+                const tabElement = document.querySelector('#' + activeTabId);
+                if (tabElement) {
+                    const tabTrigger = new bootstrap.Tab(tabElement);
+                    tabTrigger.show();
+                }
             }
 
             document.querySelectorAll('button[data-bs-toggle="tab"]').forEach(tab => {
