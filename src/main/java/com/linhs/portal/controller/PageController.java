@@ -393,22 +393,18 @@ public class PageController {
             return "redirect:/admin-dashboard?tab=2&error=Please+select+a+valid+file+to+upload";
         }
         try {
-            // 1. Define folder where files will be saved
             String uploadDir = "src/main/resources/static/uploads/resources/";
             java.io.File dir = new java.io.File(uploadDir);
             if (!dir.exists()) {
-                dir.mkdirs(); // Create the folder if it doesn't exist
+                dir.mkdirs();
             }
 
-            // 2. Clean the file name and add a timestamp so files don't overwrite each other
             String originalFileName = file.getOriginalFilename();
             String cleanFileName = System.currentTimeMillis() + "_" + originalFileName.replaceAll("[^a-zA-Z0-9\\.\\-]", "_");
 
-            // 3. Save the physical file to your computer/server
             java.nio.file.Path path = java.nio.file.Paths.get(uploadDir + cleanFileName);
             java.nio.file.Files.copy(file.getInputStream(), path, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
 
-            // 4. Save the file's path to the database so it shows up on the portal
             ResourceHub resource = new ResourceHub();
             resource.setTitle(title);
             resource.setFileUrl("/uploads/resources/" + cleanFileName);
@@ -629,6 +625,7 @@ public class PageController {
         return "guidance-dashboard";
     }
 
+    // FIXED: Adjusted attribute naming keys to perfectly match Thymeleaf HTML context templates
     @GetMapping("/clinic-dashboard")
     public String showClinicDashboard(HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");
@@ -636,15 +633,16 @@ public class PageController {
             return "redirect:/login";
 
         model.addAttribute("username", user.getUsername());
-        model.addAttribute("logs", clinicLogRepository.findAll());
-        return "clinic-dashboard";
+        model.addAttribute("students", studentRepository.findAll()); // Populates the dropdown menu form context
+        model.addAttribute("clinicLogs", clinicLogRepository.findAll()); // Matches th:each="log : ${clinicLogs}"
+        return "nurse-dashboard"; // Ensure this matches your template filename (e.g., nurse-dashboard.html)
     }
 
     @PostMapping("/clinic/log/add")
     public String addClinicLog(@RequestParam("studentLrn") String studentLrn,
-                            @RequestParam("studentName") String studentName,
-                            @RequestParam("reason") String reason,
-                            @RequestParam("actionTaken") String actionTaken) {
+                               @RequestParam("studentName") String studentName,
+                               @RequestParam("reason") String reason,
+                               @RequestParam("actionTaken") String actionTaken) {
         try {
             ClinicLog log = new ClinicLog();
             log.setStudentLrn(studentLrn);
