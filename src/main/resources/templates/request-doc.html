@@ -27,6 +27,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            padding: 20px;
         }
 
         .request-container {
@@ -35,81 +36,121 @@
             border-radius: 12px;
             padding: 40px;
             width: 100%;
-            max-width: 800px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            max-width: 600px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
         }
 
+        .brand-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .brand-header i {
+            font-size: 2.5rem;
+            color: var(--mint-green);
+            margin-bottom: 10px;
+        }
+
+        .brand-header h3 {
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        /* FIXED: Forced text color to white for visibility */
         .form-control, .form-select {
             background-color: var(--input-bg);
             border: 1px solid var(--border-color);
-            color: var(--text-main);
-            padding: 12px;
+            color: #ffffff !important; 
+        }
+
+        .form-control::placeholder {
+            color: var(--text-muted);
         }
 
         .form-control:focus, .form-select:focus {
             background-color: var(--input-bg);
             border-color: var(--mint-green);
-            color: var(--text-main);
-            box-shadow: none;
+            color: #ffffff !important;
+            box-shadow: 0 0 0 0.25rem rgba(32, 201, 151, 0.15);
+        }
+
+        /* Ensure dropdown options are readable */
+        option {
+            background-color: var(--panel-bg);
+            color: #ffffff;
         }
 
         .btn-primary {
             background-color: var(--mint-green);
-            border-color: var(--mint-green);
+            border: none;
             color: #000;
             font-weight: 600;
             padding: 12px;
             width: 100%;
-            transition: background-color 0.3s ease;
+            border-radius: 8px;
+            transition: all 0.3s ease;
         }
 
         .btn-primary:hover {
             background-color: var(--mint-hover);
-            border-color: var(--mint-hover);
+            color: #fff;
         }
     </style>
 </head>
 
 <body>
     <div class="request-container">
-        <div class="text-center mb-4">
-            <i class="fas fa-file-signature fa-3x mb-3" style="color: var(--mint-green);"></i>
-            <h3 class="fw-bold">Document Request Portal</h3>
-            <p class="text-muted">Submit a formal request for academic records and credentials.</p>
+        <div class="brand-header">
+            <i class="fas fa-file-signature"></i>
+            <h3>Request a Document</h3>
+            <p class="text-muted small">Submit a formal request to the Registrar's Office</p>
         </div>
 
-        <div th:if="${errorMessage}" class="alert alert-danger bg-danger text-white border-0" th:text="${errorMessage}"></div>
-        <div th:if="${successMessage}" class="alert alert-success bg-success text-white border-0" th:text="${successMessage}"></div>
+        <div th:if="${param.success}" class="alert alert-success bg-success bg-opacity-25 text-success border-success mb-4 text-center">
+            <i class="fas fa-check-circle me-1"></i> Document request submitted successfully! Please wait for an email regarding release.
+        </div>
+        <div th:if="${param.error}" class="alert alert-danger bg-danger bg-opacity-25 text-danger border-danger mb-4 text-center">
+            <i class="fas fa-exclamation-circle me-1"></i> Failed to submit request. Please verify your details.
+        </div>
 
-        <form action="/request-document/submit" method="POST" class="row g-3">
+        <form action="/public/request-doc" method="POST" class="row g-3">
             <div class="col-md-6">
-                <label class="form-label text-muted small">First Name</label>
-                <input type="text" name="firstName" class="form-control" required placeholder="Legal First Name">
-            </div>
-            <div class="col-md-6">
-                <label class="form-label text-muted small">Last Name</label>
-                <input type="text" name="lastName" class="form-control" required placeholder="Legal Last Name">
-            </div>
-
-            <div class="col-md-4">
-                <label class="form-label text-muted small">Email Address</label>
-                <input type="email" name="emailAddress" class="form-control" required placeholder="name@example.com">
+                <label class="form-label font-semibold" style="color: var(--mint-green);">First Name</label>
+                <input type="text" name="firstName" class="form-control" placeholder="e.g., Juan" required>
             </div>
             
-            <div class="col-md-4">
-                <label class="form-label text-muted small">Academic Year</label>
-                <input type="text" name="academicYear" class="form-control" required placeholder="e.g., 2023-2024">
+            <div class="col-md-6">
+                <label class="form-label font-semibold" style="color: var(--mint-green);">Last Name</label>
+                <input type="text" name="lastName" class="form-control" placeholder="e.g., Dela Cruz" required>
             </div>
-            <div class="col-md-4">
-                <label class="form-label text-muted small">Grade & Section</label>
-                <input type="text" name="gradeSection" class="form-control" required placeholder="e.g., Grade 10 - Rizal">
+
+            <div class="col-md-6">
+                <label class="form-label font-semibold" style="color: var(--mint-green);">Student LRN</label>
+                <input type="text" name="studentLrn" class="form-control" placeholder="12-digit LRN" required>
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label font-semibold" style="color: var(--mint-green);">Email Address</label>
+                <input type="email" name="contactNumber" class="form-control" placeholder="Enter valid email" required>
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label font-semibold" style="color: var(--mint-green);">Academic Year</label>
+                <input type="text" name="academicYear" class="form-control" placeholder="e.g., 2023-2024" required>
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label font-semibold" style="color: var(--mint-green);">Grade & Section</label>
+                <input type="text" name="gradeSection" class="form-control" placeholder="e.g., 10 - Rizal" required>
             </div>
 
             <div class="col-12">
-                <label class="form-label text-muted small">Requested Document</label>
+                <label class="form-label font-semibold" style="color: var(--mint-green);">Type of Document</label>
                 <select name="documentType" class="form-select" required>
-                    <option value="" disabled selected>-- Select Document Type --</option>
+                    <option value="" disabled selected>Select Document...</option>
                     <option value="Certificate of Enrollment">Certificate of Enrollment</option>
+                    <option value="Certificate of Academic Excellence">Certificate of Academic Excellence</option>
+                    <option value="Certified True Copy - SF 10">Certified True Copy - SF 10</option>
                     <option value="Certified True Copy - SF 9 (Card)">Certified True Copy - SF 9 (Card)</option>
                     <option value="Photocopy of SF9 (Card)">Photocopy of SF9 (Card)</option>
                     <option value="Photocopy of SF10 (Permanent Record)">Photocopy of SF10 (Permanent Record)</option>
@@ -119,17 +160,16 @@
             </div>
 
             <div class="col-12">
-                <label class="form-label font-semibold" style="color: var(--mint-green);">Official Purpose of Document Request</label>
-                <textarea name="purpose" class="form-control" rows="3"
-                    placeholder="Type intent reason (e.g., Scholarship application, Permanent transfer)" required></textarea>
+                <label class="form-label font-semibold" style="color: var(--mint-green);">Official Purpose</label>
+                <textarea name="purpose" class="form-control" rows="3" placeholder="Type intent reason (e.g., Scholarship application, Transfer)" required></textarea>
             </div>
 
             <div class="col-12 mt-4">
-                <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane me-1"></i> Dispatch Request Form</button>
+                <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane me-1"></i> Dispatch Request</button>
             </div>
 
             <div class="col-12 text-center mt-3">
-                <a href="/login" class="text-muted text-xs text-decoration-none"><i class="fas fa-arrow-left me-1"></i> Return to Main Portal Login</a>
+                <a href="/login" class="text-muted text-decoration-none" style="font-size: 0.9rem;"><i class="fas fa-arrow-left me-1"></i> Return to Main Portal Login</a>
             </div>
         </form>
     </div>

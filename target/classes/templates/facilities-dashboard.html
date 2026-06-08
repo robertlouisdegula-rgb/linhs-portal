@@ -8,225 +8,250 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root { --dark-bg: #0d0d0d; --panel-bg: #161616; --border-color: #2a2a2a; --mint-green: #20c997; --accent-orange: #ff9800; --text-main: #f8f9fa; --text-muted: #8b8b8b; --input-bg: #0a0a0a; }
-        body { background-color: var(--dark-bg); color: var(--text-main); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; }
-        .sidebar { background-color: var(--panel-bg); border-right: 1px solid var(--border-color); min-height: 100vh; padding: 20px; }
-        .sidebar-brand { font-weight: 700; font-size: 1.2rem; color: var(--mint-green); margin-bottom: 2rem; display: flex; align-items: center; gap: 10px; }
-        .nav-link { color: var(--text-muted); padding: 10px 15px; border-radius: 8px; margin-bottom: 5px; transition: all 0.3s ease; }
-        .nav-link:hover, .nav-link.active { background-color: rgba(32, 201, 151, 0.1); color: var(--mint-green); }
-        .main-content { padding: 30px; }
-        .card, .modal-content { background-color: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 12px; margin-bottom: 20px; color: var(--text-main); }
-        .card-header, .modal-header { border-bottom: 1px solid var(--border-color); padding: 15px 20px; font-weight: 600; }
-        .modal-footer { border-top: 1px solid var(--border-color); }
-        .table { color: var(--text-main); margin-bottom: 0; }
-        .table th { border-bottom-color: var(--border-color); color: var(--text-muted); font-weight: 500; font-size: 0.85rem; }
-        .table td { border-bottom-color: var(--border-color); vertical-align: middle; }
-        .nav-tabs { border-bottom: 1px solid var(--border-color); }
-        .nav-tabs .nav-link { color: var(--text-muted); border: none; padding: 12px 20px; }
-        .nav-tabs .nav-link.active { color: var(--mint-green); background-color: transparent; border-bottom: 2px solid var(--mint-green); }
-        .form-control { background-color: var(--input-bg); border: 1px solid var(--border-color); color: var(--text-main); }
-        .form-control:focus { background-color: var(--input-bg); border-color: var(--mint-green); color: var(--text-main); box-shadow: none; }
-        .btn-close-white { filter: invert(1) grayscale(100%) brightness(200%); }
+        :root {
+            --dark-bg: #0d0d0d;
+            --panel-bg: #161616;
+            --border-color: #2a2a2a;
+            --mint-green: #20c997;
+            --mint-hover: #1aa078;
+            --text-main: #f8f9fa;
+            --text-muted: #8b8b8b;
+            --input-bg: #0a0a0a;
+            --accent-orange: #ff9800;
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+        }
+
+        .navbar {
+            background-color: var(--panel-bg);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .dashboard-card {
+            background-color: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+        }
+
+        .form-control, .form-select {
+            background-color: var(--input-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            border-radius: 8px;
+        }
+
+        .form-control:focus, .form-select:focus {
+            background-color: var(--input-bg);
+            border-color: var(--mint-green);
+            color: var(--text-main);
+            box-shadow: 0 0 0 0.25rem rgba(32, 201, 151, 0.25);
+        }
+
+        .btn-mint {
+            background-color: var(--mint-green);
+            color: #000;
+            font-weight: 600;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-mint:hover {
+            background-color: var(--mint-hover);
+            color: #000;
+        }
+
+        .section-btn {
+            background-color: transparent;
+            color: var(--text-muted);
+            border: 1px solid var(--border-color);
+            padding: 8px 16px;
+            border-radius: 8px;
+            margin-right: 8px;
+            margin-bottom: 8px;
+            transition: all 0.2s;
+        }
+
+        .section-btn.active {
+            background-color: rgba(32, 201, 151, 0.1);
+            color: var(--mint-green);
+            border-color: var(--mint-green);
+        }
+
+        .table {
+            color: var(--text-main);
+            vertical-align: middle;
+        }
+
+        .table th {
+            border-bottom: 2px solid var(--border-color);
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+        }
+
+        .table td {
+            border-bottom: 1px solid var(--border-color);
+        }
     </style>
 </head>
 
 <body>
-    <div class="container-fluid">
+    <nav class="navbar navbar-expand-lg navbar-dark px-4 py-3">
+        <div class="container-fluid">
+            <span class="navbar-brand fw-bold text-uppercase tracking-wider">
+                <i class="fas fa-tools me-2 text-success"></i>LINHS Facilities Portal
+            </span>
+            <div class="d-flex align-items-center">
+                <span class="text-muted me-3" th:text="${session.user != null ? session.user.name : 'Logistics Admin'}">Admin</span>
+                <a href="/logout" class="btn btn-outline-danger btn-sm rounded-3"><i class="fas fa-sign-out-alt me-1"></i> Exit</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid px-4 py-4">
         <div class="row">
-            <div class="col-md-2 sidebar d-none d-md-block">
-                <div class="sidebar-brand"><i class="fas fa-building"></i> Facilities</div>
-                <div class="nav flex-column">
-                    <a href="#" class="nav-link active"><i class="fas fa-tools me-2"></i> Dashboard</a>
-                    <a href="/logout" class="nav-link text-danger mt-5"><i class="fas fa-sign-out-alt me-2"></i> Logout</a>
+            <div class="col-xl-4 col-lg-5">
+                <div class="dashboard-card">
+                    <h5 class="fw-bold mb-4" style="color: var(--mint-green);"><i class="fas fa-exclamation-triangle me-2"></i>Log Property Liability</h5>
+                    <form th:action="@{/facilities/report-liability}" method="POST">
+                        <div class="mb-3">
+                            <label class="form-label text-muted small">Select Target Student</label>
+                            <select name="studentLrn" class="form-select" onchange="updateHiddenName(this)" required>
+                                <option value="" disabled selected>Choose target student...</option>
+                                <th:block th:each="secEntry : ${sectionsMap}">
+                                    <optgroup th:label="${secEntry.key}">
+                                        <option th:each="student : ${secEntry.value}" 
+                                                th:value="${student.lrn}" 
+                                                th:text="${student.name} + ' (' + ${student.lrn} + ')'"></option>
+                                    </optgroup>
+                                </th:block>
+                            </select>
+                            <input type="hidden" name="studentName" class="hiddenStudentName">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-muted small">Asset or Facility Name</label>
+                            <input type="text" name="facilityOrItem" class="form-control" placeholder="e.g., Computer Unit 14, Science Lab Glassware" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-muted small">Damage Incidient Details</label>
+                            <textarea name="description" class="form-control" rows="3" placeholder="Describe the physical damages or unresolved accountabilities..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-mint w-100 py-2 mt-2"><i class="fas fa-save me-2"></i>File Liability Flag</button>
+                    </form>
                 </div>
             </div>
 
-            <div class="col-md-10 main-content">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h2 class="mb-0">Facilities & Equipment Control</h2>
-                    <div class="text-muted">Logged in as: <strong class="text-white" th:text="${username}">Staff</strong></div>
-                </div>
-
-                <div th:if="${param.successMessage}" class="alert alert-success bg-success text-white border-0" th:text="${param.successMessage}"></div>
-
-                <div class="card">
-                    <div class="card-header p-0">
-                        <ul class="nav nav-tabs px-3 pt-3" role="tablist">
-                            <li class="nav-item">
-                                <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#recordLiability">Record Liability</button>
-                            </li>
-                            <li class="nav-item">
-                                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#history">Liability History</button>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="card-body">
-                        <div class="tab-content">
-                            
-                            <div class="tab-pane fade show active" id="recordLiability">
-                                <input type="text" id="facilitySearch" class="form-control mb-4 w-50" placeholder="Search enrolled student by name or LRN...">
-                                
-                                <table class="table table-hover" id="facilityTable">
-                                    <thead>
-                                        <tr>
-                                            <th>LRN</th>
-                                            <th>Student Name</th>
-                                            <th>Section</th>
-                                            <th>Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr th:each="student : ${students}">
-                                            <td th:text="${student.lrn}">LRN</td>
-                                            <td th:text="${student.name}">Name</td>
-                                            <td th:text="${student.section}">Section</td>
-                                            <td>
-                                                <button class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" th:attr="data-bs-target='#facModal' + ${student.lrn}">
-                                                    <i class="fas fa-flag me-1"></i> Record Liability
-                                                </button>
-
-                                                <div class="modal fade" th:id="'facModal' + ${student.lrn}" tabindex="-1">
-                                                    <div class="modal-dialog modal-dialog-centered">
-                                                        <div class="modal-content">
-                                                            <form action="/facilities/log" method="POST">
-                                                                <input type="hidden" name="studentLrn" th:value="${student.lrn}">
-                                                                <input type="hidden" name="hiddenStudentName" th:value="${student.name}">
-                                                                <div class="modal-header">
-                                                                    <h5 class="modal-title">Property Liability: <span th:text="${student.name}"></span></h5>
-                                                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                                                                </div>
-                                                                <div class="modal-body">
-                                                                    <div class="mb-3">
-                                                                        <label class="form-label text-muted small">Item / Property Name</label>
-                                                                        <input type="text" name="itemName" class="form-control" required placeholder="e.g., Lab Key, Projector, Book...">
-                                                                    </div>
-                                                                    <div class="mb-3">
-                                                                        <label class="form-label text-muted small">Reason / Issue Details</label>
-                                                                        <input type="text" name="issueDetails" class="form-control" required placeholder="e.g., Unreturned, Damaged, Lost...">
-                                                                    </div>
-                                                                </div>
-                                                                <div class="modal-footer">
-                                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                                                    <button type="submit" class="btn btn-danger text-white fw-bold">Submit Liability</button>
-                                                                </div>
-                                                            </form>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-
-                            <div class="tab-pane fade" id="history">
-                                <ul class="nav nav-pills mb-3" role="tablist">
-                                    <li class="nav-item">
-                                        <button class="nav-link active rounded-pill px-4 me-2" data-bs-toggle="pill" data-bs-target="#unresolved" style="background-color: transparent; border: 1px solid var(--accent-orange); color: var(--accent-orange);">Unresolved</button>
-                                    </li>
-                                    <li class="nav-item">
-                                        <button class="nav-link rounded-pill px-4" data-bs-toggle="pill" data-bs-target="#resolved" style="background-color: transparent; border: 1px solid var(--mint-green); color: var(--mint-green);">Resolved</button>
-                                    </li>
-                                </ul>
-
-                                <div class="tab-content">
-                                    <div class="tab-pane fade show active" id="unresolved">
-                                        <table class="table table-hover">
-                                            <thead>
-                                                <tr>
-                                                    <th>Date Logged</th>
-                                                    <th>Student Name</th>
-                                                    <th>Item Name</th>
-                                                    <th>Issue Details</th>
-                                                    <th>Action</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr th:each="facility : ${activeFacilities}">
-                                                    <td th:text="${#temporals.format(facility.dateReported, 'MMM dd, yyyy')}">Date</td>
-                                                    <td th:text="${facility.studentName}">Name</td>
-                                                    <td th:text="${facility.itemName}">Item</td>
-                                                    <td th:text="${facility.issueDetails}" class="text-warning">Details</td>
-                                                    <td>
-                                                        <form th:action="@{/facilities/resolve}" method="POST">
-                                                            <input type="hidden" name="id" th:value="${facility.id}">
-                                                            <button type="submit" class="btn btn-sm btn-outline-success"><i class="fas fa-check me-1"></i> Mark Resolved</button>
-                                                        </form>
-                                                    </td>
-                                                </tr>
-                                                <tr th:if="${#lists.isEmpty(activeFacilities)}">
-                                                    <td colspan=\"5\" class=\"text-center text-muted py-4\">No active facility property holds or unreturned items.</td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                    <div class="tab-pane fade" id="resolved">
-                                        <table class="table table-hover">
-                                            <thead>
-                                                <tr>
-                                                    <th>Date Logged</th>
-                                                    <th>Student Name</th>
-                                                    <th>Item Name</th>
-                                                    <th>Issue Details</th>
-                                                    <th>Status</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr th:each="facility : ${resolvedFacilities}">
-                                                    <td th:text="${#temporals.format(facility.dateReported, 'MMM dd, yyyy')}">Date</td>
-                                                    <td th:text="${facility.studentName}">Name</td>
-                                                    <td th:text="${facility.itemName}">Item</td>
-                                                    <td th:text="${facility.issueDetails}">Details</td>
-                                                    <td><span class="badge bg-success">Resolved</span></td>
-                                                </tr>
-                                                <tr th:if="${#lists.isEmpty(resolvedFacilities)}">
-                                                    <td colspan=\"5\" class=\"text-center text-muted py-4\">No resolved records history.</td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
+            <div class="col-xl-8 col-lg-7">
+                <div class="dashboard-card">
+                    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+                        <div>
+                            <h5 class="fw-bold mb-1">Laboratory & Property Clearance Control</h5>
+                            <p class="text-muted small mb-0">Toggle sections and audit structural clearance indicators instantly.</p>
                         </div>
+                        <div class="position-relative" style="width: 280px;">
+                            <i class="fas fa-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
+                            <input type="text" id="dashboardSearch" class="form-control ps-5 rounded-pill" placeholder="Search students by LRN or Name...">
+                        </div>
+                    </div>
+
+                    <div class="d-flex flex-wrap mb-4">
+                        <button th:each="secEntry, stat : ${sectionsMap}" 
+                                th:id="'btn-' + ${#strings.replace(secEntry.key, ' ', '_')}"
+                                th:classappend="${stat.index == 0} ? 'active' : ''"
+                                class="section-btn"
+                                th:onclick="showSection([[${#strings.replace(secEntry.key, ' ', '_')}]])">
+                            <i class="fas fa-folder me-1"></i> <span th:text="${secEntry.key}"></span>
+                        </button>
+                    </div>
+
+                    <div th:each="secEntry, stat : ${sectionsMap}" 
+                         th:id="'table-' + ${#strings.replace(secEntry.key, ' ', '_')}" 
+                         class="student-table-container table-responsive" 
+                         th:style="${stat.index == 0} ? 'display: block;' : 'display: none;'">
+                        
+                        <table class="table alignment-middle">
+                            <thead>
+                                <tr>
+                                    <th>LRN Identification</th>
+                                    <th>Student Full Name</th>
+                                    <th class="text-end">Laboratory Status Flags</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="student : ${secEntry.value}" class="student-row">
+                                    <td class="fw-bold text-success search-lrn" th:text="${student.lrn}"></td>
+                                    <td class="search-name" th:text="${student.name}"></td>
+                                    <td class="text-end">
+                                        <form th:action="@{/facilities/update-clearance}" method="POST" class="d-inline-block">
+                                            <input type="hidden" name="studentLrn" th:value="${student.lrn}">
+                                            <select name="status" class="form-select form-select-sm d-inline-block w-auto border-secondary" onchange="this.form.submit()">
+                                                <option th:selected="${student.labClearance == null || student.labClearance.name() == 'PENDING'}" value="PENDING">Pending Accountability</option>
+                                                <option th:selected="${student.labClearance?.name() == 'CLEARED'}" value="CLEARED">Cleared Status</option>
+                                            </select>
+                                        </form>
+                                    </td>
+                                </tr>
+                                <tr th:if="${#lists.isEmpty(secEntry.value)}" class="no-data-row">
+                                    <td colspan="3" class="text-muted text-center py-4">No rostered students found within this program module.</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Live search filter for students
-        document.getElementById('facilitySearch').addEventListener('keyup', function() {
-            let filter = this.value.toLowerCase();
-            let rows = document.querySelectorAll('#facilityTable tbody tr');
-            rows.forEach(row => {
-                let text = row.textContent.toLowerCase();
-                row.style.display = text.includes(filter) ? '' : 'none';
-            });
-        });
-        
-        // Ensure active pill styling switches correctly
-        document.querySelectorAll('[data-bs-toggle="pill"]').forEach(pill => {
-            pill.addEventListener('shown.bs.tab', event => {
-                document.querySelectorAll('[data-bs-toggle="pill"]').forEach(p => {
-                    p.style.backgroundColor = 'transparent';
+        function showSection(sectionId) {
+            document.querySelectorAll('.student-table-container').forEach(el => el.style.display = 'none');
+            document.querySelectorAll('.section-btn').forEach(el => el.classList.remove('active'));
+            
+            const activeTable = document.getElementById('table-' + sectionId);
+            if(activeTable) activeTable.style.display = 'block';
+            
+            const activeBtn = document.getElementById('btn-' + sectionId);
+            if(activeBtn) activeBtn.classList.add('active');
+
+            // Reset current search text on section change to prevent view mismatches
+            document.getElementById('dashboardSearch').value = '';
+            document.querySelectorAll('.student-row').forEach(row => row.style.display = '');
+        }
+
+        function updateHiddenName(selectElement) {
+            const selectedText = selectElement.options[selectElement.selectedIndex].text;
+            const nameOnly = selectedText.substring(0, selectedText.lastIndexOf(' ('));
+            selectElement.closest('form').querySelector('.hiddenStudentName').value = nameOnly;
+        }
+
+        // Live Search Input Logic targeting across tables
+        document.getElementById('dashboardSearch').addEventListener('keyup', function () {
+            let filter = this.value.toLowerCase().trim();
+            // Target the student rows inside the currently displayed table layout
+            let activeContainer = document.querySelector('.student-table-container[style*="display: block"]');
+            if (!activeContainer) activeContainer = document.querySelector('.student-table-container:not([style*="display: none"])');
+            
+            if (activeContainer) {
+                let rows = activeContainer.querySelectorAll('.student-row');
+                rows.forEach(row => {
+                    let lrnText = row.querySelector('.search-lrn').textContent.toLowerCase();
+                    let nameText = row.querySelector('.search-name').textContent.toLowerCase();
+                    if (lrnText.includes(filter) || nameText.includes(filter)) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
                 });
-                if(event.target.textContent === 'Unresolved') {
-                    event.target.style.backgroundColor = 'var(--accent-orange)';
-                    event.target.style.color = '#000';
-                } else {
-                    event.target.style.backgroundColor = 'var(--mint-green)';
-                    event.target.style.color = '#000';
-                }
-            });
-            pill.addEventListener('hidden.bs.tab', event => {
-                if(event.target.textContent === 'Unresolved') {
-                    event.target.style.color = 'var(--accent-orange)';
-                } else {
-                    event.target.style.color = 'var(--mint-green)';
-                }
-            });
+            }
         });
     </script>
 </body>

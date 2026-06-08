@@ -1,238 +1,148 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registrar Dashboard | LINHS Portal</title>
+    <title>Registrar Dashboard | LINHS</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --dark-bg: #0d0d0d;
-            --panel-bg: #161616;
-            --border-color: #2a2a2a;
+            --dark-bg: #09090b;
+            --panel-bg: #18181b;
+            --border-color: #27272a;
             --mint-green: #20c997;
             --mint-hover: #1aa078;
-            --text-main: #f8f9fa;
-            --text-muted: #8b8b8b;
-            --input-bg: #0a0a0a;
+            --text-main: #ffffff;
+            --text-muted: #a1a1aa;
+            --input-bg: #09090b;
         }
 
-        body {
-            background-color: var(--dark-bg);
-            color: var(--text-main);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-        }
+        body { background-color: var(--dark-bg); color: var(--text-main); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
 
-        .sidebar {
-            background-color: var(--panel-bg);
-            border-right: 1px solid var(--border-color);
-            min-height: 100vh;
-            padding: 20px;
-        }
+        /* Sidebar & Topbar */
+        .sidebar { background-color: var(--panel-bg); border-right: 1px solid var(--border-color); min-height: 100vh; padding: 20px; }
+        .sidebar-link { color: var(--text-muted); text-decoration: none; padding: 12px 15px; display: block; border-radius: 8px; margin-bottom: 8px; transition: all 0.3s; }
+        .sidebar-link:hover, .sidebar-link.active { background-color: rgba(32, 201, 151, 0.1); color: var(--mint-green); }
+        .topbar { background-color: var(--panel-bg); border-bottom: 1px solid var(--border-color); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
 
-        .sidebar-brand {
-            font-weight: 700;
-            font-size: 1.2rem;
-            color: var(--mint-green);
-            margin-bottom: 2rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+        /* Floating Card Tables */
+        .table-custom { width: 100%; border-collapse: separate; border-spacing: 0 10px; }
+        .table-custom th { color: var(--text-muted); font-weight: 600; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 1px; padding: 0 20px 5px; border: none; }
+        .table-custom tbody tr { background-color: var(--panel-bg); box-shadow: 0 4px 6px rgba(0,0,0,0.2); transition: transform 0.2s ease, border-left 0.2s ease; border-left: 3px solid transparent; }
+        .table-custom tbody tr:hover { transform: translateY(-3px); border-left: 3px solid var(--mint-green); }
+        .table-custom td { padding: 18px 20px; border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); color: var(--text-main); vertical-align: middle; }
+        .table-custom td:first-child { border-left: 1px solid var(--border-color); border-top-left-radius: 8px; border-bottom-left-radius: 8px; }
+        .table-custom td:last-child { border-right: 1px solid var(--border-color); border-top-right-radius: 8px; border-bottom-right-radius: 8px; }
 
-        .nav-link {
-            color: var(--text-muted);
-            padding: 10px 15px;
-            border-radius: 8px;
-            margin-bottom: 5px;
-            transition: all 0.3s ease;
-        }
-
-        .nav-link:hover, .nav-link.active {
-            background-color: rgba(32, 201, 151, 0.1);
-            color: var(--mint-green);
-        }
-
-        .main-content {
-            padding: 30px;
-        }
-
-        .card {
-            background-color: var(--panel-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            margin-bottom: 20px;
-        }
-
-        .card-header {
-            background-color: transparent;
-            border-bottom: 1px solid var(--border-color);
-            padding: 15px 20px;
-            font-weight: 600;
-        }
-
-        .table {
-            color: var(--text-main);
-            margin-bottom: 0;
-        }
-
-        .table th {
-            border-bottom-color: var(--border-color);
-            color: var(--text-muted);
-            font-weight: 500;
-            text-transform: uppercase;
-            font-size: 0.85rem;
-        }
-
-        .table td {
-            border-bottom-color: var(--border-color);
-            vertical-align: middle;
-        }
-
-        .nav-tabs {
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .nav-tabs .nav-link {
-            color: var(--text-muted);
-            border: none;
-            padding: 12px 20px;
-            font-weight: 500;
-        }
-
-        .nav-tabs .nav-link.active {
-            color: var(--mint-green);
-            background-color: transparent;
-            border-bottom: 2px solid var(--mint-green);
-        }
-
-        .form-control {
-            background-color: var(--input-bg);
-            border: 1px solid var(--border-color);
-            color: var(--text-main);
-        }
-
-        .form-control:focus {
-            background-color: var(--input-bg);
-            border-color: var(--mint-green);
-            color: var(--text-main);
-            box-shadow: none;
-        }
+        /* Form Inputs */
+        .form-control, .form-select { background-color: var(--input-bg); color: var(--text-main) !important; border: 1px solid var(--border-color); border-radius: 8px; padding: 12px 15px; }
+        .form-control:focus, .form-select:focus { background-color: var(--input-bg); color: var(--text-main) !important; border-color: var(--mint-green); box-shadow: 0 0 0 0.2rem rgba(32, 201, 151, 0.15); }
+        .form-control::placeholder { color: var(--text-muted); }
+        option { background-color: var(--panel-bg); color: var(--text-main); }
+        
+        .btn-mint { background-color: var(--mint-green); color: #000; font-weight: 600; border-radius: 8px; border: none; padding: 8px 16px; }
+        .btn-mint:hover { background-color: var(--mint-hover); color: #fff; }
+        .section-btn { background: transparent; color: var(--text-muted); border: 1px solid var(--border-color); margin-right: 10px; border-radius: 20px; padding: 8px 20px; transition: all 0.3s; }
+        .section-btn.active { background: rgba(32,201,151,0.1); color: var(--mint-green); border-color: var(--mint-green); }
     </style>
 </head>
-
 <body>
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-md-2 sidebar d-none d-md-block">
-                <div class="sidebar-brand">
-                    <i class="fas fa-folder-open"></i> Registrar
-                </div>
-                <div class="nav flex-column">
-                    <a href="/admin/dashboard" class="nav-link" th:if="${session.user?.roleName == 'ADMIN'}">
-                        <i class="fas fa-arrow-left me-2"></i> Back to Admin
-                    </a>
-                    <a href="#" class="nav-link active">
-                        <i class="fas fa-file-alt me-2"></i> Document Requests
-                    </a>
-                    <a href="/logout" class="nav-link text-danger mt-5">
-                        <i class="fas fa-sign-out-alt me-2"></i> Logout
-                    </a>
+    <div class="d-flex">
+        <div class="sidebar col-md-2 d-none d-md-block">
+            <h4 class="text-white mb-4 fw-bold" style="letter-spacing: -1px;"><i class="fas fa-school text-success me-2"></i>LINHS Portal</h4>
+            <a href="/registrar/dashboard" class="sidebar-link active"><i class="fas fa-file-alt me-2"></i> Document Requests</a>
+            <a href="/logout" class="sidebar-link text-danger mt-5"><i class="fas fa-sign-out-alt me-2"></i> Logout</a>
+        </div>
+
+        <div class="col-md-10 flex-grow-1">
+            <div class="topbar">
+                <h5 class="mb-0 fw-bold"><i class="fas fa-folder-open text-success me-2"></i>Registrar Hub</h5>
+                <div class="d-flex align-items-center">
+                    <div class="text-end me-3">
+                        <div class="small" style="color: var(--text-muted);">Logged in as</div>
+                        <div class="fw-bold" style="color: #ffffff;" th:text="${session.loggedInUser?.name}">User Name</div>
+                    </div>
+                    <div class="bg-success rounded-circle d-flex align-items-center justify-content-center text-dark fw-bold" style="width: 40px; height: 40px;">
+                        <i class="fas fa-user-tie"></i>
+                    </div>
                 </div>
             </div>
 
-            <div class="col-md-10 main-content">
+            <div class="p-4">
                 <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h2 class="mb-0">Registrar Dashboard</h2>
-                    <div class="text-muted">
-                        Logged in as: <strong class="text-white" th:text="${username}">Staff</strong>
+                    <div>
+                        <button class="section-btn active" id="btn-pending" onclick="showSection('pending')">Pending Requests</button>
+                        <button class="section-btn" id="btn-completed" onclick="showSection('completed')">Completed</button>
                     </div>
+                    <input type="text" id="searchInput" class="form-control w-25" placeholder="Search records...">
                 </div>
 
-                <div th:if="${param.success}" class="alert alert-success bg-success text-white border-0" th:text="${param.success}"></div>
+                <div id="table-pending" class="student-table-container">
+                    <table class="table-custom">
+                        <thead>
+                            <tr>
+                                <th>Student details</th>
+                                <th>Email Address</th>
+                                <th>Document Type</th>
+                                <th>Purpose</th>
+                                <th>Requested</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="doc : ${pendingRequests}">
+                                <td>
+                                    <div class="fw-bold" style="color: #fff;" th:text="${doc.firstName + ' ' + doc.lastName}"></div>
+                                    <div class="small" style="color: var(--mint-green);" th:text="'LRN: ' + ${doc.studentLrn}"></div>
+                                </td>
+                                <td th:text="${doc.emailAddress}"></td>
+                                <td th:text="${doc.documentType}"></td>
+                                <td th:text="${doc.purpose}"></td>
+                                <td th:text="${#temporals.format(doc.requestedAt, 'MMM dd, yyyy - hh:mm a')}"></td>
+                                <td>
+                                    <form action="/registrar/request/complete" method="POST" class="m-0">
+                                        <input type="hidden" name="id" th:value="${doc.id}">
+                                        <button type="submit" class="btn btn-sm btn-mint"><i class="fas fa-check me-1"></i> Complete</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(pendingRequests)}">
+                                <td colspan="6" class="text-center py-5" style="color: var(--text-muted); border: 1px dashed var(--border-color); border-radius: 8px;">No pending requests at this time.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
 
-                <div class="card">
-                    <div class="card-header p-0">
-                        <ul class="nav nav-tabs px-3 pt-3" role="tablist">
-                            <li class="nav-item">
-                                <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#pending">Pending Requests</button>
-                            </li>
-                            <li class="nav-item">
-                                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#completed">Completed</button>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="card-body">
-                        <div class="tab-content">
-                            <div class="tab-pane fade show active" id="pending">
-                                <input type="text" id="pendingSearch" class="form-control mb-4 w-50" placeholder="Search pending requests...">
-                                <table class="table table-hover" id="pendingTable">
-                                    <thead>
-                                        <tr>
-                                            <th>Date Requested</th>
-                                            <th>Student Name</th>
-                                            <th>Email Address</th>
-                                            <th>Document Needed</th>
-                                            <th>Purpose</th>
-                                            <th>Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr th:each="req : ${pendingRequests}">
-                                            <td th:text="${#temporals.format(req.requestedAt, 'MMM dd, yyyy')}">Date</td>
-                                            <td class="fw-bold" th:text="${req.firstName + ' ' + req.lastName}">Name</td>
-                                            <td th:text="${req.emailAddress}">Email</td>
-                                            <td th:text="${req.documentType}" class="text-warning">Doc</td>
-                                            <td th:text="${req.purpose}">Purpose</td>
-                                            <td>
-                                                <form th:action="@{/registrar/request/complete}" method="POST">
-                                                    <input type="hidden" name="id" th:value="${req.id}">
-                                                    <button type="submit" class="btn btn-sm btn-outline-success"><i class="fas fa-check me-1"></i> Mark Complete</button>
-                                                </form>
-                                            </td>
-                                        </tr>
-                                        <tr th:if="${#lists.isEmpty(pendingRequests)}">
-                                            <td colspan="6" class="text-center text-muted py-4">No pending document requests at this time.</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-
-                            <div class="tab-pane fade" id="completed">
-                                <input type="text" id="completedSearch" class="form-control mb-4 w-50" placeholder="Search completed requests...">
-                                <table class="table table-hover" id="completedTable">
-                                    <thead>
-                                        <tr>
-                                            <th>Date Requested</th>
-                                            <th>Student Name</th>
-                                            <th>Document Released</th>
-                                            <th>Status</th>
-                                            <th>Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr th:each="req : ${completedRequests}">
-                                            <td th:text="${#temporals.format(req.requestedAt, 'MMM dd, yyyy')}">Date</td>
-                                            <td class="fw-bold" th:text="${req.firstName + ' ' + req.lastName}">Name</td>
-                                            <td th:text="${req.documentType}" class="text-success">Doc</td>
-                                            <td><span class="badge bg-success">Released</span></td>
-                                            <td>
-                                                <form th:action="@{/registrar/request/delete}" method="POST">
-                                                    <input type="hidden" name="id" th:value="${req.id}">
-                                                    <button type="submit" class="btn btn-sm btn-outline-danger"><i class="fas fa-trash me-1"></i> Clear</button>
-                                                </form>
-                                            </td>
-                                        </tr>
-                                        <tr th:if="${#lists.isEmpty(completedRequests)}">
-                                            <td colspan="5" class="text-center text-muted py-4">No completed requests yet.</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
+                <div id="table-completed" class="student-table-container" style="display: none;">
+                    <table class="table-custom">
+                        <thead>
+                            <tr>
+                                <th>Student Details</th>
+                                <th>Document Issued</th>
+                                <th>Requested Date</th>
+                                <th>Status</th>
+                                <th>Cleanup</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="doc : ${completedRequests}">
+                                <td>
+                                    <div class="fw-bold" style="color: #fff;" th:text="${doc.firstName + ' ' + doc.lastName}"></div>
+                                    <div class="small" style="color: var(--text-muted);" th:text="'LRN: ' + ${doc.studentLrn}"></div>
+                                </td>
+                                <td th:text="${doc.documentType}"></td>
+                                <td th:text="${#temporals.format(doc.requestedAt, 'MMM dd, yyyy')}"></td>
+                                <td><span class="badge bg-success bg-opacity-25 text-success border border-success">Completed</span></td>
+                                <td>
+                                    <form action="/registrar/request/delete" method="POST" class="m-0">
+                                        <input type="hidden" name="id" th:value="${doc.id}">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
+                                    </form>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -240,20 +150,17 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Live search filter for pending table
-        document.getElementById('pendingSearch').addEventListener('keyup', function () {
-            let filter = this.value.toLowerCase();
-            let rows = document.querySelectorAll('#pendingTable tbody tr');
-            rows.forEach(row => {
-                let text = row.textContent.toLowerCase();
-                row.style.display = text.includes(filter) ? '' : 'none';
-            });
-        });
+        function showSection(sectionId) {
+            document.querySelectorAll('.student-table-container').forEach(el => el.style.display = 'none');
+            document.querySelectorAll('.section-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById('table-' + sectionId).style.display = 'block';
+            document.getElementById('btn-' + sectionId).classList.add('active');
+        }
 
-        // Live search filter for completed table
-        document.getElementById('completedSearch').addEventListener('keyup', function () {
+        document.getElementById('searchInput').addEventListener('keyup', function () {
             let filter = this.value.toLowerCase();
-            let rows = document.querySelectorAll('#completedTable tbody tr');
+            let activeTable = document.querySelector('.student-table-container[style*="block"] tbody') || document.querySelector('.student-table-container tbody');
+            let rows = activeTable.querySelectorAll('tr');
             rows.forEach(row => {
                 let text = row.textContent.toLowerCase();
                 row.style.display = text.includes(filter) ? '' : 'none';
@@ -261,5 +168,4 @@
         });
     </script>
 </body>
-
 </html>

@@ -23,9 +23,10 @@ public class DocumentRequest {
     @Column(name = "last_name")
     private String lastName;
 
-    // CHANGED: Replaced contactNumber with emailAddress
-    @Column(name = "email_address")
-    private String emailAddress;
+    // FIXED 500 ERROR: Kept the database column as contact_number to prevent 
+    // schema crashes, but we are using it to store the Email Address now!
+    @Column(name = "contact_number")
+    private String contactNumber;
 
     @Column(name = "academic_year")
     private String academicYear;
@@ -62,8 +63,9 @@ public class DocumentRequest {
     public String getLastName() { return lastName; }
     public void setLastName(String lastName) { this.lastName = lastName; }
 
-    public String getEmailAddress() { return emailAddress; }
-    public void setEmailAddress(String emailAddress) { this.emailAddress = emailAddress; }
+    // Standard getters/setters for the DB column
+    public String getContactNumber() { return contactNumber; }
+    public void setContactNumber(String contactNumber) { this.contactNumber = contactNumber; }
 
     public String getAcademicYear() { return academicYear; }
     public void setAcademicYear(String academicYear) { this.academicYear = academicYear; }
@@ -83,7 +85,10 @@ public class DocumentRequest {
     public LocalDateTime getRequestedAt() { return requestedAt; }
     public void setRequestedAt(LocalDateTime requestedAt) { this.requestedAt = requestedAt; }
 
-    // --- ALIAS METHODS TO SATISFY THE CONTROLLER ---
+    // =========================================================
+    // --- ALIAS METHODS TO PREVENT CONTROLLER/DASHBOARD CRASHES ---
+    // =========================================================
+    
     public LocalDateTime getLoggedAt() {
         return requestedAt;
     }
@@ -98,5 +103,14 @@ public class DocumentRequest {
 
     public void setDocumentDetails(String documentDetails) {
         this.documentType = documentDetails;
+    }
+
+    // This makes the Registrar Dashboard happy without breaking the database
+    public String getEmailAddress() {
+        return contactNumber; 
+    }
+
+    public void setEmailAddress(String emailAddress) {
+        this.contactNumber = emailAddress;
     }
 }
