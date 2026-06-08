@@ -23,8 +23,9 @@ public class DocumentRequest {
     @Column(name = "last_name")
     private String lastName;
 
-    @Column(name = "contact_number")
-    private String contactNumber;
+    // CHANGED: Replaced contactNumber with emailAddress
+    @Column(name = "email_address")
+    private String emailAddress;
 
     @Column(name = "academic_year")
     private String academicYear;
@@ -61,8 +62,8 @@ public class DocumentRequest {
     public String getLastName() { return lastName; }
     public void setLastName(String lastName) { this.lastName = lastName; }
 
-    public String getContactNumber() { return contactNumber; }
-    public void setContactNumber(String contactNumber) { this.contactNumber = contactNumber; }
+    public String getEmailAddress() { return emailAddress; }
+    public void setEmailAddress(String emailAddress) { this.emailAddress = emailAddress; }
 
     public String getAcademicYear() { return academicYear; }
     public void setAcademicYear(String academicYear) { this.academicYear = academicYear; }

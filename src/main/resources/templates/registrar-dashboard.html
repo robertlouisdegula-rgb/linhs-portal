@@ -25,15 +25,70 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
         }
 
-        .navbar {
-            background-color: var(--dark-bg) !important;
-            border-bottom: 1px solid var(--border-color);
+        .sidebar {
+            background-color: var(--panel-bg);
+            border-right: 1px solid var(--border-color);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .sidebar-brand {
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: var(--mint-green);
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-link {
+            color: var(--text-muted);
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-bottom: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background-color: rgba(32, 201, 151, 0.1);
+            color: var(--mint-green);
+        }
+
+        .main-content {
+            padding: 30px;
         }
 
         .card {
             background-color: var(--panel-bg);
             border: 1px solid var(--border-color);
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .card-header {
+            background-color: transparent;
+            border-bottom: 1px solid var(--border-color);
+            padding: 15px 20px;
+            font-weight: 600;
+        }
+
+        .table {
             color: var(--text-main);
+            margin-bottom: 0;
+        }
+
+        .table th {
+            border-bottom-color: var(--border-color);
+            color: var(--text-muted);
+            font-weight: 500;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+        }
+
+        .table td {
+            border-bottom-color: var(--border-color);
+            vertical-align: middle;
         }
 
         .nav-tabs {
@@ -43,234 +98,162 @@
         .nav-tabs .nav-link {
             color: var(--text-muted);
             border: none;
-        }
-
-        .nav-tabs .nav-link.active {
-            background-color: transparent;
-            color: var(--mint-green);
-            border-bottom: 2px solid var(--mint-green);
-        }
-
-        .btn-mint {
-            background-color: var(--mint-green);
-            color: #000;
+            padding: 12px 20px;
             font-weight: 500;
         }
 
-        .btn-mint:hover {
-            background-color: var(--mint-hover);
-            color: #000;
+        .nav-tabs .nav-link.active {
+            color: var(--mint-green);
+            background-color: transparent;
+            border-bottom: 2px solid var(--mint-green);
         }
 
-        /* --- VISIBILITY FIXES --- */
-        .table,
-        .table th,
-        .table td,
-        .table tr,
-        .table-hover>tbody>tr:hover>* {
-            color: #ffffff !important;
-        }
-
-        body,
-        .card,
-        h1,
-        h2,
-        h3,
-        h4,
-        h5,
-        h6,
-        span {
-            color: #ffffff !important;
-        }
-
-        .text-muted {
-            color: #b0b0b0 !important;
-        }
-
-        .form-control,
-        .form-select,
-        input,
-        select,
-        textarea {
-            color: #ffffff !important;
-        }
-
-        option {
+        .form-control {
             background-color: var(--input-bg);
-            color: #ffffff;
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+        }
+
+        .form-control:focus {
+            background-color: var(--input-bg);
+            border-color: var(--mint-green);
+            color: var(--text-main);
+            box-shadow: none;
         }
     </style>
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark px-4">
-        <div class="container-fluid">
-            <a class="navbar-brand fw-bold" href="#"><i class="fas fa-graduation-cap me-2"
-                    style="color: var(--mint-green);"></i>LINHS PORTAL</a>
-            <div class="d-flex align-items-center">
-                <span class="text-muted me-3"><i class="fas fa-user-circle me-1"></i> <span
-                        th:text="${username}">Registrar</span></span>
-                <a href="/logout" class="btn btn-outline-danger btn-sm"><i class="fas fa-sign-out-alt me-1"></i>
-                    Logout</a>
-            </div>
-        </div>
-    </nav>
-
-    <div class="container-fluid py-4 px-4">
-        <h2 class="fw-bold mb-4">Registrar Dashboard Workspace</h2>
-
-        <div th:if="${param.success}"
-            class="alert alert-success bg-success bg-opacity-10 text-success border border-success mb-4">
-            <i class="fas fa-check-circle me-2"></i> Action completed successfully.
-        </div>
-
-        <ul class="nav nav-tabs mb-4" id="registrarTabs" role="tablist">
-            <li class="nav-item">
-                <button class="nav-link active" id="pending-tab" data-bs-toggle="tab" data-bs-target="#pending"
-                    type="button" role="tab"><i class="fas fa-clock me-2"></i>Pending Requests</button>
-            </li>
-            <li class="nav-item">
-                <button class="nav-link" id="completed-tab" data-bs-toggle="tab" data-bs-target="#completed"
-                    type="button" role="tab"><i class="fas fa-check-double me-2"></i>Completed History</button>
-            </li>
-            <li class="nav-item">
-                <button class="nav-link" id="masterlist-tab" data-bs-toggle="tab" data-bs-target="#masterlist"
-                    type="button" role="tab"><i class="fas fa-address-book me-2"></i>Student Master List</button>
-            </li>
-        </ul>
-
-        <div class="tab-content" id="registrarTabsContent">
-
-            <div class="tab-pane fade show active" id="pending" role="tabpanel">
-                <div class="card p-3">
-                    <h5 class="fw-bold mb-3" style="color: var(--mint-green);">Active Inbound Document Requests</h5>
-                    <div class="table-responsive">
-                        <table class="table table-dark table-hover">
-                            <thead>
-                                <tr>
-                                    <th>Logged Timestamp</th>
-                                    <th>Student Name</th>
-                                    <th>LRN Identification</th>
-                                    <th>Document Details</th>
-                                    <th>Status Flag</th>
-                                    <th class="text-center">Action Framework</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr th:each="req : ${pendingRequests}">
-                                    <td
-                                        th:text="${req.loggedAt != null ? #temporals.format(req.loggedAt, 'yyyy-MM-dd HH:mm') : 'N/A'}">
-                                    </td>
-                                    <td class="fw-bold" th:text="${req.studentName}"></td>
-                                    <td th:text="${req.studentLrn}"></td>
-                                    <td><span class="badge bg-secondary" th:text="${req.documentType}"></span></td>
-                                    <td><span class="badge bg-warning text-dark" th:text="${req.status}">PENDING</span>
-                                    </td>
-                                    <td class="text-center">
-                                        <form th:action="@{'/registrar/requests/complete/' + ${req.id}}" method="POST"
-                                            class="d-inline">
-                                            <button type="submit" class="btn btn-mint btn-sm"><i
-                                                    class="fas fa-check me-1"></i> Mark Completed</button>
-                                        </form>
-                                    </td>
-                                </tr>
-                                <tr th:if="${#lists.isEmpty(pendingRequests)}">
-                                    <td colspan="6" class="text-muted py-4 text-center">No pending request tickets are
-                                        currently filed.</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-2 sidebar d-none d-md-block">
+                <div class="sidebar-brand">
+                    <i class="fas fa-folder-open"></i> Registrar
+                </div>
+                <div class="nav flex-column">
+                    <a href="/admin/dashboard" class="nav-link" th:if="${session.user?.roleName == 'ADMIN'}">
+                        <i class="fas fa-arrow-left me-2"></i> Back to Admin
+                    </a>
+                    <a href="#" class="nav-link active">
+                        <i class="fas fa-file-alt me-2"></i> Document Requests
+                    </a>
+                    <a href="/logout" class="nav-link text-danger mt-5">
+                        <i class="fas fa-sign-out-alt me-2"></i> Logout
+                    </a>
                 </div>
             </div>
 
-            <div class="tab-pane fade" id="completed" role="tabpanel">
-                <div class="card p-3">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h5 class="fw-bold m-0" style="color: var(--mint-green);">Archived Completed Records</h5>
-                        <form th:action="@{/registrar/requests/clear-completed}" method="POST"
-                            onsubmit="return confirm('Are you sure you want to completely clear out all items from your completed log history?');">
-                            <button type="submit" class="btn btn-danger btn-sm"><i class="fas fa-trash-alt me-1"></i>
-                                Clear Completed Logs</button>
-                        </form>
+            <div class="col-md-10 main-content">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2 class="mb-0">Registrar Dashboard</h2>
+                    <div class="text-muted">
+                        Logged in as: <strong class="text-white" th:text="${username}">Staff</strong>
                     </div>
-                    <div class="table-responsive">
-                        <table class="table table-dark table-hover">
-                            <thead>
-                                <tr>
-                                    <th>Logged Timestamp</th>
-                                    <th>Student Name</th>
-                                    <th>LRN Identification</th>
-                                    <th>Document Details</th>
-                                    <th>Status Flag</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr th:each="req : ${completedRequests}">
-                                    <td
-                                        th:text="${req.loggedAt != null ? #temporals.format(req.loggedAt, 'yyyy-MM-dd HH:mm') : 'N/A'}">
-                                    </td>
-                                    <td th:text="${req.studentName}"></td>
-                                    <td th:text="${req.studentLrn}"></td>
-                                    <td><span class="badge bg-secondary" th:text="${req.documentType}"></span></td>
-                                    <td><span
-                                            class="badge bg-success bg-opacity-10 text-success border border-success">COMPLETED</span>
-                                    </td>
-                                </tr>
-                                <tr th:if="${#lists.isEmpty(completedRequests)}">
-                                    <td colspan="5" class="text-muted py-4 text-center">No records matching processed
-                                        histories found.</td>
-                                </tr>
-                            </tbody>
-                        </table>
+                </div>
+
+                <div th:if="${param.success}" class="alert alert-success bg-success text-white border-0" th:text="${param.success}"></div>
+
+                <div class="card">
+                    <div class="card-header p-0">
+                        <ul class="nav nav-tabs px-3 pt-3" role="tablist">
+                            <li class="nav-item">
+                                <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#pending">Pending Requests</button>
+                            </li>
+                            <li class="nav-item">
+                                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#completed">Completed</button>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="card-body">
+                        <div class="tab-content">
+                            <div class="tab-pane fade show active" id="pending">
+                                <input type="text" id="pendingSearch" class="form-control mb-4 w-50" placeholder="Search pending requests...">
+                                <table class="table table-hover" id="pendingTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Date Requested</th>
+                                            <th>Student Name</th>
+                                            <th>Email Address</th>
+                                            <th>Document Needed</th>
+                                            <th>Purpose</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="req : ${pendingRequests}">
+                                            <td th:text="${#temporals.format(req.requestedAt, 'MMM dd, yyyy')}">Date</td>
+                                            <td class="fw-bold" th:text="${req.firstName + ' ' + req.lastName}">Name</td>
+                                            <td th:text="${req.emailAddress}">Email</td>
+                                            <td th:text="${req.documentType}" class="text-warning">Doc</td>
+                                            <td th:text="${req.purpose}">Purpose</td>
+                                            <td>
+                                                <form th:action="@{/registrar/request/complete}" method="POST">
+                                                    <input type="hidden" name="id" th:value="${req.id}">
+                                                    <button type="submit" class="btn btn-sm btn-outline-success"><i class="fas fa-check me-1"></i> Mark Complete</button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                        <tr th:if="${#lists.isEmpty(pendingRequests)}">
+                                            <td colspan="6" class="text-center text-muted py-4">No pending document requests at this time.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div class="tab-pane fade" id="completed">
+                                <input type="text" id="completedSearch" class="form-control mb-4 w-50" placeholder="Search completed requests...">
+                                <table class="table table-hover" id="completedTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Date Requested</th>
+                                            <th>Student Name</th>
+                                            <th>Document Released</th>
+                                            <th>Status</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="req : ${completedRequests}">
+                                            <td th:text="${#temporals.format(req.requestedAt, 'MMM dd, yyyy')}">Date</td>
+                                            <td class="fw-bold" th:text="${req.firstName + ' ' + req.lastName}">Name</td>
+                                            <td th:text="${req.documentType}" class="text-success">Doc</td>
+                                            <td><span class="badge bg-success">Released</span></td>
+                                            <td>
+                                                <form th:action="@{/registrar/request/delete}" method="POST">
+                                                    <input type="hidden" name="id" th:value="${req.id}">
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger"><i class="fas fa-trash me-1"></i> Clear</button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                        <tr th:if="${#lists.isEmpty(completedRequests)}">
+                                            <td colspan="5" class="text-center text-muted py-4">No completed requests yet.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-
-            <div class="tab-pane fade" id="masterlist" role="tabpanel">
-                <div class="card p-3">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h5 class="fw-bold m-0" style="color: var(--mint-green);">Student Master Database</h5>
-                        <input type="text" id="searchInput" class="form-control form-control-sm w-25"
-                            style="background-color: var(--input-bg); border-color: var(--border-color); color: white;"
-                            placeholder="Search names/LRN...">
-                    </div>
-                    <div class="table-responsive">
-                        <table class="table table-dark table-hover" id="studentTable">
-                            <thead>
-                                <tr>
-                                    <th>Student LRN</th>
-                                    <th>Full Name</th>
-                                    <th>Enrollment Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr th:each="student : ${students}">
-                                    <td class="fw-bold" th:text="${student.lrn}"></td>
-                                    <td th:text="${student.name}"></td>
-                                    <td><span
-                                            class="badge bg-success bg-opacity-10 text-success border border-success">Enrolled</span>
-                                    </td>
-                                </tr>
-                                <tr th:if="${#lists.isEmpty(students)}">
-                                    <td colspan="3" class="text-muted py-4 text-center">No student records found in the
-                                        database.</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        document.getElementById('searchInput').addEventListener('keyup', function () {
+        // Live search filter for pending table
+        document.getElementById('pendingSearch').addEventListener('keyup', function () {
             let filter = this.value.toLowerCase();
-            let rows = document.querySelectorAll('#studentTable tbody tr');
+            let rows = document.querySelectorAll('#pendingTable tbody tr');
+            rows.forEach(row => {
+                let text = row.textContent.toLowerCase();
+                row.style.display = text.includes(filter) ? '' : 'none';
+            });
+        });
 
+        // Live search filter for completed table
+        document.getElementById('completedSearch').addEventListener('keyup', function () {
+            let filter = this.value.toLowerCase();
+            let rows = document.querySelectorAll('#completedTable tbody tr');
             rows.forEach(row => {
                 let text = row.textContent.toLowerCase();
                 row.style.display = text.includes(filter) ? '' : 'none';
