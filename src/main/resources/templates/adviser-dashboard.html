@@ -140,6 +140,31 @@
             color: #ef4444;
             border: 1px solid rgba(239, 68, 68, 0.3);
         }
+
+        /* Accordion Dark Theme Override */
+        .accordion-item {
+            background-color: transparent;
+            border: 1px solid var(--border-color);
+        }
+        .accordion-button {
+            background-color: var(--input-bg);
+            color: var(--text-main);
+        }
+        .accordion-button:not(.collapsed) {
+            background-color: #161b18;
+            color: var(--mint-green);
+            box-shadow: inset 0 -1px 0 var(--border-color);
+        }
+        .accordion-button:focus {
+            box-shadow: none;
+            border-color: var(--border-color);
+        }
+        .accordion-button::after {
+            filter: invert(1) grayscale(100%) brightness(200%);
+        }
+        .accordion-button:not(.collapsed)::after {
+            filter: invert(0.6) sepia(1) saturate(3) hue-rotate(110deg);
+        }
     </style>
 </head>
 
@@ -175,7 +200,7 @@
             </div>
             <div class="text-end">
                 <span class="d-block text-uppercase small mb-1" style="color: #e2e8f0; font-size: 0.75rem; letter-spacing: 0.5px;">Assigned Section</span>
-                <span class="badge fw-bold" style="background-color: rgba(251, 191, 36, 0.15); color: var(--accent-orange); border: 1px solid rgba(251, 191, 36, 0.3); font-size: 1rem; padding: 0.5rem 1rem;" th:text="${adviser.assignedSection}">Section Name</span>
+                <span class="badge fw-bold" style="background-color: rgba(251, 191, 36, 0.15); color: var(--accent-orange); border: 1px solid rgba(251, 191, 36, 0.3); font-size: 1rem; padding: 0.5rem 1rem;" th:text="${adviser.assignedSection ?: 'Unassigned Section'}">Section Name</span>
             </div>
         </div>
 
@@ -190,6 +215,9 @@
                     </li>
                     <li class="nav-item" role="presentation">
                         <button class="nav-link" id="grading-tab" data-bs-toggle="tab" data-bs-target="#grading" type="button" role="tab"><i class="fa-solid fa-pen-to-square me-2"></i>Grade Entry</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="records-tab" data-bs-toggle="tab" data-bs-target="#records" type="button" role="tab"><i class="fa-solid fa-ranking-star me-2"></i>Class Records</button>
                     </li>
                 </ul>
             </div>
@@ -277,7 +305,7 @@
                                 </div>
                             </div>
                             <div class="col-md-8">
-                                <h6 class="fw-bold mb-3 text-white"><i class="fa-solid fa-list-check me-2 text-success"></i>Active Subjects for <span class="text-white" th:text="${adviser.assignedSection}">Section</span></h6>
+                                <h6 class="fw-bold mb-3 text-white"><i class="fa-solid fa-list-check me-2 text-success"></i>Active Subjects for <span class="text-white" th:text="${adviser.assignedSection ?: 'Unassigned Section'}">Section</span></h6>
                                 <table class="table table-dark table-hover align-middle mt-3">
                                     <thead>
                                         <tr>
@@ -379,12 +407,59 @@
                                                 </div>
                                             </div>
                                         </div>
-
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
+
+                    <div class="tab-pane fade" id="records" role="tabpanel" tabindex="0">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h5 class="mb-0 fw-bold text-white"><i class="fa-solid fa-ranking-star me-2 text-success"></i>Student Grade Records</h5>
+                        </div>
+
+                        <div class="accordion" id="gradesAccordion">
+                            <div th:each="student, stat : ${students}" class="accordion-item mb-3 rounded border-0" style="background-color: var(--input-bg); border: 1px solid var(--border-color) !important; overflow: hidden;">
+                                <h2 class="accordion-header" th:id="'heading' + ${stat.index}">
+                                    <button class="accordion-button collapsed py-3" type="button" data-bs-toggle="collapse" th:attr="data-bs-target='#collapse' + ${stat.index}" aria-expanded="false" style="box-shadow: none;">
+                                        <span class="fw-bold me-3 text-white" th:text="${student.name}">Student Name</span>
+                                        <span class="badge bg-dark text-muted border border-secondary fw-normal font-monospace" th:text="${student.lrn}">LRN</span>
+                                    </button>
+                                </h2>
+                                <div th:id="'collapse' + ${stat.index}" class="accordion-collapse collapse" th:attr="data-bs-parent='#gradesAccordion'">
+                                    <div class="accordion-body p-0 border-top border-secondary">
+                                        <table class="table table-dark table-hover mb-0">
+                                            <thead style="background-color: var(--panel-bg);">
+                                                <tr>
+                                                    <th class="px-4 py-3" style="width: 50%;">Subject Title</th>
+                                                    <th class="px-4 py-3 text-center">Encoded Grade</th>
+                                                    <th class="px-4 py-3 text-end">Remarks</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr th:each="grade : ${allGrades}" th:if="${grade.studentLrn == student.lrn}">
+                                                    <td class="px-4 py-3 text-white fw-medium" th:text="${grade.subjectName}">Subject Name</td>
+                                                    <td class="px-4 py-3 text-center text-success fw-bold fs-6" th:text="${grade.grade}">95</td>
+                                                    <td class="px-4 py-3 text-end">
+                                                        <span class="badge" th:classappend="${grade.remarks == 'PASSED'} ? 'badge-passed' : 'badge-failed'" th:text="${grade.remarks}">PASSED</span>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="3" class="px-4 py-4 text-center text-muted small" style="display: none;">No grades have been encoded for this student yet.</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div th:if="${#lists.isEmpty(students)}" class="text-center py-5 text-muted border border-secondary rounded border-dashed" style="border-style: dashed !important;">
+                                <i class="fa-solid fa-folder-open fs-2 mb-3 opacity-50"></i>
+                                <p class="mb-0">No students are currently registered in your section to display records.</p>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>

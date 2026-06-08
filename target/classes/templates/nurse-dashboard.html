@@ -117,10 +117,6 @@
             border-bottom-color: var(--border-color);
             vertical-align: middle;
         }
-
-        .student-table-container {
-            display: none;
-        }
     </style>
 </head>
 
@@ -132,7 +128,7 @@
                     <i class="fas fa-shield-heart"></i> LINHS Clinic
                 </div>
                 <div class="nav flex-column">
-                    <a href="/admin/dashboard" class="nav-link" th:if="${session.user?.role?.name() == 'ADMIN'}">
+                    <a href="/admin/dashboard" class="nav-link" th:if="${session.user?.roleName == 'ADMIN'}">
                         <i class="fas fa-arrow-left me-2"></i> Back to Admin
                     </a>
                     <a href="#" class="nav-link active">
@@ -152,21 +148,21 @@
                     </div>
                 </div>
 
-                <div th:if="${successMessage}" class="alert alert-success bg-success text-white border-0" th:text="${successMessage}"></div>
-                <div th:if="${errorMessage}" class="alert alert-danger bg-danger text-white border-0" th:text="${errorMessage}"></div>
+                <div th:if="${param.success}" class="alert alert-success bg-success text-white border-0" th:text="${param.success}"></div>
+                <div th:if="${param.error}" class="alert alert-danger bg-danger text-white border-0" th:text="${param.error}"></div>
 
                 <div class="card mb-4">
                     <div class="card-header">
                         <i class="fas fa-plus-circle me-2"></i> Log Student Clinic Visit
                     </div>
                     <div class="card-body">
-                        <form th:action="@{/nurse/log}" method="POST" class="row g-3">
-                            <input type="hidden" name="hiddenStudentName" class="hiddenStudentName">
+                        <form th:action="@{/clinic/log/add}" method="POST" class="row g-3">
+                            <input type="hidden" name="studentName" class="hiddenStudentName">
                             <div class="col-md-4">
                                 <label class="form-label text-muted small">Select Student</label>
-                                <select name="studentId" class="form-select" required onchange="updateHiddenName(this)">
+                                <select name="studentLrn" class="form-select" required onchange="updateHiddenName(this)">
                                     <option value="" disabled selected>Search / Select Student...</option>
-                                    <option th:each="student : ${students}" th:value="${student.id}" th:text="${student.fullName} + ' (' + ${student.lrn} + ')'"></option>
+                                    <option th:each="student : ${students}" th:value="${student.lrn}" th:text="${student.name} + ' (' + ${student.lrn} + ')'"></option>
                                 </select>
                             </div>
                             <div class="col-md-4">
@@ -198,13 +194,13 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr th:each="log : ${clinicLogs}">
+                            <tr th:each="log : ${logs}">
                                 <td th:text="${#temporals.format(log.visitDate, 'MMM dd, yyyy HH:mm')}">Date</td>
                                 <td th:text="${log.studentName}">Name</td>
                                 <td th:text="${log.reason}">Reason</td>
                                 <td th:text="${log.actionTaken}">Action Taken</td>
                             </tr>
-                            <tr th:if="${#lists.isEmpty(clinicLogs)}">
+                            <tr th:if="${#lists.isEmpty(logs)}">
                                 <td colspan="4" class="text-muted py-4 text-center">No chronological medical clinical encounter profiles saved in database logs today.</td>
                             </tr>
                         </tbody>
