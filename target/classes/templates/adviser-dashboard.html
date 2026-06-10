@@ -233,7 +233,7 @@
             <div class="d-flex align-items-center">
                 <span class="me-4" style="color: var(--text-light-grey); font-weight: 500;">
                     <i class="fa-solid fa-users me-2"></i>Assigned Section: 
-                    <span class="text-white fw-bold ms-1" th:text="${session.user != null ? (session.user.assignedSection != null ? session.user.assignedSection : (sectionName != null ? sectionName : 'Awaiting Section')) : (sectionName != null ? sectionName : 'Awaiting Section')}">Section</span>
+                    <span class="text-white fw-bold ms-1" th:text="${session.user != null and session.user.assignedSection != null} ? session.user.assignedSection : (${sectionName != null} ? sectionName : 'General Advisory')">Section</span>
                 </span>
                 <a href="/logout" class="btn btn-outline-danger btn-sm">
                     <i class="fa-solid fa-right-from-bracket me-1"></i> Sign Out
@@ -302,7 +302,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <th:block th:if="${students != null}">
+                                <th:block th:if="${students != null and !#lists.isEmpty(students)}">
                                     <tr th:each="student : ${students}">
                                         <td class="student-lrn-text" th:text="${student.lrn}">123456789012</td>
                                         <td class="student-name-text" th:text="${student.name}">John Doe</td>
@@ -358,7 +358,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <th:block th:if="${subjects != null}">
+                                        <th:block th:if="${subjects != null and !#lists.isEmpty(subjects)}">
                                             <tr th:each="subject : ${subjects}">
                                                 <td style="color: var(--text-light-grey); font-family: monospace;" th:text="${subject.id}">1</td>
                                                 <td class="student-name-text" th:text="${subject.name}">Mathematics</td>
@@ -399,7 +399,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <th:block th:if="${students != null}">
+                                <th:block th:if="${students != null and !#lists.isEmpty(students)}">
                                     <tr th:each="student : ${students}">
                                         <td class="student-lrn-text" th:text="${student.lrn}">1234567890</td>
                                         <td class="student-name-text" th:text="${student.name}">Student Name</td>
@@ -425,7 +425,7 @@
                         <p class="mb-0" style="color: var(--text-light-grey);">Consolidated overview of all finalized encoded grades.</p>
                     </div>
 
-                    <th:block th:if="${students != null}">
+                    <th:block th:if="${students != null and !#lists.isEmpty(students)}">
                         <div th:each="student : ${students}" class="mb-4 p-4 rounded border" style="background-color: var(--dark-bg); border-color: var(--border-color) !important;">
                             <div class="d-flex align-items-center mb-3 border-bottom pb-3" style="border-color: var(--border-color) !important;">
                                 <i class="fa-solid fa-user-graduate fs-4 me-3" style="color: var(--emerald-green);"></i>
@@ -445,14 +445,16 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <th:block th:if="${allGrades != null}">
-                                            <tr th:each="grade : ${allGrades}" th:if="${grade.studentLrn == student.lrn}">
-                                                <td class="ps-3" style="color: var(--text-main); font-weight: 600;" th:text="${grade.subjectName}">Math</td>
-                                                <td class="text-center" style="color: var(--emerald-green); font-weight: 700; font-size: 1.1rem;" th:text="${grade.grade}">95</td>
-                                                <td class="text-end pe-3">
-                                                    <span class="badge" th:classappend="${grade.remarks == 'PASSED'} ? 'badge-passed' : 'badge-failed'" th:text="${grade.remarks}">PASSED</span>
-                                                </td>
-                                            </tr>
+                                        <th:block th:if="${allGrades != null and !#lists.isEmpty(allGrades)}">
+                                            <th:block th:each="grade : ${allGrades}">
+                                                <tr th:if="${grade != null and grade.studentLrn == student.lrn}">
+                                                    <td class="ps-3" style="color: var(--text-main); font-weight: 600;" th:text="${grade.subjectName}">Math</td>
+                                                    <td class="text-center" style="color: var(--emerald-green); font-weight: 700; font-size: 1.1rem;" th:text="${grade.grade}">95</td>
+                                                    <td class="text-end pe-3">
+                                                        <span class="badge" th:classappend="${grade.remarks == 'PASSED'} ? 'badge-passed' : 'badge-failed'" th:text="${grade.remarks}">PASSED</span>
+                                                    </td>
+                                                </tr>
+                                            </th:block>
                                         </th:block>
                                         
                                         <tr th:if="${allGrades == null or #lists.isEmpty(allGrades)}">
@@ -518,7 +520,7 @@
                                 <label class="form-label" style="color: var(--text-light-grey); font-weight: 500;">Academic Subject</label>
                                 <select name="subjectId" class="form-select py-2" required>
                                     <option value="" disabled selected>Select a mapped subject...</option>
-                                    <th:block th:if="${subjects != null}">
+                                    <th:block th:if="${subjects != null and !#lists.isEmpty(subjects)}">
                                         <option th:each="subj : ${subjects}" th:value="${subj.id}" th:text="${subj.name}"></option>
                                     </th:block>
                                 </select>
