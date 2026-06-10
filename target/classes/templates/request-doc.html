@@ -61,7 +61,7 @@
             font-weight: 500;
         }
 
-        /* Forces text color to bright white inside inputs */
+        /* Forces input text visibility to bright white */
         .form-control, .form-select {
             background-color: var(--input-bg);
             border: 1px solid var(--border-color);
@@ -81,7 +81,7 @@
             box-shadow: 0 0 0 0.25rem rgba(32, 201, 151, 0.15);
         }
 
-        /* Dropdown options forced to dark background with white text */
+        /* Dropdown selection options readable on dark backgrounds */
         option {
             background-color: var(--panel-bg);
             color: #ffffff;
@@ -120,6 +120,9 @@
         </div>
 
         <form action="/request-document/submit" method="POST" class="row g-3">
+            
+            <input type="hidden" name="studentLrn" value="PUBLIC-REQ">
+
             <div class="col-md-6">
                 <label class="form-label">First Name</label>
                 <input type="text" name="firstName" class="form-control" placeholder="e.g., Juan" required>
@@ -130,12 +133,7 @@
                 <input type="text" name="lastName" class="form-control" placeholder="e.g., Dela Cruz" required>
             </div>
 
-            <div class="col-md-6">
-                <label class="form-label">Student LRN</label>
-                <input type="text" name="studentLrn" class="form-control" placeholder="12-digit LRN" required>
-            </div>
-
-            <div class="col-md-6">
+            <div class="col-12">
                 <label class="form-label">Email Address</label>
                 <input type="email" name="emailAddress" class="form-control" placeholder="Enter valid email" required>
             </div>
