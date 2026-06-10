@@ -15,7 +15,7 @@
             --emerald-green: #10b981;    
             --emerald-hover: #059669;    
             --text-main: #ffffff;     
-            --text-light-grey: #e4e4e7; /* Brighter grey for readability */
+            --text-light-grey: #e4e4e7;
             --input-bg: #09090b;      
             --danger-red: #ef4444;
         }
@@ -109,7 +109,7 @@
         }
 
         .table > tbody > tr:hover > td {
-            background-color: rgba(16, 185, 129, 0.05); /* Slight emerald tint on hover */
+            background-color: rgba(16, 185, 129, 0.05); 
             color: var(--text-main);
         }
 
@@ -233,7 +233,7 @@
             <div class="d-flex align-items-center">
                 <span class="me-4" style="color: var(--text-light-grey); font-weight: 500;">
                     <i class="fa-solid fa-users me-2"></i>Assigned Section: 
-                    <span class="text-white fw-bold ms-1" th:text="${sectionName != null ? sectionName : 'No Section Assigned'}">Your Section</span>
+                    <span class="text-white fw-bold ms-1" th:text="${session.user != null and session.user.assignedSection != null ? session.user.assignedSection : (sectionName != null ? sectionName : 'Awaiting Section')}">Section</span>
                 </span>
                 <a href="/logout" class="btn btn-outline-danger btn-sm">
                     <i class="fa-solid fa-right-from-bracket me-1"></i> Sign Out
@@ -302,19 +302,22 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr th:each="student : ${students}">
-                                    <td class="student-lrn-text" th:text="${student.lrn}">123456789012</td>
-                                    <td class="student-name-text" th:text="${student.name}">John Doe</td>
-                                    <td><span class="badge bg-dark border text-light py-2 px-3" style="border-color: var(--border-color) !important;" th:text="${student.section}">Section A</span></td>
-                                    <td class="text-end">
-                                        <form action="/adviser/student/delete" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to completely remove this student?');">
-                                            <input type="hidden" name="lrn" th:value="${student.lrn}">
-                                            <button type="submit" class="btn btn-sm btn-outline-danger">
-                                                <i class="fa-solid fa-trash me-1"></i> Remove
-                                            </button>
-                                        </form>
-                                    </td>
-                                </tr>
+                                <th:block th:if="${students != null}">
+                                    <tr th:each="student : ${students}">
+                                        <td class="student-lrn-text" th:text="${student.lrn}">123456789012</td>
+                                        <td class="student-name-text" th:text="${student.name}">John Doe</td>
+                                        <td><span class="badge bg-dark border text-light py-2 px-3" style="border-color: var(--border-color) !important;" th:text="${student.section}">Section A</span></td>
+                                        <td class="text-end">
+                                            <form action="/adviser/student/delete" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to completely remove this student?');">
+                                                <input type="hidden" name="lrn" th:value="${student.lrn}">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                    <i class="fa-solid fa-trash me-1"></i> Remove
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                </th:block>
+                                
                                 <tr th:if="${students == null or #lists.isEmpty(students)}">
                                     <td colspan="4" class="text-center py-5" style="color: var(--text-light-grey);">No students currently registered in your section. Click 'Add New Student' to begin.</td>
                                 </tr>
@@ -355,18 +358,21 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr th:each="subject : ${subjects}">
-                                            <td style="color: var(--text-light-grey); font-family: monospace;" th:text="${subject.id}">1</td>
-                                            <td class="student-name-text" th:text="${subject.name}">Mathematics</td>
-                                            <td class="text-end">
-                                                <form action="/adviser/subject/delete" method="POST" class="d-inline" onsubmit="return confirm('Delete this subject entirely?');">
-                                                    <input type="hidden" name="id" th:value="${subject.id}">
-                                                    <button type="submit" class="btn btn-sm btn-outline-danger">
-                                                        <i class="fa-solid fa-trash me-1"></i> Delete
-                                                    </button>
-                                                </form>
-                                            </td>
-                                        </tr>
+                                        <th:block th:if="${subjects != null}">
+                                            <tr th:each="subject : ${subjects}">
+                                                <td style="color: var(--text-light-grey); font-family: monospace;" th:text="${subject.id}">1</td>
+                                                <td class="student-name-text" th:text="${subject.name}">Mathematics</td>
+                                                <td class="text-end">
+                                                    <form action="/adviser/subject/delete" method="POST" class="d-inline" onsubmit="return confirm('Delete this subject entirely?');">
+                                                        <input type="hidden" name="id" th:value="${subject.id}">
+                                                        <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                            <i class="fa-solid fa-trash me-1"></i> Delete
+                                                        </button>
+                                                    </form>
+                                                </td>
+                                            </tr>
+                                        </th:block>
+
                                         <tr th:if="${subjects == null or #lists.isEmpty(subjects)}">
                                             <td colspan="3" class="text-center py-5" style="color: var(--text-light-grey);">No subjects mapped yet. Add a subject using the left panel.</td>
                                         </tr>
@@ -393,15 +399,18 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr th:each="student : ${students}">
-                                    <td class="student-lrn-text" th:text="${student.lrn}">1234567890</td>
-                                    <td class="student-name-text" th:text="${student.name}">Student Name</td>
-                                    <td class="text-end">
-                                        <button class="btn btn-sm btn-outline-emerald" data-bs-toggle="modal" th:attr="data-bs-target='#gradeModal-' + ${student.lrn}">
-                                            <i class="fa-solid fa-marker me-1"></i> Encode Output
-                                        </button>
-                                    </td>
-                                </tr>
+                                <th:block th:if="${students != null}">
+                                    <tr th:each="student : ${students}">
+                                        <td class="student-lrn-text" th:text="${student.lrn}">1234567890</td>
+                                        <td class="student-name-text" th:text="${student.name}">Student Name</td>
+                                        <td class="text-end">
+                                            <button class="btn btn-sm btn-outline-emerald" data-bs-toggle="modal" th:attr="data-bs-target='#gradeModal-' + ${student.lrn}">
+                                                <i class="fa-solid fa-marker me-1"></i> Encode Output
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </th:block>
+
                                 <tr th:if="${students == null or #lists.isEmpty(students)}">
                                     <td colspan="3" class="text-center py-5" style="color: var(--text-light-grey);">Register students into your roster first before encoding grades.</td>
                                 </tr>
@@ -416,42 +425,44 @@
                         <p class="mb-0" style="color: var(--text-light-grey);">Consolidated overview of all finalized encoded grades.</p>
                     </div>
 
-                    <div th:each="student : ${students}" class="mb-4 p-4 rounded border" style="background-color: var(--dark-bg); border-color: var(--border-color) !important;">
-                        <div class="d-flex align-items-center mb-3 border-bottom pb-3" style="border-color: var(--border-color) !important;">
-                            <i class="fa-solid fa-user-graduate fs-4 me-3" style="color: var(--emerald-green);"></i>
-                            <div>
-                                <h5 class="mb-0 student-name-text" th:text="${student.name}">Student Name</h5>
-                                <span class="student-lrn-text" th:text="'LRN Ref: ' + ${student.lrn}">LRN: 000</span>
+                    <th:block th:if="${students != null}">
+                        <div th:each="student : ${students}" class="mb-4 p-4 rounded border" style="background-color: var(--dark-bg); border-color: var(--border-color) !important;">
+                            <div class="d-flex align-items-center mb-3 border-bottom pb-3" style="border-color: var(--border-color) !important;">
+                                <i class="fa-solid fa-user-graduate fs-4 me-3" style="color: var(--emerald-green);"></i>
+                                <div>
+                                    <h5 class="mb-0 student-name-text" th:text="${student.name}">Student Name</h5>
+                                    <span class="student-lrn-text" th:text="'LRN Ref: ' + ${student.lrn}">LRN: 000</span>
+                                </div>
+                            </div>
+                            
+                            <div class="table-responsive">
+                                <table class="table table-sm border-0 mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th class="ps-3 border-0">Subject Name</th>
+                                            <th class="text-center border-0">Encoded Score</th>
+                                            <th class="text-end pe-3 border-0">Evaluation Remarks</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <th:block th:if="${allGrades != null}">
+                                            <tr th:each="grade : ${allGrades}" th:if="${grade.studentLrn == student.lrn}">
+                                                <td class="ps-3" style="color: var(--text-main); font-weight: 600;" th:text="${grade.subjectName}">Math</td>
+                                                <td class="text-center" style="color: var(--emerald-green); font-weight: 700; font-size: 1.1rem;" th:text="${grade.grade}">95</td>
+                                                <td class="text-end pe-3">
+                                                    <span class="badge" th:classappend="${grade.remarks == 'PASSED'} ? 'badge-passed' : 'badge-failed'" th:text="${grade.remarks}">PASSED</span>
+                                                </td>
+                                            </tr>
+                                        </th:block>
+                                        
+                                        <tr th:if="${allGrades == null or #lists.isEmpty(allGrades)}">
+                                            <td colspan="3" class="text-center py-4" style="color: var(--text-light-grey);">No subject grades encoded for this student yet.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
-                        
-                        <div class="table-responsive">
-                            <table class="table table-sm border-0 mb-0">
-                                <thead>
-                                    <tr>
-                                        <th class="ps-3 border-0">Subject Name</th>
-                                        <th class="text-center border-0">Encoded Score</th>
-                                        <th class="text-end pe-3 border-0">Evaluation Remarks</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <th:block th:if="${allGrades != null}">
-                                        <tr th:each="grade : ${allGrades}" th:if="${grade.studentLrn == student.lrn}">
-                                            <td class="ps-3" style="color: var(--text-main); font-weight: 600;" th:text="${grade.subjectName}">Math</td>
-                                            <td class="text-center" style="color: var(--emerald-green); font-weight: 700; font-size: 1.1rem;" th:text="${grade.grade}">95</td>
-                                            <td class="text-end pe-3">
-                                                <span class="badge" th:classappend="${grade.remarks == 'PASSED'} ? 'badge-passed' : 'badge-failed'" th:text="${grade.remarks}">PASSED</span>
-                                            </td>
-                                        </tr>
-                                    </th:block>
-                                    
-                                    <tr th:if="${allGrades == null or #lists.isEmpty(allGrades.?[studentLrn == __${student.lrn}__])}">
-                                        <td colspan="3" class="text-center py-4" style="color: var(--text-light-grey);">No subject grades encoded for this student yet.</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+                    </th:block>
                     
                     <div th:if="${students == null or #lists.isEmpty(students)}" class="text-center py-5 rounded" style="border: 1px dashed var(--border-color);">
                         <i class="fa-solid fa-folder-open fs-1 mb-3" style="color: var(--text-light-grey); opacity: 0.5;"></i>
