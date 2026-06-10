@@ -113,7 +113,6 @@
             color: var(--text-main);
         }
 
-        /* Readable Text Elements */
         .student-name-text {
             color: #ffffff;
             font-weight: 600;
@@ -183,7 +182,14 @@
             color: #9ca3af;
         }
 
-        /* Modals */
+        /* Modals Native Overrides */
+        .modal {
+            background: rgba(0, 0, 0, 0.65);
+        }
+        .modal.show {
+            display: block !important;
+        }
+
         .modal-content {
             background-color: var(--panel-bg);
             border: 1px solid var(--border-color);
@@ -233,7 +239,7 @@
             <div class="d-flex align-items-center">
                 <span class="me-4" style="color: var(--text-light-grey); font-weight: 500;">
                     <i class="fa-solid fa-users me-2"></i>Assigned Section: 
-                    <span class="text-white fw-bold ms-1" th:text="${session.user != null and session.user.assignedSection != null} ? session.user.assignedSection : (${sectionName != null} ? sectionName : 'General Advisory')">Section</span>
+                    <span class="text-white fw-bold ms-1" th:text="${adviser != null and adviser.assignedSection != null} ? adviser.assignedSection : 'Awaiting Section'">Section</span>
                 </span>
                 <a href="/logout" class="btn btn-outline-danger btn-sm">
                     <i class="fa-solid fa-right-from-bracket me-1"></i> Sign Out
@@ -244,12 +250,12 @@
 
     <div class="container-fluid px-4 py-4">
 
-        <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert" style="background-color: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); color: #34d399; font-weight: 500;">
-            <i class="fa-solid fa-circle-check me-2"></i><span th:text="${successMessage}"></span>
+        <div th:if="${param.success or successMessage}" class="alert alert-success alert-dismissible fade show" role="alert" style="background-color: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); color: #34d399; font-weight: 500;">
+            <i class="fa-solid fa-circle-check me-2"></i><span th:text="${param.success != null ? param.success : successMessage}">Success</span>
             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
-        <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert" style="background-color: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); color: #f87171; font-weight: 500;">
-            <i class="fa-solid fa-triangle-exclamation me-2"></i><span th:text="${errorMessage}"></span>
+        <div th:if="${param.error or errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert" style="background-color: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); color: #f87171; font-weight: 500;">
+            <i class="fa-solid fa-triangle-exclamation me-2"></i><span th:text="${param.error != null ? param.error : errorMessage}">Error</span>
             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
 
@@ -257,22 +263,22 @@
             
             <ul class="nav nav-tabs" id="dashboardTabs" role="tablist">
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="students-tab" data-bs-toggle="tab" data-bs-target="#students-pane" type="button" role="tab" aria-controls="students-pane" aria-selected="true">
+                    <button class="nav-link" id="students-tab" onclick="switchTab('students')" type="button">
                         <i class="fa-solid fa-user-graduate me-2"></i>Student Roster
                     </button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="subjects-tab" data-bs-toggle="tab" data-bs-target="#subjects-pane" type="button" role="tab" aria-controls="subjects-pane" aria-selected="false">
+                    <button class="nav-link" id="subjects-tab" onclick="switchTab('subjects')" type="button">
                         <i class="fa-solid fa-book me-2"></i>Subjects Mapping
                     </button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="grading-tab" data-bs-toggle="tab" data-bs-target="#grading-pane" type="button" role="tab" aria-controls="grading-pane" aria-selected="false">
+                    <button class="nav-link" id="grading-tab" onclick="switchTab('grading')" type="button">
                         <i class="fa-solid fa-pen-to-square me-2"></i>Encode Grades
                     </button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="records-tab" data-bs-toggle="tab" data-bs-target="#records-pane" type="button" role="tab" aria-controls="records-pane" aria-selected="false">
+                    <button class="nav-link" id="records-tab" onclick="switchTab('records')" type="button">
                         <i class="fa-solid fa-folder-open me-2"></i>Master Records
                     </button>
                 </li>
@@ -280,13 +286,13 @@
 
             <div class="tab-content" id="dashboardTabsContent">
 
-                <div class="tab-pane fade show active" id="students-pane" role="tabpanel" aria-labelledby="students-tab">
+                <div class="tab-pane fade" id="students-pane" role="tabpanel">
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <div>
-                            <h5 class="fw-bold mb-1" style="color: var(--text-main);">Student Roster Management</h5>
+                            <h5 class="fw-bold mb-1">Student Roster Management</h5>
                             <p class="mb-0" style="color: var(--text-light-grey);">Manage students currently enrolled in your advisory section.</p>
                         </div>
-                        <button class="btn btn-emerald" data-bs-toggle="modal" data-bs-target="#addStudentModal">
+                        <button class="btn btn-emerald" onclick="openModal('addStudentModal')">
                             <i class="fa-solid fa-plus me-1"></i> Add New Student
                         </button>
                     </div>
@@ -317,16 +323,15 @@
                                         </td>
                                     </tr>
                                 </th:block>
-                                
                                 <tr th:if="${students == null or #lists.isEmpty(students)}">
                                     <td colspan="4" class="text-center py-5" style="color: var(--text-light-grey);">No students currently registered in your section. Click 'Add New Student' to begin.</td>
-                                </tr>
+                                end:                             </tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
 
-                <div class="tab-pane fade" id="subjects-pane" role="tabpanel" aria-labelledby="subjects-tab">
+                <div class="tab-pane fade" id="subjects-pane" role="tabpanel">
                     <div class="row">
                         <div class="col-lg-4 mb-4 mb-lg-0">
                             <div class="p-4 rounded border" style="background-color: var(--dark-bg); border-color: var(--border-color) !important;">
@@ -345,7 +350,7 @@
 
                         <div class="col-lg-8">
                             <div class="mb-3">
-                                <h5 class="fw-bold mb-1" style="color: var(--text-main);">Curriculum Subjects Ledger</h5>
+                                <h5 class="fw-bold mb-1">Curriculum Subjects Ledger</h5>
                                 <p class="mb-0" style="color: var(--text-light-grey);">Subjects added here will be evaluated in the grading matrix.</p>
                             </div>
                             <div class="table-responsive border rounded" style="border-color: var(--border-color) !important;">
@@ -372,7 +377,6 @@
                                                 </td>
                                             </tr>
                                         </th:block>
-
                                         <tr th:if="${subjects == null or #lists.isEmpty(subjects)}">
                                             <td colspan="3" class="text-center py-5" style="color: var(--text-light-grey);">No subjects mapped yet. Add a subject using the left panel.</td>
                                         </tr>
@@ -383,9 +387,9 @@
                     </div>
                 </div>
 
-                <div class="tab-pane fade" id="grading-pane" role="tabpanel" aria-labelledby="grading-tab">
+                <div class="tab-pane fade" id="grading-pane" role="tabpanel">
                     <div class="mb-4">
-                        <h5 class="fw-bold mb-1" style="color: var(--text-main);">Grade Evaluation Matrix</h5>
+                        <h5 class="fw-bold mb-1">Grade Evaluation Matrix</h5>
                         <p class="mb-0" style="color: var(--text-light-grey);">Select a target student below to encode their specific subject grades.</p>
                     </div>
 
@@ -404,13 +408,12 @@
                                         <td class="student-lrn-text" th:text="${student.lrn}">1234567890</td>
                                         <td class="student-name-text" th:text="${student.name}">Student Name</td>
                                         <td class="text-end">
-                                            <button class="btn btn-sm btn-outline-emerald" data-bs-toggle="modal" th:attr="data-bs-target='#gradeModal-' + ${student.lrn}">
+                                            <button class="btn btn-sm btn-outline-emerald" th:attr="onclick='openModal(\'gradeModal-' + ${student.lrn} + '\')'">
                                                 <i class="fa-solid fa-marker me-1"></i> Encode Output
                                             </button>
                                         </td>
                                     </tr>
                                 </th:block>
-
                                 <tr th:if="${students == null or #lists.isEmpty(students)}">
                                     <td colspan="3" class="text-center py-5" style="color: var(--text-light-grey);">Register students into your roster first before encoding grades.</td>
                                 </tr>
@@ -419,9 +422,9 @@
                     </div>
                 </div>
 
-                <div class="tab-pane fade" id="records-pane" role="tabpanel" aria-labelledby="records-tab">
+                <div class="tab-pane fade" id="records-pane" role="tabpanel">
                     <div class="mb-4">
-                        <h5 class="fw-bold mb-1" style="color: var(--text-main);">Academic Master Records</h5>
+                        <h5 class="fw-bold mb-1">Academic Master Records</h5>
                         <p class="mb-0" style="color: var(--text-light-grey);">Consolidated overview of all finalized encoded grades.</p>
                     </div>
 
@@ -456,10 +459,6 @@
                                                 </tr>
                                             </th:block>
                                         </th:block>
-                                        
-                                        <tr th:if="${allGrades == null or #lists.isEmpty(allGrades)}">
-                                            <td colspan="3" class="text-center py-4" style="color: var(--text-light-grey);">No subject grades encoded for this student yet.</td>
-                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -475,13 +474,13 @@
             </div> </div>
     </div>
 
-    <div class="modal fade" id="addStudentModal" tabindex="-1" aria-hidden="true">
+    <div class="modal fade" id="addStudentModal" tabindex="-1" aria-hidden="true" style="display: none;">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <form action="/adviser/student/add" method="POST">
                     <div class="modal-header border-bottom pb-3" style="border-color: var(--border-color) !important;">
                         <h5 class="modal-title"><i class="fa-solid fa-user-plus me-2"></i>Register Student Profile</h5>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <button type="button" class="btn-close btn-close-white" onclick="closeModal('addStudentModal')" aria-label="Close"></button>
                     </div>
                     <div class="modal-body p-4">
                         <div class="mb-4">
@@ -494,7 +493,7 @@
                         </div>
                     </div>
                     <div class="modal-footer border-top pt-3" style="border-color: var(--border-color) !important;">
-                        <button type="button" class="btn btn-link text-decoration-none" style="color: var(--text-light-grey);" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-link text-decoration-none" style="color: var(--text-light-grey);" onclick="closeModal('addStudentModal')">Cancel</button>
                         <button type="submit" class="btn btn-emerald px-4">Create Student</button>
                     </div>
                 </form>
@@ -503,22 +502,22 @@
     </div>
 
     <th:block th:if="${students != null and !#lists.isEmpty(students)}">
-        <div th:each="student : ${students}" class="modal fade" th:id="'gradeModal-' + ${student.lrn}" tabindex="-1" aria-hidden="true">
+        <div th:each="student : ${students}" class="modal fade" th:id="'gradeModal-' + ${student.lrn}" tabindex="-1" aria-hidden="true" style="display: none;">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
-                    <form action="/adviser/grade/save" method="POST">
+                    <form action="/adviser/grade/save" method="POST" th:onsubmit="'return prepareGradeFields(\'' + ${student.lrn} + '\')'">
                         <div class="modal-header border-bottom pb-3" style="border-color: var(--border-color) !important;">
                             <h5 class="modal-title">
                                 <i class="fa-solid fa-pen-nib me-2"></i>Evaluate: <span class="text-white" th:text="${student.name}">Student</span>
                             </h5>
-                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                            <button type="button" class="btn-close btn-close-white" th:attr="onclick='closeModal(\'gradeModal-' + ${student.lrn} + '\')'" aria-label="Close"></button>
                         </div>
                         <div class="modal-body p-4">
                             <input type="hidden" name="studentLrn" th:value="${student.lrn}">
                             
                             <div class="mb-4">
                                 <label class="form-label" style="color: var(--text-light-grey); font-weight: 500;">Academic Subject</label>
-                                <select name="subjectId" class="form-select py-2" required>
+                                <select th:id="'subjectSelect-' + ${student.lrn}" class="form-select py-2" required>
                                     <option value="" disabled selected>Select a mapped subject...</option>
                                     <th:block th:if="${subjects != null and !#lists.isEmpty(subjects)}">
                                         <option th:each="subj : ${subjects}" th:value="${subj.id}" th:text="${subj.name}"></option>
@@ -527,11 +526,11 @@
                             </div>
                             <div class="mb-2">
                                 <label class="form-label" style="color: var(--text-light-grey); font-weight: 500;">Numerical Final Grade</label>
-                                <input type="number" name="grade" class="form-control py-2" placeholder="Input Grade (e.g., 85)" min="50" max="100" required>
+                                <input type="number" th:id="'gradeInput-' + ${student.lrn}" class="form-control py-2" placeholder="Input Grade (e.g., 85)" min="50" max="100" required>
                             </div>
                         </div>
                         <div class="modal-footer border-top pt-3" style="border-color: var(--border-color) !important;">
-                            <button type="button" class="btn btn-link text-decoration-none" style="color: var(--text-light-grey);" data-bs-dismiss="modal">Cancel Request</button>
+                            <button type="button" class="btn btn-link text-decoration-none" style="color: var(--text-light-grey);" th:attr="onclick='closeModal(\'gradeModal-' + ${student.lrn} + '\')'">Cancel Request</button>
                             <button type="submit" class="btn btn-emerald px-4">Submit Evaluation</button>
                         </div>
                     </form>
@@ -541,6 +540,57 @@
     </th:block>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
+    <script>
+        // Native Fail-Safe Tab Switcher
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('show', 'active'));
+            document.querySelectorAll('.nav-tabs .nav-link').forEach(btn => btn.classList.remove('active'));
+            
+            const targetPane = document.getElementById(tabId + '-pane');
+            const targetBtn = document.getElementById(tabId + '-tab');
+            
+            if (targetPane && targetBtn) {
+                targetPane.classList.add('show', 'active');
+                targetBtn.classList.add('active');
+            }
+            localStorage.setItem('adviserActiveTab', tabId);
+        }
 
+        // Native Fail-Safe Modal Controllers
+        function openModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if(modal) modal.classList.add('show');
+        }
+
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if(modal) modal.classList.remove('show');
+        }
+
+        // Bridges the payload naming with PageController requirements dynamically
+        function prepareGradeFields(lrn) {
+            const selectEl = document.getElementById('subjectSelect-' + lrn);
+            const inputEl = document.getElementById('gradeInput-' + lrn);
+            if(selectEl && inputEl) {
+                const subjectId = selectEl.value;
+                inputEl.name = "subject_" + subjectId;
+            }
+            return true;
+        }
+
+        // Automatically routers view state upon controller parameter handovers
+        document.addEventListener("DOMContentLoaded", function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            let activeTab = urlParams.get('tab');
+            
+            if (!activeTab) {
+                activeTab = localStorage.getItem('adviserActiveTab');
+            }
+            if (!activeTab || !['students', 'subjects', 'grading', 'records'].includes(activeTab)) {
+                activeTab = 'students';
+            }
+            switchTab(activeTab);
+        });
+    </script>
+</body>
 </html>
