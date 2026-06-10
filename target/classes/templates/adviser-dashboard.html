@@ -231,7 +231,7 @@
             <div class="d-flex align-items-center">
                 <span class="me-4" style="color: var(--text-light-grey); font-weight: 500;">
                     <i class="fa-solid fa-users me-2"></i>Assigned Section: 
-                    <span class="text-white fw-bold ms-1" th:text="${adviser != null and adviser.assignedSection != null} ? adviser.assignedSection : 'Awaiting Section'">Section</span>
+                    <span class="text-white fw-bold ms-1" th:text="${adviser != null ? (adviser.assignedSection != null ? adviser.assignedSection : 'Awaiting Section') : 'Awaiting Section'}">Section</span>
                 </span>
                 <a href="/logout" class="btn btn-outline-danger btn-sm">
                     <i class="fa-solid fa-right-from-bracket me-1"></i> Sign Out
@@ -242,12 +242,12 @@
 
     <div class="container-fluid px-4 py-4">
 
-        <div th:if="${param.success or successMessage}" class="alert alert-success alert-dismissible fade show" role="alert" style="background-color: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); color: #34d399; font-weight: 500;">
-            <i class="fa-solid fa-circle-check me-2"></i><span th:text="${param.success != null ? param.success : successMessage}">Success</span>
+        <div th:if="${param.success != null}" class="alert alert-success alert-dismissible fade show" role="alert" style="background-color: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); color: #34d399; font-weight: 500;">
+            <i class="fa-solid fa-circle-check me-2"></i><span th:text="${param.success[0]}">Success</span>
             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
-        <div th:if="${param.error or errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert" style="background-color: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); color: #f87171; font-weight: 500;">
-            <i class="fa-solid fa-triangle-exclamation me-2"></i><span th:text="${param.error != null ? param.error : errorMessage}">Error</span>
+        <div th:if="${param.error != null}" class="alert alert-danger alert-dismissible fade show" role="alert" style="background-color: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); color: #f87171; font-weight: 500;">
+            <i class="fa-solid fa-triangle-exclamation me-2"></i><span th:text="${param.error[0]}">Error</span>
             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
 
@@ -400,7 +400,7 @@
                                         <td class="student-lrn-text" th:text="${student.lrn}">1234567890</td>
                                         <td class="student-name-text" th:text="${student.name}">Student Name</td>
                                         <td class="text-end">
-                                            <button class="btn btn-sm btn-outline-emerald" data-bs-toggle="modal" th:data-bs-target="'#gradeModal-' + ${student.lrn}">
+                                            <button class="btn btn-sm btn-outline-emerald" data-bs-toggle="modal" th:data-bs-target="|#gradeModal-${student.lrn}|">
                                                 <i class="fa-solid fa-marker me-1"></i> Encode Output
                                             </button>
                                         </td>
@@ -441,15 +441,13 @@
                                     </thead>
                                     <tbody>
                                         <th:block th:if="${allGrades != null and !#lists.isEmpty(allGrades)}">
-                                            <th:block th:each="grade : ${allGrades}">
-                                                <tr th:if="${grade != null and grade.studentLrn == student.lrn}">
-                                                    <td class="ps-3" style="color: var(--text-main); font-weight: 600;" th:text="${grade.subjectName}">Math</td>
-                                                    <td class="text-center" style="color: var(--emerald-green); font-weight: 700; font-size: 1.1rem;" th:text="${grade.grade}">95</td>
-                                                    <td class="text-end pe-3">
-                                                        <span class="badge" th:classappend="${grade.remarks == 'PASSED'} ? 'badge-passed' : 'badge-failed'" th:text="${grade.remarks}">PASSED</span>
-                                                    </td>
-                                                </tr>
-                                            </th:block>
+                                            <tr th:each="grade : ${allGrades}" th:if="${grade.studentLrn == student.lrn}">
+                                                <td class="ps-3" style="color: var(--text-main); font-weight: 600;" th:text="${grade.subjectName}">Math</td>
+                                                <td class="text-center" style="color: var(--emerald-green); font-weight: 700; font-size: 1.1rem;" th:text="${grade.grade}">95</td>
+                                                <td class="text-end pe-3">
+                                                    <span class="badge" th:classappend="${grade.remarks == 'PASSED'} ? 'badge-passed' : 'badge-failed'" th:text="${grade.remarks}">PASSED</span>
+                                                </td>
+                                            </tr>
                                         </th:block>
                                     </tbody>
                                 </table>
@@ -495,10 +493,10 @@
     </div>
 
     <th:block th:if="${students != null and !#lists.isEmpty(students)}">
-        <div th:each="student : ${students}" class="modal fade" th:id="'gradeModal-' + ${student.lrn}" tabindex="-1" aria-hidden="true">
+        <div th:each="student : ${students}" class="modal fade" th:id="|gradeModal-${student.lrn}|" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
-                    <form action="/adviser/grade/save" method="POST" th:onsubmit="'return mapInputNamesToControllerRequirements(\'' + ${student.lrn} + '\')'">
+                    <form action="/adviser/grade/save" method="POST" th:onsubmit="|return mapInputNamesToControllerRequirements('${student.lrn}')|">
                         <div class="modal-header">
                             <h5 class="modal-title">
                                 <i class="fa-solid fa-pen-nib me-2"></i>Evaluate: <span class="text-white" th:text="${student.name}">Student</span>
@@ -510,7 +508,7 @@
                             
                             <div class="mb-4">
                                 <label class="form-label" style="color: var(--text-light-grey); font-weight: 500;">Academic Subject</label>
-                                <select th:id="'subjectSelect-' + ${student.lrn}" class="form-select py-2" required>
+                                <select th:id="|subjectSelect-${student.lrn}|" class="form-select py-2" required>
                                     <option value="" disabled selected>Select a mapped subject...</option>
                                     <th:block th:if="${subjects != null and !#lists.isEmpty(subjects)}">
                                         <option th:each="subj : ${subjects}" th:value="${subj.id}" th:text="${subj.name}"></option>
@@ -519,7 +517,7 @@
                             </div>
                             <div class="mb-2">
                                 <label class="form-label" style="color: var(--text-light-grey); font-weight: 500;">Numerical Final Grade</label>
-                                <input type="number" th:id="'gradeInput-' + ${student.lrn}" class="form-control py-2" placeholder="Input Grade (e.g., 85)" min="50" max="100" required>
+                                <input type="number" th:id="|gradeInput-${student.lrn}|" class="form-control py-2" placeholder="Input Grade (e.g., 85)" min="50" max="100" required>
                             </div>
                         </div>
                         <div class="modal-footer">
