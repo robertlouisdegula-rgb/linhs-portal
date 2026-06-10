@@ -42,12 +42,12 @@
             </a>
         </div>
 
-        <div th:if="${param.success}" class="mb-6 p-4 bg-emeraldAccent/10 border border-emeraldAccent/30 text-emeraldAccent text-sm font-semibold rounded-lg flex items-center gap-2">
-            <i class="fa-solid fa-circle-check"></i> <span th:text="${param.success}">System process completed successfully.</span>
+        <div th:if="${param.success != null}" class="mb-6 p-4 bg-emeraldAccent/10 border border-emeraldAccent/30 text-emeraldAccent text-sm font-semibold rounded-lg flex items-center gap-2">
+            <i class="fa-solid fa-circle-check"></i> <span th:text="${param.success[0]}">System process completed successfully.</span>
         </div>
 
-        <div th:if="${param.error}" class="mb-6 p-4 bg-dangerRed/10 border border-dangerRed/30 text-dangerRed text-sm font-semibold rounded-lg flex items-center gap-2">
-            <i class="fa-solid fa-circle-xmark"></i> <span th:text="${param.error}">System process encountered an error.</span>
+        <div th:if="${param.error != null}" class="mb-6 p-4 bg-dangerRed/10 border border-dangerRed/30 text-dangerRed text-sm font-semibold rounded-lg flex items-center gap-2">
+            <i class="fa-solid fa-circle-xmark"></i> <span th:text="${param.error[0]}">System process encountered an error.</span>
         </div>
 
         <div class="flex border-b border-panelBorder mb-6 gap-2">
@@ -109,7 +109,7 @@
                         </div>
                         <div>
                             <label class="block text-xs font-bold uppercase text-zinc-400 mb-1">Assigned Section Name</label>
-                            <input type="text" name="assignedSection" required placeholder="e.g., Grade 12 - Azurite" class="w-full bg-darkBg border border-panelBorder rounded-lg p-2.5 text-sm text-white focus:border-emeraldAccent focus:outline-none">
+                            <input type="text" name="section" required placeholder="e.g., Grade 12 - Azurite" class="w-full bg-darkBg border border-panelBorder rounded-lg p-2.5 text-sm text-white focus:border-emeraldAccent focus:outline-none">
                         </div>
                         <div>
                             <label class="block text-xs font-bold uppercase text-zinc-400 mb-1">Login Email Address</label>
@@ -302,21 +302,30 @@
 
     <script>
         function switchTab(index) {
+            index = parseInt(index);
+            if (isNaN(index)) return;
+
             document.querySelectorAll('.tab-content').forEach((el) => {
                 el.classList.add('hidden');
                 el.classList.remove('block');
             });
-            document.getElementById('tab-panel-' + index).classList.remove('hidden');
-            document.getElementById('tab-panel-' + index).classList.add('block');
+            
+            const targetPanel = document.getElementById('tab-panel-' + index);
+            if(targetPanel) {
+                targetPanel.classList.remove('hidden');
+                targetPanel.classList.add('block');
+            }
 
             for (let i = 0; i < 3; i++) {
                 let btn = document.getElementById('tab-btn-' + i);
-                if (i === index) {
-                    btn.classList.add('text-emeraldAccent', 'border-emeraldAccent');
-                    btn.classList.remove('text-zinc-400', 'border-transparent', 'hover:text-white');
-                } else {
-                    btn.classList.remove('text-emeraldAccent', 'border-emeraldAccent');
-                    btn.classList.add('text-zinc-400', 'border-transparent', 'hover:text-white');
+                if(btn) {
+                    if (i === index) {
+                        btn.classList.add('text-emeraldAccent', 'border-emeraldAccent');
+                        btn.classList.remove('text-zinc-400', 'border-transparent', 'hover:text-white');
+                    } else {
+                        btn.classList.remove('text-emeraldAccent', 'border-emeraldAccent');
+                        btn.classList.add('text-zinc-400', 'border-transparent', 'hover:text-white');
+                    }
                 }
             }
             localStorage.setItem('adminActiveTab', index);
@@ -334,10 +343,21 @@
         }
 
         document.addEventListener("DOMContentLoaded", function() {
-            let active = localStorage.getItem('adminActiveTab');
-            if (active !== null) {
-                switchTab(parseInt(active));
+            // First: Look for "?tab=" passed from the Java Controller Redirect
+            const urlParams = new URLSearchParams(window.location.search);
+            let active = urlParams.get('tab');
+            
+            // Second: If not in URL, fallback to what was last clicked (stored in localStorage)
+            if (active === null) {
+                active = localStorage.getItem('adminActiveTab');
             }
+            
+            // Third: If absolutely nothing is found, default to tab 0
+            if (active === null) {
+                active = 0;
+            }
+            
+            switchTab(active);
         });
     </script>
 </body>
