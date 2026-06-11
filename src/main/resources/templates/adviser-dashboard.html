@@ -27,198 +27,48 @@
             min-height: 100vh;
         }
 
-        /* Navbar Styling */
-        .navbar {
-            background-color: var(--panel-bg);
-            border-bottom: 1px solid var(--border-color);
-            padding: 1rem 1.5rem;
-        }
+        /* Navbar & Cards */
+        .navbar { background-color: var(--panel-bg); border-bottom: 1px solid var(--border-color); padding: 1rem 1.5rem; }
+        .navbar-brand { color: var(--text-main) !important; font-weight: 700; letter-spacing: 0.5px; }
+        .dashboard-card { background-color: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem; margin-top: 1.5rem; }
 
-        .navbar-brand {
-            color: var(--text-main) !important;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-        }
-
-        /* Card & Panel Styling */
-        .dashboard-card {
-            background-color: var(--panel-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 1.5rem;
-            margin-top: 1.5rem;
-        }
-
-        /* Tab Navigation */
-        .nav-tabs {
-            border-bottom: 1px solid var(--border-color);
-            margin-bottom: 1.5rem;
-        }
-
-        .nav-tabs .nav-link {
-            color: var(--text-light-grey);
-            border: none;
-            padding: 0.75rem 1.5rem;
-            font-weight: 500;
-            background: transparent;
-            border-radius: 0;
-            cursor: pointer;
-            font-size: 1.05rem;
-            transition: color 0.2s ease;
-        }
-
-        .nav-tabs .nav-link:hover {
-            color: var(--text-main);
-            border: none;
-        }
-
-        .nav-tabs .nav-link.active {
-            color: var(--emerald-green) !important;
-            background-color: transparent;
-            border-bottom: 2px solid var(--emerald-green);
-        }
+        /* Custom Tabs Engine */
+        .nav-tabs { border-bottom: 1px solid var(--border-color); margin-bottom: 1.5rem; }
+        .nav-tabs .nav-link { color: var(--text-light-grey); border: none; padding: 0.75rem 1.5rem; font-weight: 500; background: transparent; border-radius: 0; cursor: pointer; font-size: 1.05rem; transition: color 0.2s ease; }
+        .nav-tabs .nav-link:hover { color: var(--text-main); border: none; }
+        .nav-tabs .nav-link.active { color: var(--emerald-green) !important; background-color: transparent; border-bottom: 2px solid var(--emerald-green); }
+        .tab-pane { display: none; opacity: 0; transition: opacity 0.15s linear; }
+        .tab-pane.show { opacity: 1; }
 
         /* Tables */
-        .table {
-            color: var(--text-main);
-            margin-bottom: 0;
-            border-color: var(--border-color);
-        }
-
-        .table > thead {
-            background-color: rgba(0, 0, 0, 0.5);
-        }
-
-        .table > thead > tr > th {
-            color: var(--emerald-green);
-            font-weight: 700;
-            text-transform: uppercase;
-            font-size: 0.85rem;
-            letter-spacing: 0.5px;
-            border-bottom: 2px solid var(--border-color);
-            padding: 1rem;
-            background-color: transparent;
-        }
-
-        .table > tbody > tr > td {
-            padding: 1.25rem 1rem;
-            vertical-align: middle;
-            border-bottom: 1px solid var(--border-color);
-            color: var(--text-main);
-            background-color: transparent;
-            font-weight: 500;
-        }
-
-        .table > tbody > tr:hover > td {
-            background-color: rgba(16, 185, 129, 0.05); 
-            color: var(--text-main);
-        }
-
-        .student-name-text {
-            color: #ffffff;
-            font-weight: 600;
-            font-size: 1.05rem;
-        }
-
-        .student-lrn-text {
-            color: var(--emerald-green);
-            font-family: monospace;
-            font-size: 1rem;
-        }
+        .table { color: var(--text-main); margin-bottom: 0; border-color: var(--border-color); }
+        .table > thead { background-color: rgba(0, 0, 0, 0.5); }
+        .table > thead > tr > th { color: var(--emerald-green); font-weight: 700; text-transform: uppercase; font-size: 0.85rem; border-bottom: 2px solid var(--border-color); padding: 1rem; }
+        .table > tbody > tr > td { padding: 1.25rem 1rem; vertical-align: middle; border-bottom: 1px solid var(--border-color); font-weight: 500; }
+        .table > tbody > tr:hover > td { background-color: rgba(16, 185, 129, 0.05); }
+        .student-name-text { color: #ffffff; font-weight: 600; font-size: 1.05rem; }
+        .student-lrn-text { color: var(--emerald-green); font-family: monospace; font-size: 1rem; }
 
         /* Buttons & Forms */
-        .btn-emerald {
-            background-color: var(--emerald-green);
-            color: #000000;
-            font-weight: 700;
-            border: none;
-            border-radius: 6px;
-            padding: 0.5rem 1.25rem;
-        }
+        .btn-emerald { background-color: var(--emerald-green); color: #000000; font-weight: 700; border: none; border-radius: 6px; padding: 0.5rem 1.25rem; cursor: pointer; }
+        .btn-emerald:hover { background-color: var(--emerald-hover); color: #ffffff; }
+        .btn-outline-emerald { border: 1px solid var(--emerald-green); color: var(--emerald-green); background: transparent; font-weight: 600; cursor: pointer;}
+        .btn-outline-emerald:hover { background-color: var(--emerald-green); color: #000000; }
+        .btn-outline-danger { border: 1px solid var(--danger-red); color: var(--danger-red); background: transparent; font-weight: 600; cursor: pointer;}
+        .btn-outline-danger:hover { background-color: var(--danger-red); color: #ffffff; }
 
-        .btn-emerald:hover {
-            background-color: var(--emerald-hover);
-            color: #ffffff;
-        }
+        .form-control, .form-select { background-color: var(--input-bg); border: 1px solid var(--border-color); color: var(--text-main) !important; border-radius: 6px; }
+        .form-control:focus, .form-select:focus { border-color: var(--emerald-green); box-shadow: 0 0 0 0.25rem rgba(16, 185, 129, 0.15); }
 
-        .btn-outline-emerald {
-            border: 1px solid var(--emerald-green);
-            color: var(--emerald-green);
-            background: transparent;
-            font-weight: 600;
-        }
+        /* Custom Modal Adjustments */
+        .modal { display: none; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); }
+        .modal-content { background-color: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 12px; }
+        .modal-header { border-bottom: 1px solid var(--border-color); }
+        .modal-footer { border-top: 1px solid var(--border-color); }
+        .modal-title { color: var(--emerald-green); font-weight: 700; }
 
-        .btn-outline-emerald:hover {
-            background-color: var(--emerald-green);
-            color: #000000;
-        }
-        
-        .btn-outline-danger {
-            border: 1px solid var(--danger-red);
-            color: var(--danger-red);
-            background: transparent;
-            font-weight: 600;
-        }
-        
-        .btn-outline-danger:hover {
-            background-color: var(--danger-red);
-            color: #ffffff;
-        }
-
-        .form-control, .form-select {
-            background-color: var(--input-bg);
-            border: 1px solid var(--border-color);
-            color: var(--text-main) !important;
-            border-radius: 6px;
-        }
-
-        .form-control:focus, .form-select:focus {
-            background-color: var(--input-bg);
-            border-color: var(--emerald-green);
-            color: var(--text-main) !important;
-            box-shadow: 0 0 0 0.25rem rgba(16, 185, 129, 0.15);
-        }
-        
-        .form-control::placeholder {
-            color: #9ca3af;
-        }
-
-        .modal-content {
-            background-color: var(--panel-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            color: var(--text-main);
-        }
-
-        .modal-header {
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .modal-footer {
-            border-top: 1px solid var(--border-color);
-        }
-
-        .modal-title {
-            color: var(--emerald-green);
-            font-weight: 700;
-        }
-
-        /* Badges */
-        .badge-passed {
-            background-color: rgba(16, 185, 129, 0.15);
-            color: #34d399;
-            border: 1px solid rgba(16, 185, 129, 0.3);
-            font-size: 0.9rem;
-            padding: 0.4rem 0.8rem;
-        }
-
-        .badge-failed {
-            background-color: rgba(239, 68, 68, 0.15);
-            color: #f87171;
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            font-size: 0.9rem;
-            padding: 0.4rem 0.8rem;
-        }
+        .badge-passed { background-color: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); font-size: 0.9rem; padding: 0.4rem 0.8rem; }
+        .badge-failed { background-color: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); font-size: 0.9rem; padding: 0.4rem 0.8rem; }
     </style>
 </head>
 
@@ -243,49 +93,49 @@
 
     <div class="container-fluid px-4 py-4">
 
-        <div th:if="${param.success != null}" class="alert alert-success alert-dismissible fade show" role="alert" style="background-color: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); color: #34d399; font-weight: 500;">
-            <i class="fa-solid fa-circle-check me-2"></i><span th:text="${param.success[0]}">Success</span>
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+        <div th:if="${param.success != null}" id="successAlert" class="alert alert-success d-flex justify-content-between align-items-center" style="background-color: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); color: #34d399; font-weight: 500;">
+            <div><i class="fa-solid fa-circle-check me-2"></i><span th:text="${param.success[0]}">Success</span></div>
+            <button type="button" class="btn-close btn-close-white" onclick="document.getElementById('successAlert').style.display='none'"></button>
         </div>
-        <div th:if="${param.error != null}" class="alert alert-danger alert-dismissible fade show" role="alert" style="background-color: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); color: #f87171; font-weight: 500;">
-            <i class="fa-solid fa-triangle-exclamation me-2"></i><span th:text="${param.error[0]}">Error</span>
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+        <div th:if="${param.error != null}" id="errorAlert" class="alert alert-danger d-flex justify-content-between align-items-center" style="background-color: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); color: #f87171; font-weight: 500;">
+            <div><i class="fa-solid fa-triangle-exclamation me-2"></i><span th:text="${param.error[0]}">Error</span></div>
+            <button type="button" class="btn-close btn-close-white" onclick="document.getElementById('errorAlert').style.display='none'"></button>
         </div>
 
         <div class="dashboard-card">
             
             <ul class="nav nav-tabs" id="dashboardTabs" role="tablist">
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="students-tab" data-bs-toggle="tab" data-bs-target="#students-pane" type="button" role="tab" aria-controls="students-pane" aria-selected="true">
+                    <button class="nav-link active" id="students-tab" onclick="switchTab('students')" type="button">
                         <i class="fa-solid fa-user-graduate me-2"></i>Student Roster
                     </button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="subjects-tab" data-bs-toggle="tab" data-bs-target="#subjects-pane" type="button" role="tab" aria-controls="subjects-pane" aria-selected="false">
+                    <button class="nav-link" id="subjects-tab" onclick="switchTab('subjects')" type="button">
                         <i class="fa-solid fa-book me-2"></i>Subjects Mapping
                     </button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="grading-tab" data-bs-toggle="tab" data-bs-target="#grading-pane" type="button" role="tab" aria-controls="grading-pane" aria-selected="false">
+                    <button class="nav-link" id="grading-tab" onclick="switchTab('grading')" type="button">
                         <i class="fa-solid fa-pen-to-square me-2"></i>Encode Grades
                     </button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="records-tab" data-bs-toggle="tab" data-bs-target="#records-pane" type="button" role="tab" aria-controls="records-pane" aria-selected="false">
+                    <button class="nav-link" id="records-tab" onclick="switchTab('records')" type="button">
                         <i class="fa-solid fa-folder-open me-2"></i>Master Records
                     </button>
                 </li>
             </ul>
 
-            <div class="tab-content" id="dashboardTabsContent">
+            <div class="tab-content">
 
-                <div class="tab-pane fade show active" id="students-pane" role="tabpanel" aria-labelledby="students-tab" tabindex="0">
+                <div class="tab-pane show active" id="students-pane" style="display: block;">
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <div>
                             <h5 class="fw-bold mb-1">Student Roster Management</h5>
                             <p class="mb-0" style="color: var(--text-light-grey);">Manage students currently enrolled in your advisory section.</p>
                         </div>
-                        <button class="btn btn-emerald" data-bs-toggle="modal" data-bs-target="#addStudentModal">
+                        <button class="btn btn-emerald" onclick="openModal('addStudentModal')">
                             <i class="fa-solid fa-plus me-1"></i> Add New Student
                         </button>
                     </div>
@@ -309,9 +159,7 @@
                                         <td class="text-end">
                                             <form action="/adviser/student/delete" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to remove this student?');">
                                                 <input type="hidden" name="lrn" th:value="${student.lrn}">
-                                                <button type="submit" class="btn btn-sm btn-outline-danger">
-                                                    <i class="fa-solid fa-trash me-1"></i> Remove
-                                                </button>
+                                                <button type="submit" class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash me-1"></i> Remove</button>
                                             </form>
                                         </td>
                                     </tr>
@@ -324,7 +172,7 @@
                     </div>
                 </div>
 
-                <div class="tab-pane fade" id="subjects-pane" role="tabpanel" aria-labelledby="subjects-tab" tabindex="0">
+                <div class="tab-pane" id="subjects-pane">
                     <div class="row">
                         <div class="col-lg-4 mb-4 mb-lg-0">
                             <div class="p-4 rounded border" style="background-color: var(--dark-bg); border-color: var(--border-color) !important;">
@@ -334,9 +182,7 @@
                                         <label class="form-label" style="color: var(--text-light-grey); font-weight: 500;">Subject Component Name</label>
                                         <input type="text" name="name" class="form-control py-2" placeholder="e.g. Mathematics 7" required>
                                     </div>
-                                    <button type="submit" class="btn btn-emerald w-100 py-2">
-                                        <i class="fa-solid fa-save me-1"></i> Save Subject
-                                    </button>
+                                    <button type="submit" class="btn btn-emerald w-100 py-2"><i class="fa-solid fa-save me-1"></i> Save Subject</button>
                                 </form>
                             </div>
                         </div>
@@ -363,9 +209,7 @@
                                                 <td class="text-end">
                                                     <form action="/adviser/subject/delete" method="POST" class="d-inline" onsubmit="return confirm('Delete this subject entirely?');">
                                                         <input type="hidden" name="id" th:value="${subject.id}">
-                                                        <button type="submit" class="btn btn-sm btn-outline-danger">
-                                                            <i class="fa-solid fa-trash me-1"></i> Delete
-                                                        </button>
+                                                        <button type="submit" class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash me-1"></i> Delete</button>
                                                     </form>
                                                 </td>
                                             </tr>
@@ -380,7 +224,7 @@
                     </div>
                 </div>
 
-                <div class="tab-pane fade" id="grading-pane" role="tabpanel" aria-labelledby="grading-tab" tabindex="0">
+                <div class="tab-pane" id="grading-pane">
                     <div class="mb-4">
                         <h5 class="fw-bold mb-1">Grade Evaluation Matrix</h5>
                         <p class="mb-0" style="color: var(--text-light-grey);">Select a target student below to encode their specific subject grades.</p>
@@ -401,7 +245,7 @@
                                         <td class="student-lrn-text" th:text="${student.lrn}">1234567890</td>
                                         <td class="student-name-text" th:text="${student.name}">Student Name</td>
                                         <td class="text-end">
-                                            <button class="btn btn-sm btn-outline-emerald" data-bs-toggle="modal" th:data-bs-target="|#gradeModal-${student.lrn}|">
+                                            <button class="btn btn-sm btn-outline-emerald" th:onclick="|openModal('gradeModal-${student.lrn}')|">
                                                 <i class="fa-solid fa-marker me-1"></i> Encode Output
                                             </button>
                                         </td>
@@ -415,7 +259,7 @@
                     </div>
                 </div>
 
-                <div class="tab-pane fade" id="records-pane" role="tabpanel" aria-labelledby="records-tab" tabindex="0">
+                <div class="tab-pane" id="records-pane">
                     <div class="mb-4">
                         <h5 class="fw-bold mb-1">Academic Master Records</h5>
                         <p class="mb-0" style="color: var(--text-light-grey);">Consolidated overview of all finalized encoded grades.</p>
@@ -466,13 +310,13 @@
         </div>
     </div>
 
-    <div class="modal fade" id="addStudentModal" tabindex="-1" aria-hidden="true">
+    <div class="modal" id="addStudentModal">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <form action="/adviser/student/add" method="POST">
                     <div class="modal-header">
                         <h5 class="modal-title"><i class="fa-solid fa-user-plus me-2"></i>Register Student Profile</h5>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <button type="button" class="btn-close btn-close-white" onclick="closeModal('addStudentModal')"></button>
                     </div>
                     <div class="modal-body p-4">
                         <div class="mb-4">
@@ -485,7 +329,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-link text-decoration-none" style="color: var(--text-light-grey);" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-link text-decoration-none" style="color: var(--text-light-grey);" onclick="closeModal('addStudentModal')">Cancel</button>
                         <button type="submit" class="btn btn-emerald px-4">Create Student</button>
                     </div>
                 </form>
@@ -494,15 +338,13 @@
     </div>
 
     <th:block th:if="${students != null and !#lists.isEmpty(students)}">
-        <div th:each="student : ${students}" class="modal fade" th:id="|gradeModal-${student.lrn}|" tabindex="-1" aria-hidden="true">
+        <div th:each="student : ${students}" class="modal" th:id="|gradeModal-${student.lrn}|">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                     <form action="/adviser/grade/save" method="POST" th:onsubmit="|return mapInputNamesToControllerRequirements('${student.lrn}')|">
                         <div class="modal-header">
-                            <h5 class="modal-title">
-                                <i class="fa-solid fa-pen-nib me-2"></i>Evaluate: <span class="text-white" th:text="${student.name}">Student</span>
-                            </h5>
-                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                            <h5 class="modal-title"><i class="fa-solid fa-pen-nib me-2"></i>Evaluate: <span class="text-white" th:text="${student.name}">Student</span></h5>
+                            <button type="button" class="btn-close btn-close-white" th:onclick="|closeModal('gradeModal-${student.lrn}')|"></button>
                         </div>
                         <div class="modal-body p-4">
                             <input type="hidden" name="studentLrn" th:value="${student.lrn}">
@@ -522,7 +364,7 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-link text-decoration-none" style="color: var(--text-light-grey);" data-bs-dismiss="modal">Cancel Request</button>
+                            <button type="button" class="btn btn-link text-decoration-none" style="color: var(--text-light-grey);" th:onclick="|closeModal('gradeModal-${student.lrn}')|">Cancel</button>
                             <button type="submit" class="btn btn-emerald px-4">Submit Evaluation</button>
                         </div>
                     </form>
@@ -531,10 +373,55 @@
         </div>
     </th:block>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
     <script>
-        // 1. Controller Payload Mapper - bridges frontend naming to backend dynamic ID expectations
+        /* 1. Universal Tab Engine (100% Dependency Free) */
+        function switchTab(tabId) {
+            // Hide all content panes securely
+            document.querySelectorAll('.tab-pane').forEach(pane => {
+                pane.classList.remove('show');
+                pane.style.display = 'none';
+            });
+            
+            // Remove active highlight from all tab buttons
+            document.querySelectorAll('.nav-link').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Turn on the selected content pane and highlight button
+            const targetPane = document.getElementById(tabId + '-pane');
+            const targetTab = document.getElementById(tabId + '-tab');
+            
+            if (targetPane && targetTab) {
+                targetPane.style.display = 'block';
+                // Tiny timeout allows smooth opacity fade
+                setTimeout(() => targetPane.classList.add('show'), 10);
+                targetTab.classList.add('active');
+                
+                // Save to browser memory so it stays active on reload
+                localStorage.setItem('adviserActiveTab', tabId);
+            }
+        }
+
+        /* 2. Universal Modal Engine (100% Dependency Free) */
+        function openModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if(modal) {
+                modal.style.display = 'block';
+                setTimeout(() => modal.classList.add('show'), 10);
+                document.body.style.overflow = 'hidden'; // Stop background scrolling
+            }
+        }
+
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if(modal) {
+                modal.classList.remove('show');
+                setTimeout(() => modal.style.display = 'none', 150);
+                document.body.style.overflow = 'auto'; // Restore background scrolling
+            }
+        }
+
+        /* 3. Controller Payload Data Mapper */
         function mapInputNamesToControllerRequirements(lrn) {
             const selectElement = document.getElementById('subjectSelect-' + lrn);
             const inputElement = document.getElementById('gradeInput-' + lrn);
@@ -545,38 +432,24 @@
             return true;
         }
 
-        // 2. Safe Official Bootstrap 5 Implementation for Tab Persistence
+        /* 4. On-Load Initialization Logic */
         document.addEventListener("DOMContentLoaded", function() {
-            // Check URL for redirect target (e.g. ?tab=subjects)
+            // Check Java Controller URL for "?tab=" redirect parameter
             const urlParameters = new URLSearchParams(window.location.search);
             let targetTabId = urlParameters.get('tab');
             
-            // Fallback to local storage
+            // Fallback to local memory if URL parameter isn't present
             if (!targetTabId) {
                 targetTabId = localStorage.getItem('adviserActiveTab');
             }
             
-            // Ensure valid target, default to students
+            // If completely empty, default safely to students tab
             if (!targetTabId || !['students', 'subjects', 'grading', 'records'].includes(targetTabId)) {
                 targetTabId = 'students';
             }
             
-            // Execute the Official Bootstrap Tab Switcher natively (no class stripping!)
-            const tabElementToActivate = document.getElementById(targetTabId + '-tab');
-            if (tabElementToActivate) {
-                const bsTabInstance = new bootstrap.Tab(tabElementToActivate);
-                bsTabInstance.show();
-            }
-
-            // Bind native Bootstrap events to save the tab memory when you click
-            const tabElements = document.querySelectorAll('button[data-bs-toggle="tab"]');
-            tabElements.forEach(btn => {
-                btn.addEventListener('shown.bs.tab', function (event) {
-                    // event.target is the active tab button
-                    const rawId = event.target.id.replace('-tab', '');
-                    localStorage.setItem('adviserActiveTab', rawId);
-                });
-            });
+            // Call our custom switchTab function
+            switchTab(targetTabId);
         });
     </script>
 </body>
