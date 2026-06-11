@@ -8,11 +8,11 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --dark-bg: #09090b;
-            --panel-bg: #141417;
-            --border-color: #2d2d30;
-            --text-main: #ffffff;
-            --input-bg: #09090b;
+            --dark-bg: #09090b;       
+            --panel-bg: #141417;      
+            --border-color: #2d2d30;  
+            --text-main: #ffffff;     
+            --input-bg: #09090b;      
             --accent-red: #ef4444; 
             --accent-hover: #dc2626;
         }
@@ -20,7 +20,7 @@
         body {
             background-color: var(--dark-bg);
             color: var(--text-main);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             min-height: 100vh;
         }
 
@@ -42,7 +42,6 @@
             padding: 1.5rem;
         }
 
-        /* --- VERTICAL SIDEBAR LAYOUT STYLE --- */
         .nav-sidebar {
             display: flex;
             flex-direction: column;
@@ -104,7 +103,7 @@
         }
 
         .table > tbody > tr:hover > td {
-            background-color: rgba(255, 255, 255, 0.03);
+            background-color: rgba(255, 255, 255, 0.03); 
         }
 
         .btn-red-custom {
@@ -206,15 +205,15 @@
     <nav class="navbar navbar-expand-lg">
         <div class="container-fluid">
             <span class="navbar-brand">
-                <i class="fas fa-briefcase-medical me-2 text-red-light"></i>LINHS Clinic Office
+                <i class="fa-solid fa-briefcase-medical me-2 text-red-light"></i>LINHS Clinic Office
             </span>
             <div class="d-flex align-items-center">
                 <span class="me-4" style="font-weight: 500;">
-                    <i class="fas fa-user-nurse me-2"></i>Logged in as: 
+                    <i class="fa-solid fa-user-nurse me-2"></i>Logged in as: 
                     <span class="fw-bold ms-1" th:text="${session.user != null ? session.user.name : 'School Nurse'}">School Nurse</span>
                 </span>
                 <a href="/logout" class="btn btn-outline-danger btn-sm text-white">
-                    <i class="fas fa-sign-out-alt me-1"></i> Sign Out
+                    <i class="fa-solid fa-right-from-bracket me-1"></i> Sign Out
                 </a>
             </div>
         </div>
@@ -262,7 +261,7 @@
                                     <div class="p-4 rounded border" style="background-color: var(--dark-bg); border-color: var(--border-color) !important;">
                                         
                                         <form action="/clinic/log/save" method="POST">
-                                            
+
                                             <div class="mb-4">
                                                 <label class="form-label fw-bold">Search Patient (Student) <span style="color: var(--accent-red) !important;">*</span></label>
                                                 <div class="input-group">
@@ -282,8 +281,8 @@
                                             </div>
 
                                             <div class="mb-4">
-                                                <label class="form-label fw-bold">Medicine / Treatment Given <span class="text-white opacity-50 font-weight-normal">(Optional)</span></label>
-                                                <input type="text" name="medicine" class="form-control py-2" placeholder="e.g., 1 Paracetamol, Resting in bed 2...">
+                                                <label class="form-label fw-bold">Medicine / Treatment Given <span style="color: #a1a1aa !important; font-weight: normal !important;">(Optional)</span></label>
+                                                <input type="text" name="medicine" class="form-control py-2" placeholder="e.g., 1 Paracetamol, Resting in bed...">
                                             </div>
 
                                             <div class="d-flex justify-content-end mt-4 pt-2 border-top" style="border-color: var(--border-color) !important;">
@@ -331,7 +330,7 @@
                                                 </td>
                                                 <td>
                                                     <span th:if="${log.medicine != null and !log.medicine.isEmpty()}" th:text="${log.medicine}">Paracetamol</span>
-                                                    <span th:if="${log.medicine == null or log.medicine.isEmpty()}" class="fst-italic text-white">None given</span>
+                                                    <span th:if="${log.medicine == null or log.medicine.isEmpty()}" style="color: #a1a1aa !important; font-style: italic;">None given</span>
                                                 </td>
                                             </tr>
                                         </th:block>
@@ -377,7 +376,7 @@
                     </div>
                 </th:block>
                 <div th:if="${allStudents == null or #lists.isEmpty(allStudents)}" class="text-center py-4 text-white">
-                    No active records found inside global parameters.
+                    No active student accounts found inside the system database.
                 </div>
             </div>
         </div>

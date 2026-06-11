@@ -12,7 +12,6 @@
             --panel-bg: #141417;      
             --border-color: #2d2d30;  
             --emerald-green: #10b981;    
-            --emerald-hover: #059669;    
             --text-main: #ffffff;     
             --input-bg: #09090b;      
             --danger-red: #ef4444;
@@ -215,10 +214,6 @@
             padding: 0.4rem 0.8rem;
             border-radius: 4px;
         }
-
-        .text-blue-light {
-            color: #60a5fa !important;
-        }
     </style>
 </head>
 
@@ -226,7 +221,7 @@
     <nav class="navbar navbar-expand-lg">
         <div class="container-fluid">
             <span class="navbar-brand">
-                <i class="fa-solid fa-hammer me-2 text-blue-light"></i>LINHS Facilities Office
+                <i class="fa-solid fa-hammer me-2" style="color: var(--accent-blue);"></i>LINHS Facilities Office
             </span>
             <div class="d-flex align-items-center">
                 <span class="me-4" style="font-weight: 500;">
@@ -364,9 +359,37 @@
                                                 </td>
                                             </tr>
                                         </th:block>
-                                        <tr th:if="${facilityLogs == null or #lists.isEmpty(facilityLogs)}">
+                                        
+                                        <th:block th:if="${facilityLogs == null and facilitiesLogs != null and !#lists.isEmpty(facilitiesLogs)}">
+                                            <tr th:each="log : ${facilitiesLogs}">
+                                                <td>
+                                                    <strong class="d-block" th:text="${log.studentName}">John Doe</strong>
+                                                    <small style="font-family: monospace; color: var(--accent-blue) !important;" th:text="${log.lrn}">123456789012</small>
+                                                </td>
+                                                <td><span th:text="${log.facility}">Computer Mouse</span></td>
+                                                <td style="max-width: 280px; white-space: normal; word-break: break-word;">
+                                                    <span th:text="${log.description}">Cable cut</span>
+                                                </td>
+                                                <td class="text-center">
+                                                    <span class="badge" th:classappend="${log.status == 'RESOLVED' or log.status == 'SOLVED'} ? 'badge-solved' : 'badge-unsolved'" th:text="${log.status}">UNSOLVED</span>
+                                                </td>
+                                                <td class="text-end">
+                                                    <form th:if="${log.status == 'UNSOLVED' or log.status == 'PENDING'}" action="/facilities/log/solve" method="POST" class="d-inline" onsubmit="return confirm('Confirm that this student has repaired or paid for the damages?');">
+                                                        <input type="hidden" name="logId" th:value="${log.id}">
+                                                        <button type="submit" class="btn btn-sm btn-outline-blue">
+                                                            <i class="fa-solid fa-check me-1"></i> Mark Repaired/Paid
+                                                        </button>
+                                                    </form>
+                                                    <span th:if="${log.status == 'RESOLVED' or log.status == 'SOLVED'}">
+                                                        <i class="fa-solid fa-lock me-1 text-white"></i> Resolved
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        </th:block>
+
+                                        <tr th:if="${(facilityLogs == null or #lists.isEmpty(facilityLogs)) and (facilitiesLogs == null or #lists.isEmpty(facilitiesLogs))}">
                                             <td colspan="5" class="text-center py-5">
-                                                <i class="fa-solid fa-folder-open fs-2 mb-3 opacity-50 text-blue-light"></i><br>
+                                                <i class="fa-solid fa-folder-open fs-2 mb-3 opacity-50" style="color: var(--accent-blue) !important;"></i><br>
                                                 No facility damage reports have been filed yet.
                                             </td>
                                         </tr>
@@ -400,7 +423,7 @@
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
                                 <strong class="student-name d-block" th:text="${student.name}">Student Name</strong>
-                                <small class="student-lrn text-blue-light" style="font-family: monospace; color: var(--accent-blue) !important;" th:text="${student.lrn}">123456789012</small>
+                                <small class="student-lrn" style="font-family: monospace; color: var(--accent-blue) !important;" th:text="${student.lrn}">123456789012</small>
                             </div>
                         </div>
                     </div>
