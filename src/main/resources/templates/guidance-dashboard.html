@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,20 +8,19 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --dark-bg: #09090b;       
-            --panel-bg: #141417;      
-            --border-color: #2d2d30;  
-            --emerald-green: #10b981;    
-            --emerald-hover: #059669;    
-            --text-main: #ffffff;     
-            --input-bg: #09090b;      
-            --danger-red: #ef4444;
+            --dark-bg: #09090b;
+            --panel-bg: #141417;
+            --border-color: #2d2d30;
+            --text-main: #ffffff;
+            --input-bg: #09090b;
+            --accent-orange: #ff9800;
+            --accent-hover: #e08600;
         }
 
         body {
             background-color: var(--dark-bg);
             color: var(--text-main);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
             min-height: 100vh;
         }
 
@@ -35,7 +33,6 @@
         .navbar-brand {
             color: #ffffff !important;
             font-weight: 700;
-            letter-spacing: 0.5px;
         }
 
         .dashboard-card {
@@ -45,7 +42,6 @@
             padding: 1.5rem;
         }
 
-        /* --- LEFT SIDE SIDEBAR VERTICAL NAVIGATION STYLE --- */
         .nav-sidebar {
             display: flex;
             flex-direction: column;
@@ -68,14 +64,13 @@
 
         .nav-sidebar .nav-link:hover {
             background-color: rgba(255, 255, 255, 0.05);
-            color: #ffffff !important;
             border-color: rgba(255, 255, 255, 0.1);
         }
 
         .nav-sidebar .nav-link.active {
-            color: var(--emerald-green) !important;
-            background-color: rgba(16, 185, 129, 0.1) !important;
-            border: 1px solid var(--emerald-green) !important;
+            color: #000000 !important;
+            background-color: var(--accent-orange) !important;
+            border: 1px solid var(--accent-orange) !important;
         }
 
         .table {
@@ -105,85 +100,52 @@
             border-bottom: 1px solid var(--border-color);
             color: #ffffff !important;
             background-color: transparent;
-            font-weight: 500;
         }
 
         .table > tbody > tr:hover > td {
-            background-color: rgba(255, 255, 255, 0.03); 
-            color: #ffffff !important;
+            background-color: rgba(255, 255, 255, 0.03);
         }
 
-        .btn-emerald {
-            background-color: var(--emerald-green);
-            color: #000000;
+        .btn-orange-custom {
+            background-color: var(--accent-orange);
+            color: #000000 !important;
             font-weight: 700;
             border: none;
             border-radius: 6px;
             padding: 0.5rem 1.25rem;
         }
-
-        .btn-emerald:hover {
-            background-color: var(--emerald-hover);
-            color: #ffffff;
+        
+        .btn-orange-custom:hover {
+            background-color: var(--accent-hover);
+            color: #ffffff !important;
         }
 
-        .btn-outline-emerald {
-            border: 1px solid var(--emerald-green);
-            color: var(--emerald-green);
+        .btn-outline-orange {
+            border: 1px solid var(--accent-orange);
+            color: var(--accent-orange) !important;
             background: transparent;
             font-weight: 600;
         }
 
-        .btn-outline-emerald:hover {
-            background-color: var(--emerald-green);
-            color: #000000;
-        }
-        
-        .btn-outline-danger {
-            border: 1px solid var(--danger-red);
-            color: var(--danger-red);
-            background: transparent;
-            font-weight: 600;
-        }
-        
-        .btn-outline-danger:hover {
-            background-color: var(--danger-red);
-            color: #ffffff;
+        .btn-outline-orange:hover {
+            background-color: var(--accent-orange);
+            color: #000000 !important;
         }
 
         .form-control, .form-select {
-            background-color: var(--input-bg);
-            border: 1px solid var(--border-color);
+            background-color: var(--input-bg) !important;
+            border: 1px solid var(--border-color) !important;
             color: #ffffff !important;
             border-radius: 6px;
         }
 
         .form-control:focus, .form-select:focus {
-            background-color: var(--input-bg);
-            border-color: var(--emerald-green);
+            background-color: var(--input-bg) !important;
+            border-color: var(--accent-orange) !important;
             color: #ffffff !important;
-            box-shadow: 0 0 0 0.25rem rgba(16, 185, 129, 0.15);
+            box-shadow: 0 0 0 0.25rem rgba(255, 152, 0, 0.15);
         }
 
-        .badge-solved {
-            background-color: var(--emerald-green);
-            color: #000000 !important;
-            font-size: 0.9rem;
-            font-weight: 700;
-            padding: 0.4rem 0.8rem;
-            border-radius: 4px;
-        }
-
-        .badge-unsolved {
-            background-color: var(--danger-red);
-            color: #ffffff !important;
-            font-size: 0.9rem;
-            font-weight: 700;
-            padding: 0.4rem 0.8rem;
-            border-radius: 4px;
-        }
-
-        /* Modal Styles */
         .custom-modal {
             display: none;
             position: fixed;
@@ -205,7 +167,6 @@
             max-width: 600px;
             border-radius: 12px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            color: #ffffff !important;
         }
 
         .student-item {
@@ -218,42 +179,54 @@
             background-color: rgba(255, 255, 255, 0.05);
         }
 
-        /* --- COMPREHENSIVE WHITE TEXT OVERRIDES --- */
+        /* STRICT WHITE TEXT OVERRIDES */
         p, small, label, h1, h2, h3, h4, h5, h6, 
-        .form-label, .form-text, .text-muted, .text-light-grey, 
-        span, th, td, option, select, input, textarea {
+        .form-label, .text-muted, span, th, td, input, textarea, option, select {
             color: #ffffff !important;
             opacity: 1 !important;
         }
 
         .form-control::placeholder, textarea::placeholder {
-            color: rgba(255, 255, 255, 0.5) !important;
+            color: #a1a1aa !important;
         }
 
         select option {
             background-color: var(--panel-bg) !important;
             color: #ffffff !important;
         }
+        
+        .badge-solved {
+            background-color: #10b981;
+            color: #ffffff !important;
+            font-size: 0.9rem;
+            font-weight: 700;
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+        }
 
-        .text-emerald {
-            color: var(--emerald-green) !important;
+        .badge-unsolved {
+            background-color: #ef4444;
+            color: #ffffff !important;
+            font-size: 0.9rem;
+            font-weight: 700;
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
         }
     </style>
 </head>
 
 <body>
-
     <nav class="navbar navbar-expand-lg">
         <div class="container-fluid">
             <span class="navbar-brand">
-                <i class="fa-solid fa-shield-alt me-2 text-emerald"></i>LINHS Guidance Office
+                <i class="fa-solid fa-hands-holding-child me-2" style="color: var(--accent-orange);"></i>LINHS Guidance Office
             </span>
             <div class="d-flex align-items-center">
                 <span class="me-4" style="font-weight: 500;">
                     <i class="fa-solid fa-user-shield me-2"></i>Logged in as: 
                     <span class="fw-bold ms-1" th:text="${session.user != null ? session.user.name : 'Guidance Officer'}">Guidance Officer</span>
                 </span>
-                <a href="/logout" class="btn btn-outline-danger btn-sm">
+                <a href="/logout" class="btn btn-outline-danger btn-sm text-white">
                     <i class="fa-solid fa-right-from-bracket me-1"></i> Sign Out
                 </a>
             </div>
@@ -261,27 +234,25 @@
     </nav>
 
     <div class="container-fluid px-4 py-4">
-
-        <div th:if="${param.success != null}" class="alert alert-success alert-dismissible fade show" role="alert" style="background-color: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); color: #ffffff; font-weight: 500;">
-            <i class="fa-solid fa-circle-check me-2 text-emerald"></i>Action completed successfully.
+        <div th:if="${param.success != null}" class="alert alert-success alert-dismissible fade show border-0" role="alert" style="background-color: #065f46;">
+            <i class="fa-solid fa-circle-check me-2 text-white"></i><span class="text-white">Case record updated successfully.</span>
             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
-        <div th:if="${param.error != null}" class="alert alert-danger alert-dismissible fade show" role="alert" style="background-color: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); color: #ffffff; font-weight: 500;">
-            <i class="fa-solid fa-triangle-exclamation me-2"></i>Failed to process request.
+        <div th:if="${param.error != null}" class="alert alert-danger alert-dismissible fade show border-0" role="alert" style="background-color: #991b1b;">
+            <i class="fa-solid fa-triangle-exclamation me-2 text-white"></i><span class="text-white">An error occurred while saving.</span>
             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
 
         <div class="row">
-            
             <div class="col-xl-3 col-lg-4 mb-4">
                 <div class="dashboard-card p-3">
                     <h5 class="fw-bold mb-3 px-2">Portal Navigation</h5>
-                    <div class="nav nav-sidebar" id="guidanceTabs" role="tablist">
+                    <div class="nav nav-sidebar" id="guidanceTabs">
                         <button class="nav-link" id="report-tab" onclick="openTab('report')" type="button">
-                            <i class="fa-solid fa-file-signature me-2"></i>File Liability Report
+                            <i class="fa-solid fa-triangle-exclamation me-2"></i>File Infraction Report
                         </button>
                         <button class="nav-link" id="logs-tab" onclick="openTab('logs')" type="button">
-                            <i class="fa-solid fa-folder-open me-2"></i>Guidance Logs
+                            <i class="fa-solid fa-clipboard-list me-2"></i>Guidance Logs
                         </button>
                     </div>
                 </div>
@@ -294,45 +265,44 @@
                         <div class="tab-pane fade" id="report-pane" style="display: none;">
                             <div class="d-flex justify-content-between align-items-center mb-4">
                                 <div>
-                                    <h5 class="fw-bold mb-1">Create New Incident Report</h5>
-                                    <p class="mb-0">Filing a report here will automatically flag the student's master clearance.</p>
+                                    <h5 class="fw-bold mb-1">Record Student Offense / Infraction</h5>
+                                    <p class="mb-0">Filing an ongoing record auto-attaches an active status block onto the student clearance view.</p>
                                 </div>
                             </div>
 
                             <div class="row">
                                 <div class="col-lg-10">
                                     <div class="p-4 rounded border" style="background-color: var(--dark-bg); border-color: var(--border-color) !important;">
-                                        <form action="/guidance/report/save" method="POST" id="guidanceForm">
+                                        
+                                        <form action="/guidance/report/save" method="POST">
                                             
-                                            <input type="hidden" name="dateLogged" id="autoDateLogged">
-
                                             <div class="mb-4">
-                                                <label class="form-label fw-bold">Search Target Student <span class="text-emerald">*</span></label>
+                                                <label class="form-label fw-bold">Search Target Student <span style="color: var(--accent-orange) !important;">*</span></label>
                                                 <div class="input-group">
                                                     <input type="hidden" name="lrn" id="selectedLrn" required>
-                                                    <input type="hidden" name="studentName" id="selectedName">
+                                                    <input type="hidden" name="studentName" id="selectedName" required>
                                                     
-                                                    <input type="text" class="form-control py-2" id="selectedStudentDisplay" placeholder="Click 'Search Database' to select an enrolled student..." readonly required style="cursor: default;">
-                                                    <button type="button" class="btn btn-outline-emerald" onclick="openSearchModal()">
+                                                    <input type="text" class="form-control py-2" id="selectedStudentDisplay" placeholder="Select a student from database..." readonly required style="cursor: default;">
+                                                    <button type="button" class="btn btn-outline-orange" onclick="openSearchModal()">
                                                         <i class="fas fa-search me-1"></i> Search Database
                                                     </button>
                                                 </div>
                                             </div>
 
                                             <div class="mb-4">
-                                                <label class="form-label fw-bold">Incident / Violation Description <span class="text-emerald">*</span></label>
-                                                <textarea name="incident" class="form-control" rows="3" placeholder="Describe what happened in detail..." required></textarea>
+                                                <label class="form-label fw-bold">Offense Description / Violation Case <span style="color: var(--accent-orange) !important;">*</span></label>
+                                                <textarea name="incident" class="form-control" rows="3" placeholder="Specify violations (e.g., Uniform non-compliance)..." required></textarea>
                                             </div>
 
                                             <div class="mb-4">
-                                                <label class="form-label fw-bold">Action to Take <span class="text-emerald">*</span></label>
-                                                <textarea name="actionTaken" class="form-control" rows="2" placeholder="e.g., Parent meeting required, 3-day suspension..." required></textarea>
+                                                <label class="form-label fw-bold">Action Taken <span style="color: var(--accent-orange) !important;">*</span></label>
+                                                <textarea name="actionTaken" class="form-control" rows="2" placeholder="e.g., Parent meeting required..." required></textarea>
                                             </div>
 
                                             <div class="d-flex justify-content-end mt-4 pt-2 border-top" style="border-color: var(--border-color) !important;">
-                                                <button type="reset" class="btn btn-link text-decoration-none me-3" style="color: #ffffff;">Clear Form</button>
-                                                <button type="submit" class="btn btn-emerald px-4 py-2">
-                                                    <i class="fa-solid fa-paper-plane me-2"></i> Submit Liability Report
+                                                <button type="reset" class="btn btn-link text-decoration-none me-3 text-white">Clear Form</button>
+                                                <button type="submit" class="btn btn-orange-custom px-4 py-2">
+                                                    <i class="fa-solid fa-file-export me-2"></i> Submit Incident Report
                                                 </button>
                                             </div>
                                         </form>
@@ -344,8 +314,8 @@
                         <div class="tab-pane fade" id="logs-pane" style="display: none;">
                             <div class="d-flex justify-content-between align-items-center mb-4">
                                 <div>
-                                    <h5 class="fw-bold mb-1">Master Liability Logs</h5>
-                                    <p class="mb-0"><i class="fa-solid fa-circle-info me-1 text-emerald"></i> Unsolved records block the student's final clearance.</p>
+                                    <h5 class="fw-bold mb-1">Master Guidance Case Records</h5>
+                                    <p class="mb-0"><i class="fa-solid fa-circle-info me-1" style="color: var(--accent-orange) !important;"></i> Unresolved cases hold up structural system clearances.</p>
                                 </div>
                             </div>
 
@@ -354,10 +324,9 @@
                                     <thead>
                                         <tr>
                                             <th>Student Target</th>
-                                            <th>Incident Details</th>
-                                            <th>Required Action</th>
-                                            <th class="text-center">Clearance Status</th>
-                                            <th class="text-end">Resolution Controls</th>
+                                            <th>Infraction Details</th>
+                                            <th class="text-center">Status</th>
+                                            <th class="text-end">Controls</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -365,34 +334,31 @@
                                             <tr th:each="log : ${guidanceLogs}">
                                                 <td>
                                                     <strong class="d-block" th:text="${log.studentName}">John Doe</strong>
-                                                    <small class="text-emerald" style="font-family: monospace;" th:text="${log.lrn}">123456789012</small>
+                                                    <small style="font-family: monospace; color: var(--accent-orange) !important;" th:text="${log.lrn}">123456789012</small>
                                                 </td>
-                                                <td style="max-width: 250px;">
-                                                    <span th:text="${log.incident}">Fighting in hallway</span>
-                                                </td>
-                                                <td>
-                                                    <span th:text="${log.actionTaken}">Parent meeting</span>
+                                                <td style="max-width: 280px; white-space: normal; word-break: break-word;">
+                                                    <span th:text="${log.incident}">Violation Entry</span>
                                                 </td>
                                                 <td class="text-center">
-                                                    <span class="badge" th:classappend="${log.status == 'SOLVED'} ? 'badge-solved' : 'badge-unsolved'" th:text="${log.status}">UNSOLVED</span>
+                                                    <span class="badge" th:classappend="${log.status == 'RESOLVED' or log.status == 'SOLVED'} ? 'badge-solved' : 'badge-unsolved'" th:text="${log.status}">UNSOLVED</span>
                                                 </td>
                                                 <td class="text-end">
-                                                    <form th:if="${log.status == 'UNSOLVED'}" action="/guidance/log/solve" method="POST" class="d-inline" onsubmit="return confirm('Mark this liability as completely solved?');">
+                                                    <form th:if="${log.status == 'UNSOLVED' or log.status == 'PENDING'}" action="/guidance/log/solve" method="POST" class="d-inline" onsubmit="return confirm('Mark this offense as fully resolved?');">
                                                         <input type="hidden" name="logId" th:value="${log.id}">
-                                                        <button type="submit" class="btn btn-sm btn-outline-emerald">
-                                                            <i class="fa-solid fa-check me-1"></i> Mark as Solved
+                                                        <button type="submit" class="btn btn-sm btn-outline-orange">
+                                                            <i class="fa-solid fa-check me-1"></i> Resolve Case
                                                         </button>
                                                     </form>
-                                                    <span th:if="${log.status == 'SOLVED'}">
-                                                        <i class="fa-solid fa-lock me-1 text-emerald"></i> Resolved
+                                                    <span th:if="${log.status == 'RESOLVED' or log.status == 'SOLVED'}">
+                                                        <i class="fa-solid fa-lock me-1 text-white"></i> Closed
                                                     </span>
                                                 </td>
                                             </tr>
                                         </th:block>
                                         <tr th:if="${guidanceLogs == null or #lists.isEmpty(guidanceLogs)}">
-                                            <td colspan="5" class="text-center py-5">
+                                            <td colspan="4" class="text-center py-5">
                                                 <i class="fa-solid fa-folder-open fs-2 mb-3 opacity-50"></i><br>
-                                                No liability reports have been filed yet.
+                                                No incident logs have been recorded yet.
                                             </td>
                                         </tr>
                                     </tbody>
@@ -403,15 +369,14 @@
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
 
     <div id="studentSearchModal" class="custom-modal">
         <div class="custom-modal-content">
             <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3" style="border-color: var(--border-color) !important;">
-                <h5 class="mb-0 fw-bold"><i class="fas fa-users me-2 text-emerald"></i>Global Student Database</h5>
-                <button type="button" class="btn btn-sm btn-outline-light" onclick="closeSearchModal()">
+                <h5 class="mb-0 fw-bold"><i class="fas fa-users me-2" style="color: var(--accent-orange) !important;"></i>Global Student Database</h5>
+                <button type="button" class="btn btn-sm btn-outline-light text-white" onclick="closeSearchModal()">
                     <i class="fas fa-times me-1"></i> Close
                 </button>
             </div>
@@ -426,27 +391,20 @@
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
                                 <strong class="student-name d-block" th:text="${student.name}">Student Name</strong>
-                                <small class="student-lrn text-emerald" style="font-family: monospace;" th:text="${student.lrn}">123456789012</small>
+                                <small class="student-lrn" style="font-family: monospace; color: var(--accent-orange) !important;" th:text="${student.lrn}">123456789012</small>
                             </div>
                         </div>
                     </div>
                 </th:block>
-                <div th:if="${allStudents == null or #lists.isEmpty(allStudents)}" class="text-center py-4">
-                    No students found in the global database. Ensure Advisers have added students.
+                <div th:if="${allStudents == null or #lists.isEmpty(allStudents)}" class="text-center py-4 text-white">
+                    No active student accounts found inside the system database.
                 </div>
             </div>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
     <script>
-        // Automatic Date Injector to prevent Database Crashes
-        document.getElementById("guidanceForm").addEventListener("submit", function() {
-            document.getElementById("autoDateLogged").value = new Date().toISOString().split('T')[0];
-        });
-
-        // Tab Engine
         function openTab(tabId) {
             try {
                 const targetPane = document.getElementById(tabId + '-pane');
@@ -461,23 +419,16 @@
                     
                     targetTab.classList.add('active');
                     targetPane.style.display = 'block';
-                    
-                    setTimeout(() => {
-                        targetPane.classList.add('show', 'active');
-                    }, 10);
-                    
-                    localStorage.setItem('safeGuidanceTab', tabId);
+                    setTimeout(() => { targetPane.classList.add('show', 'active'); }, 10);
+                    localStorage.setItem('guidanceActiveTab', tabId);
                 } else {
                     document.getElementById('report-tab').classList.add('active');
                     document.getElementById('report-pane').style.display = 'block';
                     document.getElementById('report-pane').classList.add('show', 'active');
                 }
-            } catch (error) {
-                console.error("Tab System Encountered an Error:", error);
-            }
+            } catch (err) { console.error(err); }
         }
 
-        // Custom Modal Engine
         function openSearchModal() {
             document.getElementById('studentSearchModal').style.display = 'block';
             document.body.style.overflow = 'hidden'; 
@@ -489,40 +440,27 @@
             document.body.style.overflow = 'auto'; 
         }
 
-        // Connect selected student to the form
         function selectStudent(lrn, name) {
             document.getElementById('selectedLrn').value = lrn;
             document.getElementById('selectedName').value = name;
             document.getElementById('selectedStudentDisplay').value = name + ' (LRN: ' + lrn + ')';
-            document.getElementById('selectedStudentDisplay').style.borderColor = 'var(--emerald-green)';
+            document.getElementById('selectedStudentDisplay').style.borderColor = 'var(--accent-orange)';
             closeSearchModal();
         }
 
-        // Live Search Filter Engine
         function filterStudentList() {
             let filter = document.getElementById('modalSearchInput').value.toLowerCase();
             let items = document.querySelectorAll('.student-item');
-            
             items.forEach(item => {
                 let name = item.querySelector('.student-name').textContent.toLowerCase();
                 let lrn = item.querySelector('.student-lrn').textContent.toLowerCase();
-                
-                if (name.includes(filter) || lrn.includes(filter)) {
-                    item.style.display = 'block';
-                } else {
-                    item.style.display = 'none';
-                }
+                item.style.display = (name.includes(filter) || lrn.includes(filter)) ? 'block' : 'none';
             });
         }
 
-        // On Load Logic
         document.addEventListener("DOMContentLoaded", function() {
-            let savedTab = localStorage.getItem('safeGuidanceTab');
-            if(savedTab) {
-                openTab(savedTab);
-            } else {
-                openTab('report');
-            }
+            let savedTab = localStorage.getItem('guidanceActiveTab');
+            openTab(savedTab ? savedTab : 'report');
         });
     </script>
 </body>

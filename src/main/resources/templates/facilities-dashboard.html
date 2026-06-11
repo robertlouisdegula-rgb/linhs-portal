@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -17,6 +16,8 @@
             --text-main: #ffffff;     
             --input-bg: #09090b;      
             --danger-red: #ef4444;
+            --accent-blue: #3b82f6; 
+            --accent-blue-hover: #2563eb;
         }
 
         body {
@@ -35,7 +36,6 @@
         .navbar-brand {
             color: #ffffff !important;
             font-weight: 700;
-            letter-spacing: 0.5px;
         }
 
         .dashboard-card {
@@ -45,7 +45,6 @@
             padding: 1.5rem;
         }
 
-        /* --- LEFT SIDE SIDEBAR VERTICAL NAVIGATION STYLE --- */
         .nav-sidebar {
             display: flex;
             flex-direction: column;
@@ -68,14 +67,13 @@
 
         .nav-sidebar .nav-link:hover {
             background-color: rgba(255, 255, 255, 0.05);
-            color: #ffffff !important;
             border-color: rgba(255, 255, 255, 0.1);
         }
 
         .nav-sidebar .nav-link.active {
-            color: var(--emerald-green) !important;
-            background-color: rgba(16, 185, 129, 0.1) !important;
-            border: 1px solid var(--emerald-green) !important;
+            color: #ffffff !important;
+            background-color: rgba(59, 130, 246, 0.1) !important;
+            border: 1px solid var(--accent-blue) !important;
         }
 
         .table {
@@ -105,85 +103,52 @@
             border-bottom: 1px solid var(--border-color);
             color: #ffffff !important;
             background-color: transparent;
-            font-weight: 500;
         }
 
         .table > tbody > tr:hover > td {
             background-color: rgba(255, 255, 255, 0.03); 
-            color: #ffffff !important;
         }
 
-        .btn-emerald {
-            background-color: var(--emerald-green);
-            color: #000000;
+        .btn-blue-custom {
+            background-color: var(--accent-blue);
+            color: #ffffff !important;
             font-weight: 700;
             border: none;
             border-radius: 6px;
             padding: 0.5rem 1.25rem;
         }
-
-        .btn-emerald:hover {
-            background-color: var(--emerald-hover);
-            color: #ffffff;
+        
+        .btn-blue-custom:hover {
+            background-color: var(--accent-blue-hover);
+            color: #ffffff !important;
         }
 
-        .btn-outline-emerald {
-            border: 1px solid var(--emerald-green);
-            color: var(--emerald-green);
+        .btn-outline-blue {
+            border: 1px solid var(--accent-blue);
+            color: var(--accent-blue) !important;
             background: transparent;
             font-weight: 600;
         }
 
-        .btn-outline-emerald:hover {
-            background-color: var(--emerald-green);
-            color: #000000;
-        }
-        
-        .btn-outline-danger {
-            border: 1px solid var(--danger-red);
-            color: var(--danger-red);
-            background: transparent;
-            font-weight: 600;
-        }
-        
-        .btn-outline-danger:hover {
-            background-color: var(--danger-red);
-            color: #ffffff;
+        .btn-outline-blue:hover {
+            background-color: var(--accent-blue);
+            color: #ffffff !important;
         }
 
         .form-control, .form-select {
-            background-color: var(--input-bg);
-            border: 1px solid var(--border-color);
+            background-color: var(--input-bg) !important;
+            border: 1px solid var(--border-color) !important;
             color: #ffffff !important;
             border-radius: 6px;
         }
 
         .form-control:focus, .form-select:focus {
-            background-color: var(--input-bg);
-            border-color: var(--emerald-green);
+            background-color: var(--input-bg) !important;
+            border-color: var(--accent-blue) !important;
             color: #ffffff !important;
-            box-shadow: 0 0 0 0.25rem rgba(16, 185, 129, 0.15);
+            box-shadow: 0 0 0 0.25rem rgba(59, 130, 246, 0.15);
         }
 
-        .badge-solved {
-            background-color: var(--emerald-green);
-            color: #000000 !important;
-            font-size: 0.9rem;
-            font-weight: 700;
-            padding: 0.4rem 0.8rem;
-            border-radius: 4px;
-        }
-
-        .badge-unsolved {
-            background-color: var(--danger-red);
-            color: #ffffff !important;
-            font-size: 0.9rem;
-            font-weight: 700;
-            padding: 0.4rem 0.8rem;
-            border-radius: 4px;
-        }
-
-        /* Modal Styles */
         .custom-modal {
             display: none;
             position: fixed;
@@ -205,7 +170,6 @@
             max-width: 600px;
             border-radius: 12px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            color: #ffffff !important;
         }
 
         .student-item {
@@ -218,42 +182,58 @@
             background-color: rgba(255, 255, 255, 0.05);
         }
 
-        /* --- COMPREHENSIVE WHITE TEXT OVERRIDES --- */
+        /* STRICT WHITE TEXT OVERRIDES */
         p, small, label, h1, h2, h3, h4, h5, h6, 
-        .form-label, .form-text, .text-muted, .text-light-grey, 
-        span, th, td, option, select, input, textarea {
+        .form-label, .text-muted, span, th, td, input, textarea, option, select {
             color: #ffffff !important;
             opacity: 1 !important;
         }
 
         .form-control::placeholder, textarea::placeholder {
-            color: rgba(255, 255, 255, 0.5) !important;
+            color: #a1a1aa !important;
         }
 
         select option {
             background-color: var(--panel-bg) !important;
             color: #ffffff !important;
         }
+        
+        .badge-solved {
+            background-color: #10b981;
+            color: #ffffff !important;
+            font-size: 0.9rem;
+            font-weight: 700;
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+        }
 
-        .text-emerald {
-            color: var(--emerald-green) !important;
+        .badge-unsolved {
+            background-color: #ef4444;
+            color: #ffffff !important;
+            font-size: 0.9rem;
+            font-weight: 700;
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+        }
+
+        .text-blue-light {
+            color: #60a5fa !important;
         }
     </style>
 </head>
 
 <body>
-
     <nav class="navbar navbar-expand-lg">
         <div class="container-fluid">
             <span class="navbar-brand">
-                <i class="fa-solid fa-hammer me-2 text-emerald"></i>LINHS Facilities Office
+                <i class="fa-solid fa-hammer me-2 text-blue-light"></i>LINHS Facilities Office
             </span>
             <div class="d-flex align-items-center">
                 <span class="me-4" style="font-weight: 500;">
-                    <i class="fa-solid fa-user-gear me-2"></i>Logged in as: 
+                    <i class="fa-solid fa-user-hard-hat me-2"></i>Logged in as: 
                     <span class="fw-bold ms-1" th:text="${session.user != null ? session.user.name : 'Facilities Admin'}">Facilities Admin</span>
                 </span>
-                <a href="/logout" class="btn btn-outline-danger btn-sm">
+                <a href="/logout" class="btn btn-outline-danger btn-sm text-white">
                     <i class="fa-solid fa-right-from-bracket me-1"></i> Sign Out
                 </a>
             </div>
@@ -261,22 +241,20 @@
     </nav>
 
     <div class="container-fluid px-4 py-4">
-
-        <div th:if="${param.success != null}" class="alert alert-success alert-dismissible fade show" role="alert" style="background-color: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); color: #ffffff; font-weight: 500;">
-            <i class="fa-solid fa-circle-check me-2 text-emerald"></i>Action completed successfully.
+        <div th:if="${param.success != null}" class="alert alert-success alert-dismissible fade show border-0" role="alert" style="background-color: #065f46;">
+            <i class="fa-solid fa-circle-check me-2 text-white"></i><span class="text-white">Damage report logged successfully.</span>
             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
-        <div th:if="${param.error != null}" class="alert alert-danger alert-dismissible fade show" role="alert" style="background-color: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); color: #ffffff; font-weight: 500;">
-            <i class="fa-solid fa-triangle-exclamation me-2"></i>Failed to process request.
+        <div th:if="${param.error != null}" class="alert alert-danger alert-dismissible fade show border-0" role="alert" style="background-color: #991b1b;">
+            <i class="fa-solid fa-triangle-exclamation me-2 text-white"></i><span class="text-white">An error occurred while saving.</span>
             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
 
         <div class="row">
-            
             <div class="col-xl-3 col-lg-4 mb-4">
                 <div class="dashboard-card p-3">
                     <h5 class="fw-bold mb-3 px-2">Portal Navigation</h5>
-                    <div class="nav nav-sidebar" id="facilitiesTabs" role="tablist">
+                    <div class="nav nav-sidebar" id="facilitiesTabs">
                         <button class="nav-link" id="report-tab" onclick="openTab('report')" type="button">
                             <i class="fa-solid fa-triangle-exclamation me-2"></i>File Damage Report
                         </button>
@@ -302,36 +280,35 @@
                             <div class="row">
                                 <div class="col-lg-10">
                                     <div class="p-4 rounded border" style="background-color: var(--dark-bg); border-color: var(--border-color) !important;">
-                                        <form action="/facilities/report/save" method="POST" id="facilitiesForm">
+                                        
+                                        <form action="/facilities/report/save" method="POST">
                                             
-                                            <input type="hidden" name="dateLogged" id="autoDateLogged">
-
                                             <div class="mb-4">
-                                                <label class="form-label fw-bold">Search Responsible Student <span class="text-emerald">*</span></label>
+                                                <label class="form-label fw-bold">Search Responsible Student <span style="color: var(--accent-blue) !important;">*</span></label>
                                                 <div class="input-group">
                                                     <input type="hidden" name="lrn" id="selectedLrn" required>
-                                                    <input type="hidden" name="studentName" id="selectedName">
+                                                    <input type="hidden" name="studentName" id="selectedName" required>
                                                     
-                                                    <input type="text" class="form-control py-2" id="selectedStudentDisplay" placeholder="Click 'Search Database' to select a student..." readonly required style="cursor: default;">
-                                                    <button type="button" class="btn btn-outline-emerald" onclick="openSearchModal()">
+                                                    <input type="text" class="form-control py-2" id="selectedStudentDisplay" placeholder="Select a student from database..." readonly required style="cursor: default;">
+                                                    <button type="button" class="btn btn-outline-blue" onclick="openSearchModal()">
                                                         <i class="fas fa-search me-1"></i> Search Database
                                                     </button>
                                                 </div>
                                             </div>
 
                                             <div class="mb-4">
-                                                <label class="form-label fw-bold">Facility / Equipment Damaged <span class="text-emerald">*</span></label>
+                                                <label class="form-label fw-bold">Facility / Equipment Damaged <span style="color: var(--accent-blue) !important;">*</span></label>
                                                 <input type="text" name="facility" class="form-control py-2" placeholder="e.g., Library Chair, Computer Monitor..." required>
                                             </div>
 
                                             <div class="mb-4">
-                                                <label class="form-label fw-bold">Damage Description <span class="text-emerald">*</span></label>
+                                                <label class="form-label fw-bold">Damage Description <span style="color: var(--accent-blue) !important;">*</span></label>
                                                 <textarea name="description" class="form-control" rows="3" placeholder="Describe the severity and specifics of the damage..." required></textarea>
                                             </div>
 
                                             <div class="d-flex justify-content-end mt-4 pt-2 border-top" style="border-color: var(--border-color) !important;">
-                                                <button type="reset" class="btn btn-link text-decoration-none me-3" style="color: #ffffff;">Clear Form</button>
-                                                <button type="submit" class="btn btn-emerald px-4 py-2">
+                                                <button type="reset" class="btn btn-link text-decoration-none me-3 text-white">Clear Form</button>
+                                                <button type="submit" class="btn btn-blue-custom px-4 py-2">
                                                     <i class="fa-solid fa-file-export me-2"></i> Submit Damage Report
                                                 </button>
                                             </div>
@@ -345,7 +322,7 @@
                             <div class="d-flex justify-content-between align-items-center mb-4">
                                 <div>
                                     <h5 class="fw-bold mb-1">Master Facility Damage Logs</h5>
-                                    <p class="mb-0"><i class="fa-solid fa-circle-info me-1 text-emerald"></i> Unsolved damage records will block the student's final clearance.</p>
+                                    <p class="mb-0"><i class="fa-solid fa-circle-info me-1" style="color: var(--accent-blue) !important;"></i> Unsolved damage records will block the student's final clearance.</p>
                                 </div>
                             </div>
 
@@ -356,8 +333,8 @@
                                             <th>Student Target</th>
                                             <th>Equipment / Facility</th>
                                             <th>Damage Description</th>
-                                            <th class="text-center">Clearance Status</th>
-                                            <th class="text-end">Resolution Controls</th>
+                                            <th class="text-center">Status</th>
+                                            <th class="text-end">Controls</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -365,33 +342,31 @@
                                             <tr th:each="log : ${facilityLogs}">
                                                 <td>
                                                     <strong class="d-block" th:text="${log.studentName}">John Doe</strong>
-                                                    <small class="text-emerald" style="font-family: monospace;" th:text="${log.lrn}">123456789012</small>
+                                                    <small style="font-family: monospace; color: var(--accent-blue) !important;" th:text="${log.lrn}">123456789012</small>
                                                 </td>
-                                                <td>
-                                                    <span th:text="${log.facility}">Computer Mouse</span>
-                                                </td>
-                                                <td>
+                                                <td><span th:text="${log.facility}">Computer Mouse</span></td>
+                                                <td style="max-width: 280px; white-space: normal; word-break: break-word;">
                                                     <span th:text="${log.description}">Cable cut</span>
                                                 </td>
                                                 <td class="text-center">
-                                                    <span class="badge" th:classappend="${log.status == 'SOLVED'} ? 'badge-solved' : 'badge-unsolved'" th:text="${log.status}">UNSOLVED</span>
+                                                    <span class="badge" th:classappend="${log.status == 'RESOLVED' or log.status == 'SOLVED'} ? 'badge-solved' : 'badge-unsolved'" th:text="${log.status}">UNSOLVED</span>
                                                 </td>
                                                 <td class="text-end">
-                                                    <form th:if="${log.status == 'UNSOLVED'}" action="/facilities/log/solve" method="POST" class="d-inline" onsubmit="return confirm('Confirm that this student has repaired or paid for the damages?');">
+                                                    <form th:if="${log.status == 'UNSOLVED' or log.status == 'PENDING'}" action="/facilities/log/solve" method="POST" class="d-inline" onsubmit="return confirm('Confirm that this student has repaired or paid for the damages?');">
                                                         <input type="hidden" name="logId" th:value="${log.id}">
-                                                        <button type="submit" class="btn btn-sm btn-outline-emerald">
+                                                        <button type="submit" class="btn btn-sm btn-outline-blue">
                                                             <i class="fa-solid fa-check me-1"></i> Mark Repaired/Paid
                                                         </button>
                                                     </form>
-                                                    <span th:if="${log.status == 'SOLVED'}">
-                                                        <i class="fa-solid fa-lock me-1 text-emerald"></i> Resolved
+                                                    <span th:if="${log.status == 'RESOLVED' or log.status == 'SOLVED'}">
+                                                        <i class="fa-solid fa-lock me-1 text-white"></i> Resolved
                                                     </span>
                                                 </td>
                                             </tr>
                                         </th:block>
                                         <tr th:if="${facilityLogs == null or #lists.isEmpty(facilityLogs)}">
                                             <td colspan="5" class="text-center py-5">
-                                                <i class="fa-solid fa-folder-open fs-2 mb-3 opacity-50"></i><br>
+                                                <i class="fa-solid fa-folder-open fs-2 mb-3 opacity-50 text-blue-light"></i><br>
                                                 No facility damage reports have been filed yet.
                                             </td>
                                         </tr>
@@ -403,15 +378,14 @@
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
 
     <div id="studentSearchModal" class="custom-modal">
         <div class="custom-modal-content">
             <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3" style="border-color: var(--border-color) !important;">
-                <h5 class="mb-0 fw-bold"><i class="fas fa-users me-2 text-emerald"></i>Global Student Database</h5>
-                <button type="button" class="btn btn-sm btn-outline-light" onclick="closeSearchModal()">
+                <h5 class="mb-0 fw-bold"><i class="fas fa-users me-2" style="color: var(--accent-blue) !important;"></i>Global Student Database</h5>
+                <button type="button" class="btn btn-sm btn-outline-light text-white" onclick="closeSearchModal()">
                     <i class="fas fa-times me-1"></i> Close
                 </button>
             </div>
@@ -426,27 +400,20 @@
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
                                 <strong class="student-name d-block" th:text="${student.name}">Student Name</strong>
-                                <small class="student-lrn text-emerald" style="font-family: monospace;" th:text="${student.lrn}">123456789012</small>
+                                <small class="student-lrn text-blue-light" style="font-family: monospace; color: var(--accent-blue) !important;" th:text="${student.lrn}">123456789012</small>
                             </div>
                         </div>
                     </div>
                 </th:block>
-                <div th:if="${allStudents == null or #lists.isEmpty(allStudents)}" class="text-center py-4">
-                    No students found in the global database. Ensure Advisers have added students.
+                <div th:if="${allStudents == null or #lists.isEmpty(allStudents)}" class="text-center py-4 text-white">
+                    No active student accounts found inside the system database.
                 </div>
             </div>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
     <script>
-        // Automatic Timestamp formulation to address 500 error mapping constraints
-        document.getElementById("facilitiesForm").addEventListener("submit", function() {
-            document.getElementById("autoDateLogged").value = new Date().toISOString().split('T')[0];
-        });
-
-        // Tab System Navigation Engine
         function openTab(tabId) {
             try {
                 const targetPane = document.getElementById(tabId + '-pane');
@@ -461,23 +428,16 @@
                     
                     targetTab.classList.add('active');
                     targetPane.style.display = 'block';
-                    
-                    setTimeout(() => {
-                        targetPane.classList.add('show', 'active');
-                    }, 10);
-                    
-                    localStorage.setItem('safeFacilitiesTab', tabId);
+                    setTimeout(() => { targetPane.classList.add('show', 'active'); }, 10);
+                    localStorage.setItem('facilitiesActiveTab', tabId);
                 } else {
                     document.getElementById('report-tab').classList.add('active');
                     document.getElementById('report-pane').style.display = 'block';
                     document.getElementById('report-pane').classList.add('show', 'active');
                 }
-            } catch (error) {
-                console.error("Tab Navigation Error Encountered:", error);
-            }
+            } catch (err) { console.error(err); }
         }
 
-        // Search Database Modal Logic
         function openSearchModal() {
             document.getElementById('studentSearchModal').style.display = 'block';
             document.body.style.overflow = 'hidden'; 
@@ -489,40 +449,27 @@
             document.body.style.overflow = 'auto'; 
         }
 
-        // Map Selection attributes into target controls
         function selectStudent(lrn, name) {
             document.getElementById('selectedLrn').value = lrn;
             document.getElementById('selectedName').value = name;
             document.getElementById('selectedStudentDisplay').value = name + ' (LRN: ' + lrn + ')';
-            document.getElementById('selectedStudentDisplay').style.borderColor = 'var(--emerald-green)';
+            document.getElementById('selectedStudentDisplay').style.borderColor = 'var(--accent-blue)';
             closeSearchModal();
         }
 
-        // Live Realtime list filtering system 
         function filterStudentList() {
             let filter = document.getElementById('modalSearchInput').value.toLowerCase();
             let items = document.querySelectorAll('.student-item');
-            
             items.forEach(item => {
                 let name = item.querySelector('.student-name').textContent.toLowerCase();
                 let lrn = item.querySelector('.student-lrn').textContent.toLowerCase();
-                
-                if (name.includes(filter) || lrn.includes(filter)) {
-                    item.style.display = 'block';
-                } else {
-                    item.style.display = 'none';
-                }
+                item.style.display = (name.includes(filter) || lrn.includes(filter)) ? 'block' : 'none';
             });
         }
 
-        // On Load Logic
         document.addEventListener("DOMContentLoaded", function() {
-            let savedTab = localStorage.getItem('safeFacilitiesTab');
-            if(savedTab) {
-                openTab(savedTab);
-            } else {
-                openTab('report');
-            }
+            let savedTab = localStorage.getItem('facilitiesActiveTab');
+            openTab(savedTab ? savedTab : 'report');
         });
     </script>
 </body>

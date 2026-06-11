@@ -69,7 +69,7 @@
         }
 
         .nav-sidebar .nav-link.active {
-            color: var(--accent-red) !important;
+            color: #ffffff !important;
             background-color: rgba(239, 68, 68, 0.1) !important;
             border: 1px solid var(--accent-red) !important;
         }
@@ -109,7 +109,7 @@
 
         .btn-red-custom {
             background-color: var(--accent-red);
-            color: #ffffff;
+            color: #ffffff !important;
             font-weight: 700;
             border: none;
             border-radius: 6px;
@@ -118,35 +118,35 @@
         
         .btn-red-custom:hover {
             background-color: var(--accent-hover);
+            color: #ffffff !important;
         }
 
         .btn-outline-danger {
             border: 1px solid var(--accent-red);
-            color: var(--accent-red);
+            color: var(--accent-red) !important;
             background: transparent;
             font-weight: 600;
         }
 
         .btn-outline-danger:hover {
             background-color: var(--accent-red);
-            color: #ffffff;
+            color: #ffffff !important;
         }
 
-        .form-control {
-            background-color: var(--input-bg);
-            border: 1px solid var(--border-color);
+        .form-control, .form-select {
+            background-color: var(--input-bg) !important;
+            border: 1px solid var(--border-color) !important;
             color: #ffffff !important;
             border-radius: 6px;
         }
 
-        .form-control:focus {
-            background-color: var(--input-bg);
-            border-color: var(--accent-red);
+        .form-control:focus, .form-select:focus {
+            background-color: var(--input-bg) !important;
+            border-color: var(--accent-red) !important;
             color: #ffffff !important;
             box-shadow: 0 0 0 0.25rem rgba(239, 68, 68, 0.15);
         }
 
-        /* Modal Custom Styling */
         .custom-modal {
             display: none;
             position: fixed;
@@ -180,15 +180,20 @@
             background-color: rgba(255, 255, 255, 0.05);
         }
 
-        /* --- COMPREHENSIVE TEXT BRIGHTNESS OVERRIDES --- */
+        /* STRICT WHITE TEXT OVERRIDES */
         p, small, label, h1, h2, h3, h4, h5, h6, 
-        .form-label, .text-muted, span, th, td, input, textarea {
+        .form-label, .text-muted, span, th, td, input, textarea, option, select {
             color: #ffffff !important;
             opacity: 1 !important;
         }
 
         .form-control::placeholder, textarea::placeholder {
-            color: rgba(255, 255, 255, 0.4) !important;
+            color: #a1a1aa !important;
+        }
+
+        select option {
+            background-color: var(--panel-bg) !important;
+            color: #ffffff !important;
         }
 
         .text-red-light {
@@ -208,7 +213,7 @@
                     <i class="fas fa-user-nurse me-2"></i>Logged in as: 
                     <span class="fw-bold ms-1" th:text="${session.user != null ? session.user.name : 'School Nurse'}">School Nurse</span>
                 </span>
-                <a href="/logout" class="btn btn-outline-secondary btn-sm text-white">
+                <a href="/logout" class="btn btn-outline-danger btn-sm text-white">
                     <i class="fas fa-sign-out-alt me-1"></i> Sign Out
                 </a>
             </div>
@@ -216,13 +221,16 @@
     </nav>
 
     <div class="container-fluid px-4 py-4">
-        <div th:if="${param.success != null}" class="alert alert-success alert-dismissible fade show" role="alert" style="background-color: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); color: #ffffff;">
-            <i class="fa-solid fa-check-circle me-2 text-success"></i>Medical log saved successfully.
+        <div th:if="${param.success != null}" class="alert alert-success alert-dismissible fade show border-0" role="alert" style="background-color: #065f46;">
+            <i class="fa-solid fa-circle-check me-2 text-white"></i><span class="text-white">Medical log saved successfully.</span>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <div th:if="${param.error != null}" class="alert alert-danger alert-dismissible fade show border-0" role="alert" style="background-color: #991b1b;">
+            <i class="fa-solid fa-triangle-exclamation me-2 text-white"></i><span class="text-white">An error occurred while saving.</span>
             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
 
         <div class="row">
-            
             <div class="col-xl-3 col-lg-4 mb-4">
                 <div class="dashboard-card p-3">
                     <h5 class="fw-bold mb-3 px-2">Portal Navigation</h5>
@@ -252,17 +260,16 @@
                             <div class="row">
                                 <div class="col-lg-10">
                                     <div class="p-4 rounded border" style="background-color: var(--dark-bg); border-color: var(--border-color) !important;">
-                                        <form action="/clinic/log/save" method="POST" id="clinicForm">
+                                        
+                                        <form action="/clinic/log/save" method="POST">
                                             
-                                            <input type="hidden" name="dateLogged" id="autoDateLogged">
-
                                             <div class="mb-4">
-                                                <label class="form-label fw-bold">Search Patient (Student) <span class="text-red-light">*</span></label>
+                                                <label class="form-label fw-bold">Search Patient (Student) <span style="color: var(--accent-red) !important;">*</span></label>
                                                 <div class="input-group">
                                                     <input type="hidden" name="lrn" id="selectedLrn" required>
-                                                    <input type="hidden" name="studentName" id="selectedName">
+                                                    <input type="hidden" name="studentName" id="selectedName" required>
                                                     
-                                                    <input type="text" class="form-control py-2" id="selectedStudentDisplay" placeholder="Click 'Search Database' to select a student..." readonly required style="cursor: default;">
+                                                    <input type="text" class="form-control py-2" id="selectedStudentDisplay" placeholder="Select a student from database..." readonly required style="cursor: default;">
                                                     <button type="button" class="btn btn-outline-danger" onclick="openSearchModal()">
                                                         <i class="fas fa-search me-1"></i> Search Database
                                                     </button>
@@ -270,7 +277,7 @@
                                             </div>
 
                                             <div class="mb-4">
-                                                <label class="form-label fw-bold">Clinical Assessment / Symptoms <span class="text-red-light">*</span></label>
+                                                <label class="form-label fw-bold">Clinical Assessment / Symptoms <span style="color: var(--accent-red) !important;">*</span></label>
                                                 <textarea name="assessment" class="form-control" rows="3" placeholder="e.g., Complaining of stomach ache, fever of 38.5C..." required></textarea>
                                             </div>
 
@@ -295,7 +302,7 @@
                             <div class="d-flex justify-content-between align-items-center mb-4">
                                 <div>
                                     <h5 class="fw-bold mb-1">Master Clinic Records</h5>
-                                    <p class="mb-0"><i class="fa-solid fa-circle-info me-1 text-red-light"></i> Pure health evaluation engine. No structural academic liability blocks are active here.</p>
+                                    <p class="mb-0"><i class="fa-solid fa-circle-info me-1" style="color: var(--accent-red) !important;"></i> Pure health evaluation engine. No structural academic liability blocks apply here.</p>
                                 </div>
                             </div>
 
@@ -312,19 +319,19 @@
                                     <tbody>
                                         <th:block th:if="${clinicLogs != null and !#lists.isEmpty(clinicLogs)}">
                                             <tr th:each="log : ${clinicLogs}">
-                                                <td class="text-white-50 small">
+                                                <td class="small">
                                                     <span th:text="${log.dateLogged}">Oct 10, 2024</span>
                                                 </td>
                                                 <td>
                                                     <strong class="d-block" th:text="${log.studentName}">John Doe</strong>
-                                                    <small class="text-red-light" style="font-family: monospace;" th:text="${log.lrn}">123456789012</small>
+                                                    <small style="font-family: monospace; color: var(--accent-red) !important;" th:text="${log.lrn}">123456789012</small>
                                                 </td>
                                                 <td style="max-width: 280px; white-space: normal; word-break: break-word;">
                                                     <span th:text="${log.assessment}">Fever and headache</span>
                                                 </td>
                                                 <td>
                                                     <span th:if="${log.medicine != null and !log.medicine.isEmpty()}" th:text="${log.medicine}">Paracetamol</span>
-                                                    <span th:if="${log.medicine == null or log.medicine.isEmpty()}" class="text-white-50 fst-italic">None given</span>
+                                                    <span th:if="${log.medicine == null or log.medicine.isEmpty()}" class="fst-italic text-white">None given</span>
                                                 </td>
                                             </tr>
                                         </th:block>
@@ -342,14 +349,13 @@
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
 
     <div id="studentSearchModal" class="custom-modal">
         <div class="custom-modal-content">
             <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3" style="border-color: var(--border-color) !important;">
-                <h5 class="mb-0 fw-bold"><i class="fas fa-users me-2 text-red-light"></i>Global Student Database</h5>
+                <h5 class="mb-0 fw-bold"><i class="fas fa-users me-2" style="color: var(--accent-red) !important;"></i>Global Student Database</h5>
                 <button type="button" class="btn btn-sm btn-outline-light text-white" onclick="closeSearchModal()">
                     <i class="fas fa-times me-1"></i> Close
                 </button>
@@ -365,12 +371,12 @@
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
                                 <strong class="student-name d-block" th:text="${student.name}">Student Name</strong>
-                                <small class="student-lrn text-red-light" style="font-family: monospace;" th:text="${student.lrn}">123456789012</small>
+                                <small class="student-lrn text-red-light" style="font-family: monospace; color: var(--accent-red) !important;" th:text="${student.lrn}">123456789012</small>
                             </div>
                         </div>
                     </div>
                 </th:block>
-                <div th:if="${allStudents == null or #lists.isEmpty(allStudents)}" class="text-center py-4 text-white-50">
+                <div th:if="${allStudents == null or #lists.isEmpty(allStudents)}" class="text-center py-4 text-white">
                     No active records found inside global parameters.
                 </div>
             </div>
@@ -378,14 +384,7 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
     <script>
-        // Form hook injector to secure the operational date logging fields
-        document.getElementById("clinicForm").addEventListener("submit", function() {
-            document.getElementById("autoDateLogged").value = new Date().toISOString().split('T')[0];
-        });
-
-        // Vertical Tab Nav Engine
         function openTab(tabId) {
             try {
                 const targetPane = document.getElementById(tabId + '-pane');
@@ -400,20 +399,14 @@
                     
                     targetTab.classList.add('active');
                     targetPane.style.display = 'block';
-                    
-                    setTimeout(() => {
-                        targetPane.classList.add('show', 'active');
-                    }, 10);
-                    
+                    setTimeout(() => { targetPane.classList.add('show', 'active'); }, 10);
                     localStorage.setItem('clinicActiveTab', tabId);
                 } else {
                     document.getElementById('log-tab').classList.add('active');
                     document.getElementById('log-pane').style.display = 'block';
                     document.getElementById('log-pane').classList.add('show', 'active');
                 }
-            } catch (err) {
-                console.error("Tab Navigation Error Checked:", err);
-            }
+            } catch (err) { console.error(err); }
         }
 
         function openSearchModal() {
@@ -438,26 +431,16 @@
         function filterStudentList() {
             let filter = document.getElementById('modalSearchInput').value.toLowerCase();
             let items = document.querySelectorAll('.student-item');
-            
             items.forEach(item => {
                 let name = item.querySelector('.student-name').textContent.toLowerCase();
                 let lrn = item.querySelector('.student-lrn').textContent.toLowerCase();
-                
-                if (name.includes(filter) || lrn.includes(filter)) {
-                    item.style.display = 'block';
-                } else {
-                    item.style.display = 'none';
-                }
+                item.style.display = (name.includes(filter) || lrn.includes(filter)) ? 'block' : 'none';
             });
         }
 
         document.addEventListener("DOMContentLoaded", function() {
             let savedTab = localStorage.getItem('clinicActiveTab');
-            if(savedTab) {
-                openTab(savedTab);
-            } else {
-                openTab('log');
-            }
+            openTab(savedTab ? savedTab : 'log');
         });
     </script>
 </body>
