@@ -272,7 +272,7 @@
     <div class="tracker-card">
 
         <form action="/clearance/track" method="GET" class="search-form">
-            <input type="text" name="lrn" class="search-input" placeholder="Enter 12-Digit Student LRN Identification code..." th:value="${param.lrn}" pattern="\d+" required autocomplete="off">
+            <input type="text" name="lrn" class="search-input" placeholder="Enter 12-Digit Student LRN Identification code..." th:value="${student != null ? student.lrn : ''}" pattern="\d+" required autocomplete="off">
             <button type="submit" class="search-btn">Query Status</button>
         </form>
 
@@ -342,7 +342,7 @@
                 </div>
             </div>
 
-            <div th:if="${(unresolvedGuidance != null and !unresolvedGuidance.isEmpty()) or (unresolvedFacilities != null and !unresolvedFacilities.isEmpty())}" style="margin-bottom: 25px;">
+            <div th:if="${(unresolvedGuidance != null and unresolvedGuidance.size() > 0) or (unresolvedFacilities != null and unresolvedFacilities.size() > 0)}" style="margin-bottom: 25px;">
                 <h3 style="font-size: 16px; color: #b91c1c; margin-bottom: 12px; border-bottom: 1px solid #fca5a5; padding-bottom: 8px;">
                     ⚠️ Unresolved Infraction/Liability Item Details:
                 </h3>
