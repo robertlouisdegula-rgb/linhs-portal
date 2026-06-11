@@ -12,9 +12,9 @@
             --panel-bg: #141417;
             --border-color: #2d2d30;
             --text-main: #ffffff;
-            --text-muted: #d4d4d8;
             --input-bg: #09090b;
-            --accent-red: #ef4444; /* Medical Red Theme */
+            --accent-red: #ef4444; 
+            --accent-hover: #dc2626;
         }
 
         body {
@@ -27,35 +27,116 @@
         .navbar {
             background-color: var(--panel-bg);
             border-bottom: 1px solid var(--border-color);
+            padding: 1rem 1.5rem;
         }
 
         .navbar-brand {
-            color: var(--text-main) !important;
-        }
-
-        .session-user-text {
             color: #ffffff !important;
-            font-weight: 600;
+            font-weight: 700;
         }
 
         .dashboard-card {
             background-color: var(--panel-bg);
             border: 1px solid var(--border-color);
             border-radius: 12px;
-            padding: 24px;
-            margin-bottom: 24px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+            padding: 1.5rem;
         }
 
-        .form-label {
+        /* --- VERTICAL SIDEBAR LAYOUT STYLE --- */
+        .nav-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .nav-sidebar .nav-link {
             color: #ffffff !important;
-            font-weight: 500;
+            border: 1px solid transparent;
+            padding: 0.85rem 1.25rem;
+            font-weight: 600;
+            background: transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.05rem;
+            text-align: left;
+            width: 100%;
+            transition: all 0.2s ease;
+        }
+
+        .nav-sidebar .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-sidebar .nav-link.active {
+            color: var(--accent-red) !important;
+            background-color: rgba(239, 68, 68, 0.1) !important;
+            border: 1px solid var(--accent-red) !important;
+        }
+
+        .table {
+            color: #ffffff !important;
+            margin-bottom: 0;
+            border-color: var(--border-color);
+        }
+
+        .table > thead {
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .table > thead > tr > th {
+            color: #ffffff !important;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid var(--border-color);
+            padding: 1rem;
+            background-color: transparent;
+        }
+
+        .table > tbody > tr > td {
+            padding: 1.25rem 1rem;
+            vertical-align: middle;
+            border-bottom: 1px solid var(--border-color);
+            color: #ffffff !important;
+            background-color: transparent;
+        }
+
+        .table > tbody > tr:hover > td {
+            background-color: rgba(255, 255, 255, 0.03);
+        }
+
+        .btn-red-custom {
+            background-color: var(--accent-red);
+            color: #ffffff;
+            font-weight: 700;
+            border: none;
+            border-radius: 6px;
+            padding: 0.5rem 1.25rem;
+        }
+        
+        .btn-red-custom:hover {
+            background-color: var(--accent-hover);
+        }
+
+        .btn-outline-danger {
+            border: 1px solid var(--accent-red);
+            color: var(--accent-red);
+            background: transparent;
+            font-weight: 600;
+        }
+
+        .btn-outline-danger:hover {
+            background-color: var(--accent-red);
+            color: #ffffff;
         }
 
         .form-control {
             background-color: var(--input-bg);
             border: 1px solid var(--border-color);
             color: #ffffff !important;
+            border-radius: 6px;
         }
 
         .form-control:focus {
@@ -65,76 +146,7 @@
             box-shadow: 0 0 0 0.25rem rgba(239, 68, 68, 0.15);
         }
 
-        /* Tab Navigation Styles */
-        .nav-tabs {
-            border-bottom: 1px solid var(--border-color);
-            margin-bottom: 1.5rem;
-        }
-
-        .nav-tabs .nav-link {
-            color: var(--text-muted);
-            border: none;
-            padding: 0.75rem 1.5rem;
-            font-weight: 500;
-            background: transparent;
-            cursor: pointer;
-            transition: color 0.2s ease;
-        }
-
-        .nav-tabs .nav-link:hover {
-            color: var(--text-main);
-        }
-
-        .nav-tabs .nav-link.active {
-            color: var(--accent-red) !important;
-            border-bottom: 2px solid var(--accent-red);
-            background-color: transparent;
-        }
-
-        .tab-pane {
-            display: none;
-        }
-
-        .tab-pane.show {
-            display: block;
-            animation: fadeIn 0.3s;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        /* Table Styles */
-        .table {
-            color: var(--text-main);
-            border-color: var(--border-color);
-            margin-bottom: 0;
-        }
-
-        .table > thead {
-            background-color: rgba(0, 0, 0, 0.5);
-        }
-
-        .table > thead > tr > th {
-            color: var(--accent-red);
-            font-weight: 600;
-            border-bottom: 2px solid var(--border-color);
-            background-color: transparent;
-        }
-
-        .table > tbody > tr > td {
-            background-color: transparent;
-            color: var(--text-main);
-            border-bottom: 1px solid var(--border-color);
-            vertical-align: middle;
-        }
-
-        .table > tbody > tr:hover > td {
-            background-color: rgba(239, 68, 68, 0.05);
-        }
-
-        /* Custom Modal Styles (Crash-Proof) */
+        /* Modal Custom Styling */
         .custom-modal {
             display: none;
             position: fixed;
@@ -161,164 +173,184 @@
         .student-item {
             transition: background-color 0.2s;
             border-radius: 6px;
-        }
-
-        .student-item:hover {
-            background-color: #2a2a2d;
             cursor: pointer;
         }
 
-        .btn-red-custom {
-            background-color: var(--accent-red);
-            color: #fff;
-            font-weight: 600;
-            border: none;
+        .student-item:hover {
+            background-color: rgba(255, 255, 255, 0.05);
         }
-        
-        .btn-red-custom:hover {
-            background-color: #dc2626;
-            color: #fff;
+
+        /* --- COMPREHENSIVE TEXT BRIGHTNESS OVERRIDES --- */
+        p, small, label, h1, h2, h3, h4, h5, h6, 
+        .form-label, .text-muted, span, th, td, input, textarea {
+            color: #ffffff !important;
+            opacity: 1 !important;
+        }
+
+        .form-control::placeholder, textarea::placeholder {
+            color: rgba(255, 255, 255, 0.4) !important;
+        }
+
+        .text-red-light {
+            color: #ff6b6b !important;
         }
     </style>
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-lg px-4 py-3">
+    <nav class="navbar navbar-expand-lg">
         <div class="container-fluid">
-            <span class="navbar-brand fw-bold text-uppercase tracking-wider">
-                <i class="fas fa-briefcase-medical me-2" style="color: var(--accent-red);"></i>LINHS Clinic Office
+            <span class="navbar-brand">
+                <i class="fas fa-briefcase-medical me-2 text-red-light"></i>LINHS Clinic Office
             </span>
             <div class="d-flex align-items-center">
-                <span class="session-user-text me-4">
-                    <i class="fas fa-user-nurse me-1 text-muted"></i> Logged in as: <span th:text="${session.user != null ? session.user.name : 'School Nurse'}">School Nurse</span>
+                <span class="me-4" style="font-weight: 500;">
+                    <i class="fas fa-user-nurse me-2"></i>Logged in as: 
+                    <span class="fw-bold ms-1" th:text="${session.user != null ? session.user.name : 'School Nurse'}">School Nurse</span>
                 </span>
-                <a href="/logout" class="btn btn-outline-secondary btn-sm rounded-3">
-                    <i class="fas fa-sign-out-alt me-1"></i> Exit
+                <a href="/logout" class="btn btn-outline-secondary btn-sm text-white">
+                    <i class="fas fa-sign-out-alt me-1"></i> Sign Out
                 </a>
             </div>
         </div>
     </nav>
 
     <div class="container-fluid px-4 py-4">
-        <div th:if="${param.success != null}" class="alert alert-success alert-dismissible fade show" role="alert" style="background-color: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.3); color: #34d399;">
-            <i class="fa-solid fa-check-circle me-2"></i>Medical log saved successfully.
+        <div th:if="${param.success != null}" class="alert alert-success alert-dismissible fade show" role="alert" style="background-color: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); color: #ffffff;">
+            <i class="fa-solid fa-check-circle me-2 text-success"></i>Medical log saved successfully.
             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
 
-        <div class="dashboard-card">
+        <div class="row">
             
-            <ul class="nav nav-tabs" id="clinicTabs">
-                <li class="nav-item">
-                    <button class="nav-link active" id="log-tab" onclick="openTab('log')" type="button">
-                        <i class="fa-solid fa-notes-medical me-2"></i>Create Medical Log
-                    </button>
-                </li>
-                <li class="nav-item">
-                    <button class="nav-link" id="history-tab" onclick="openTab('history')" type="button">
-                        <i class="fa-solid fa-clock-rotate-left me-2"></i>Clinic History
-                    </button>
-                </li>
-            </ul>
+            <div class="col-xl-3 col-lg-4 mb-4">
+                <div class="dashboard-card p-3">
+                    <h5 class="fw-bold mb-3 px-2">Portal Navigation</h5>
+                    <div class="nav nav-sidebar" id="clinicTabs">
+                        <button class="nav-link" id="log-tab" onclick="openTab('log')" type="button">
+                            <i class="fa-solid fa-notes-medical me-2"></i>Create Medical Log
+                        </button>
+                        <button class="nav-link" id="history-tab" onclick="openTab('history')" type="button">
+                            <i class="fa-solid fa-clock-rotate-left me-2"></i>Clinic History
+                        </button>
+                    </div>
+                </div>
+            </div>
 
-            <div class="tab-content" id="clinicTabsContent">
+            <div class="col-xl-9 col-lg-8">
+                <div class="dashboard-card p-4">
+                    <div class="tab-content" id="clinicTabsContent">
 
-                <div class="tab-pane fade show active" id="log-pane">
-                    <div class="row">
-                        <div class="col-lg-8 mx-auto">
-                            <div class="p-4 rounded border mt-2" style="background-color: var(--dark-bg); border-color: var(--border-color) !important;">
-                                <h5 class="fw-bold mb-4" style="color: var(--accent-red);"><i class="fa-solid fa-stethoscope me-2"></i>Patient Examination Record</h5>
-                                
-                                <form action="/clinic/log/save" method="POST">
-                                    <div class="mb-4">
-                                        <label class="form-label">Search Patient (Student) <span class="text-danger">*</span></label>
-                                        <div class="input-group">
-                                            <input type="hidden" name="lrn" id="selectedLrn" required>
-                                            <input type="hidden" name="studentName" id="selectedName">
+                        <div class="tab-pane fade" id="log-pane" style="display: none;">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <div>
+                                    <h5 class="fw-bold mb-1">Patient Examination Record</h5>
+                                    <p class="mb-0">Log school health visit metrics safely down to the central database logs.</p>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-lg-10">
+                                    <div class="p-4 rounded border" style="background-color: var(--dark-bg); border-color: var(--border-color) !important;">
+                                        <form action="/clinic/log/save" method="POST" id="clinicForm">
                                             
-                                            <input type="text" class="form-control py-2" id="selectedStudentDisplay" placeholder="Click 'Search Database' to select a student..." readonly required style="cursor: default;">
-                                            <button type="button" class="btn btn-outline-danger" onclick="openSearchModal()">
-                                                <i class="fas fa-search me-1"></i> Search Database
-                                            </button>
-                                        </div>
-                                    </div>
+                                            <input type="hidden" name="dateLogged" id="autoDateLogged">
 
-                                    <div class="mb-4">
-                                        <label class="form-label">Clinical Assessment / Symptoms <span class="text-danger">*</span></label>
-                                        <textarea name="assessment" class="form-control" rows="3" placeholder="e.g., Complaining of stomach ache, fever of 38.5C..." required></textarea>
-                                    </div>
+                                            <div class="mb-4">
+                                                <label class="form-label fw-bold">Search Patient (Student) <span class="text-red-light">*</span></label>
+                                                <div class="input-group">
+                                                    <input type="hidden" name="lrn" id="selectedLrn" required>
+                                                    <input type="hidden" name="studentName" id="selectedName">
+                                                    
+                                                    <input type="text" class="form-control py-2" id="selectedStudentDisplay" placeholder="Click 'Search Database' to select a student..." readonly required style="cursor: default;">
+                                                    <button type="button" class="btn btn-outline-danger" onclick="openSearchModal()">
+                                                        <i class="fas fa-search me-1"></i> Search Database
+                                                    </button>
+                                                </div>
+                                            </div>
 
-                                    <div class="mb-4">
-                                        <label class="form-label">Medicine / Treatment Given <span class="text-muted fw-normal">(Optional)</span></label>
-                                        <input type="text" name="medicine" class="form-control py-2" placeholder="e.g., 1 Paracetamol, Resting in bed 2...">
-                                    </div>
+                                            <div class="mb-4">
+                                                <label class="form-label fw-bold">Clinical Assessment / Symptoms <span class="text-red-light">*</span></label>
+                                                <textarea name="assessment" class="form-control" rows="3" placeholder="e.g., Complaining of stomach ache, fever of 38.5C..." required></textarea>
+                                            </div>
 
-                                    <div class="d-flex justify-content-end mt-4">
-                                        <button type="reset" class="btn btn-link text-muted text-decoration-none me-3">Clear Form</button>
-                                        <button type="submit" class="btn btn-red-custom px-4 py-2">
-                                            <i class="fa-solid fa-file-medical me-2"></i> Save Medical Log
-                                        </button>
+                                            <div class="mb-4">
+                                                <label class="form-label fw-bold">Medicine / Treatment Given <span class="text-white opacity-50 font-weight-normal">(Optional)</span></label>
+                                                <input type="text" name="medicine" class="form-control py-2" placeholder="e.g., 1 Paracetamol, Resting in bed 2...">
+                                            </div>
+
+                                            <div class="d-flex justify-content-end mt-4 pt-2 border-top" style="border-color: var(--border-color) !important;">
+                                                <button type="reset" class="btn btn-link text-decoration-none me-3 text-white">Clear Form</button>
+                                                <button type="submit" class="btn btn-red-custom px-4 py-2">
+                                                    <i class="fa-solid fa-file-medical me-2"></i> Save Medical Log
+                                                </button>
+                                            </div>
+                                        </form>
                                     </div>
-                                </form>
+                                </div>
                             </div>
                         </div>
+
+                        <div class="tab-pane fade" id="history-pane" style="display: none;">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <div>
+                                    <h5 class="fw-bold mb-1">Master Clinic Records</h5>
+                                    <p class="mb-0"><i class="fa-solid fa-circle-info me-1 text-red-light"></i> Pure health evaluation engine. No structural academic liability blocks are active here.</p>
+                                </div>
+                            </div>
+
+                            <div class="table-responsive border rounded" style="border-color: var(--border-color) !important;">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Date / Time</th>
+                                            <th>Patient Details</th>
+                                            <th>Assessment / Symptoms</th>
+                                            <th>Treatment Provided</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <th:block th:if="${clinicLogs != null and !#lists.isEmpty(clinicLogs)}">
+                                            <tr th:each="log : ${clinicLogs}">
+                                                <td class="text-white-50 small">
+                                                    <span th:text="${log.dateLogged}">Oct 10, 2024</span>
+                                                </td>
+                                                <td>
+                                                    <strong class="d-block" th:text="${log.studentName}">John Doe</strong>
+                                                    <small class="text-red-light" style="font-family: monospace;" th:text="${log.lrn}">123456789012</small>
+                                                </td>
+                                                <td style="max-width: 280px; white-space: normal; word-break: break-word;">
+                                                    <span th:text="${log.assessment}">Fever and headache</span>
+                                                </td>
+                                                <td>
+                                                    <span th:if="${log.medicine != null and !log.medicine.isEmpty()}" th:text="${log.medicine}">Paracetamol</span>
+                                                    <span th:if="${log.medicine == null or log.medicine.isEmpty()}" class="text-white-50 fst-italic">None given</span>
+                                                </td>
+                                            </tr>
+                                        </th:block>
+                                        <tr th:if="${clinicLogs == null or #lists.isEmpty(clinicLogs)}">
+                                            <td colspan="4" class="text-center py-5">
+                                                <i class="fa-solid fa-notes-medical fs-2 mb-3 opacity-50 text-red-light"></i><br>
+                                                No medical records have been logged yet.
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
-
-                <div class="tab-pane fade" id="history-pane">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h5 class="fw-bold mb-0">Master Clinic Records</h5>
-                        <p class="mb-0 text-muted small"><i class="fa-solid fa-circle-info me-1"></i> Pure logging system. No liability restrictions apply.</p>
-                    </div>
-
-                    <div class="table-responsive border rounded" style="border-color: var(--border-color) !important;">
-                        <table class="table table-hover">
-                            <thead>
-                                <tr>
-                                    <th class="px-3">Date / Time</th>
-                                    <th>Patient Details</th>
-                                    <th>Assessment / Symptoms</th>
-                                    <th>Treatment Provided</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <th:block th:if="${clinicLogs != null and !#lists.isEmpty(clinicLogs)}">
-                                    <tr th:each="log : ${clinicLogs}">
-                                        <td class="px-3 py-3 text-muted small">
-                                            <span th:text="${log.dateLogged}">Oct 10, 2024</span>
-                                        </td>
-                                        <td class="py-3">
-                                            <strong class="d-block text-white" th:text="${log.studentName}">John Doe</strong>
-                                            <small style="color: var(--accent-red); font-family: monospace;" th:text="${log.lrn}">123456789012</small>
-                                        </td>
-                                        <td class="py-3" style="max-width: 250px;">
-                                            <span th:text="${log.assessment}">Fever and headache</span>
-                                        </td>
-                                        <td class="py-3">
-                                            <span th:if="${log.medicine != null and !log.medicine.isEmpty()}" th:text="${log.medicine}">Paracetamol</span>
-                                            <span th:if="${log.medicine == null or log.medicine.isEmpty()}" class="text-muted fst-italic">None given</span>
-                                        </td>
-                                    </tr>
-                                </th:block>
-                                <tr th:if="${clinicLogs == null or #lists.isEmpty(clinicLogs)}">
-                                    <td colspan="4" class="text-center py-5 text-muted">
-                                        <i class="fa-solid fa-notes-medical fs-2 mb-3 opacity-50"></i><br>
-                                        No medical records have been logged yet.
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
             </div>
+
         </div>
     </div>
 
     <div id="studentSearchModal" class="custom-modal">
         <div class="custom-modal-content">
             <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3" style="border-color: var(--border-color) !important;">
-                <h5 class="mb-0 fw-bold text-white"><i class="fas fa-users me-2" style="color: var(--accent-red);"></i>Global Student Database</h5>
-                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="closeSearchModal()">
+                <h5 class="mb-0 fw-bold"><i class="fas fa-users me-2 text-red-light"></i>Global Student Database</h5>
+                <button type="button" class="btn btn-sm btn-outline-light text-white" onclick="closeSearchModal()">
                     <i class="fas fa-times me-1"></i> Close
                 </button>
             </div>
@@ -328,41 +360,59 @@
             </div>
             
             <div class="rounded border p-2" style="border-color: var(--border-color) !important; background-color: var(--dark-bg); max-height: 350px; overflow-y: auto;">
-    <th:block th:if="${allStudents != null and !#lists.isEmpty(allStudents)}">
-        <div th:each="student : ${allStudents}" class="student-item p-3 mb-1 border-bottom" style="border-color: var(--border-color) !important;" th:onclick="|selectStudent('${student.lrn}', '${student.name}')|">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <strong class="student-name d-block text-white" th:text="${student.name}">Student Name</strong>
-                    <small class="student-lrn" style="color: #ff9800; font-family: monospace;" th:text="${student.lrn}">123456789012</small>
+                <th:block th:if="${allStudents != null and !#lists.isEmpty(allStudents)}">
+                    <div th:each="student : ${allStudents}" class="student-item p-3 mb-1 border-bottom" style="border-color: var(--border-color) !important;" th:onclick="|selectStudent('${student.lrn}', '${student.name}')|">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong class="student-name d-block" th:text="${student.name}">Student Name</strong>
+                                <small class="student-lrn text-red-light" style="font-family: monospace;" th:text="${student.lrn}">123456789012</small>
+                            </div>
+                        </div>
+                    </div>
+                </th:block>
+                <div th:if="${allStudents == null or #lists.isEmpty(allStudents)}" class="text-center py-4 text-white-50">
+                    No active records found inside global parameters.
                 </div>
             </div>
-        </div>
-    </th:block>
-    <div th:if="${allStudents == null or #lists.isEmpty(allStudents)}" class="text-center py-4 text-muted">
-        No students found in the global database.
-    </div>
-</div>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
-        function openTab(tabId) {
-            document.querySelectorAll('.tab-pane').forEach(pane => {
-                pane.classList.remove('show', 'active');
-                pane.style.display = 'none';
-            });
-            document.querySelectorAll('.nav-link').forEach(btn => btn.classList.remove('active'));
+        // Form hook injector to secure the operational date logging fields
+        document.getElementById("clinicForm").addEventListener("submit", function() {
+            document.getElementById("autoDateLogged").value = new Date().toISOString().split('T')[0];
+        });
 
-            const targetPane = document.getElementById(tabId + '-pane');
-            const targetTab = document.getElementById(tabId + '-tab');
-            
-            if(targetPane && targetTab) {
-                targetPane.style.display = 'block';
-                setTimeout(() => targetPane.classList.add('show', 'active'), 10);
-                targetTab.classList.add('active');
-                localStorage.setItem('clinicActiveTab', tabId);
+        // Vertical Tab Nav Engine
+        function openTab(tabId) {
+            try {
+                const targetPane = document.getElementById(tabId + '-pane');
+                const targetTab = document.getElementById(tabId + '-tab');
+                
+                if (targetPane && targetTab) {
+                    document.querySelectorAll('.tab-pane').forEach(pane => {
+                        pane.classList.remove('show', 'active');
+                        pane.style.display = 'none';
+                    });
+                    document.querySelectorAll('.nav-sidebar .nav-link').forEach(btn => btn.classList.remove('active'));
+                    
+                    targetTab.classList.add('active');
+                    targetPane.style.display = 'block';
+                    
+                    setTimeout(() => {
+                        targetPane.classList.add('show', 'active');
+                    }, 10);
+                    
+                    localStorage.setItem('clinicActiveTab', tabId);
+                } else {
+                    document.getElementById('log-tab').classList.add('active');
+                    document.getElementById('log-pane').style.display = 'block';
+                    document.getElementById('log-pane').classList.add('show', 'active');
+                }
+            } catch (err) {
+                console.error("Tab Navigation Error Checked:", err);
             }
         }
 
