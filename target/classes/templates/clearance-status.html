@@ -335,20 +335,28 @@
                 </div>
             </div>
 
-            <div th:if="${(unresolvedGuidance != null and !#lists.isEmpty(unresolvedGuidance)) or (unresolvedFacilities != null and !#lists.isEmpty(unresolvedFacilities))}" style="margin-bottom: 25px;">
-                <h3 style="font-size: 16px; color: #b91c1c; margin-bottom: 12px; border-bottom: 1px solid #fca5a5; padding-bottom: 8px;">
-                    ⚠️ Unresolved Infraction/Liability Item Details:
-                </h3>
+            <div th:if="${unresolvedGuidance != null or unresolvedFacilities != null}" style="margin-bottom: 25px;">
                 
-                <div th:each="gItem : ${unresolvedGuidance}" class="liability-box">
-                    <div class="liability-title">⚖️ Guidance Accountability Hold:</div>
-                    <div th:text="${'Incident/Violation: ' + (gItem?.incident ?: 'Unspecified')}">Details</div>
+                <div th:if="${unresolvedGuidance != null and !#lists.isEmpty(unresolvedGuidance)}">
+                    <h3 style="font-size: 16px; color: #b91c1c; margin-bottom: 12px; border-bottom: 1px solid #fca5a5; padding-bottom: 8px;">
+                        ⚠️ Guidance Department Holds:
+                    </h3>
+                    <div th:each="gItem : ${unresolvedGuidance}" class="liability-box">
+                        <div class="liability-title">⚖️ Infraction Incident:</div>
+                        <div th:text="${'Incident Description: ' + (gItem?.incident ?: 'Unspecified Liability Entry')}">Details</div>
+                    </div>
                 </div>
                 
-                <div th:each="fItem : ${unresolvedFacilities}" class="liability-box">
-                    <div class="liability-title">🏢 Facilities & Property Damage Hold:</div>
-                    <div th:text="${(fItem?.facility ?: 'Unknown Facility') + ' - ' + (fItem?.description ?: 'No description provided')}">Details</div>
+                <div th:if="${unresolvedFacilities != null and !#lists.isEmpty(unresolvedFacilities)}" style="margin-top: 15px;">
+                    <h3 style="font-size: 16px; color: #b91c1c; margin-bottom: 12px; border-bottom: 1px solid #fca5a5; padding-bottom: 8px;">
+                        🏢 Facilities & Property Account holds:
+                    </h3>
+                    <div th:each="fItem : ${unresolvedFacilities}" class="liability-box">
+                        <div class="liability-title">🏢 Damage Reference Item:</div>
+                        <div th:text="${(fItem?.facility ?: 'Unknown School Facility') + ' - ' + (fItem?.description ?: 'No detailed log details found')}">Details</div>
+                    </div>
                 </div>
+
             </div>
 
             <div th:if="${student?.adviserClearance == 'CLEARED' and student?.labClearance == 'CLEARED' and student?.sportsClearance == 'CLEARED' and student?.guidanceClearance == 'CLEARED' and student?.facilitiesClearance == 'CLEARED' and student?.libraryClearance == 'CLEARED'}"
