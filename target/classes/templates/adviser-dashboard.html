@@ -395,7 +395,7 @@
                                         <td class="student-lrn-text" th:text="${student.lrn}">1234567890</td>
                                         <td class="student-name-text" th:text="${student.name}">Student Name</td>
                                         <td class="text-end">
-                                            <button class="btn btn-sm btn-outline-emerald" data-bs-toggle="modal" th:data-bs-target="|#gradeModal-${student.lrn}|">
+                                            <button class="btn btn-sm btn-outline-emerald" data-bs-toggle="modal" th:data-bs-target="|#gradeModal-student-${student.lrn}|">
                                                 <i class="fa-solid fa-marker me-1"></i> Encode Output
                                             </button>
                                         </td>
@@ -488,34 +488,35 @@
     </div>
 
     <th:block th:if="${students != null and !#lists.isEmpty(students)}">
-        <div th:each="student : ${students}" class="modal fade" th:id="|gradeModal-${student.lrn}|" tabindex="-1" aria-hidden="true">
+        <div th:each="student : ${students}" class="modal fade" th:id="|gradeModal-student-${student.lrn}|" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                     <form action="/adviser/grade/save" method="POST" th:onsubmit="|return mapInputNamesToControllerRequirements('${student.lrn}')|">
                         <div class="modal-header">
-                            <h5 class="modal-title"><i class="fa-solid fa-pen-nib me-2"></i>Evaluate: <span class="text-white" th:text="${student.name}">Student</span></h5>
+                            <h5 class="modal-title"><i class="fa-solid fa-pen-nib me-2"></i>Encode Academic Output</h5>
                             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body p-4">
                             <input type="hidden" name="studentLrn" th:value="${student.lrn}">
                             
                             <div class="mb-4">
-                                <label class="form-label" style="color: var(--text-light-grey); font-weight: 500;">Academic Subject</label>
-                                <select th:id="|subjectSelect-${student.lrn}|" class="form-select py-2" required>
-                                    <option value="" disabled selected>Select a mapped subject...</option>
-                                    <th:block th:if="${subjects != null and !#lists.isEmpty(subjects)}">
-                                        <option th:each="subj : ${subjects}" th:value="${subj.id}" th:text="${subj.name}"></option>
-                                    </th:block>
+                                <label class="form-label" style="color: var(--text-light-grey); font-weight: 500;">Target Subject</label>
+                                <select th:id="|subjectSelect-student-${student.lrn}|" class="form-select py-2" required>
+                                    <option value="" disabled selected>-- Select subject to grade --</option>
+                                    <option th:each="subject : ${subjects}" th:value="${subject.id}" th:text="${subject.name}"></option>
                                 </select>
                             </div>
+
                             <div class="mb-2">
-                                <label class="form-label" style="color: var(--text-light-grey); font-weight: 500;">Numerical Final Grade</label>
-                                <input type="number" th:id="|gradeInput-${student.lrn}|" class="form-control py-2" placeholder="Input Grade (e.g., 85)" min="50" max="100" required>
+                                <label class="form-label" style="color: var(--text-light-grey); font-weight: 500;">Numerical Grade Valuation</label>
+                                <input type="number" th:id="|gradeInput-student-${student.lrn}|" class="form-control py-2" placeholder="Input Grade (e.g., 85)" min="50" max="100" required>
                             </div>
+                            
+                            <div th:id="|hiddenInputsContainer-${student.lrn}|"></div>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-link text-decoration-none" style="color: var(--text-light-grey);" data-bs-dismiss="modal">Cancel</button>
-                            <button type="submit" class="btn btn-emerald px-4">Submit Evaluation</button>
+                            <button type="submit" class="btn btn-emerald px-4">Lock in Grade</button>
                         </div>
                     </form>
                 </div>
@@ -524,48 +525,47 @@
     </th:block>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
+
     <script>
         function mapInputNamesToControllerRequirements(lrn) {
-            const selectElement = document.getElementById('subjectSelect-' + lrn);
-            const inputElement = document.getElementById('gradeInput-' + lrn);
-            if (selectElement && inputElement) {
-                const selectedSubjectId = selectElement.value;
-                inputElement.name = "subject_" + selectedSubjectId;
-            }
+            const subjectSelect = document.getElementById('subjectSelect-student-' + lrn);
+            const gradeInput = document.getElementById('gradeInput-student-' + lrn);
+            const hiddenContainer = document.getElementById('hiddenInputsContainer-' + lrn);
+            
+            if(!subjectSelect.value || !gradeInput.value) return false;
+            
+            hiddenContainer.innerHTML = '';
+            
+            const dynamicInput = document.createElement('input');
+            dynamicInput.type = 'hidden';
+            dynamicInput.name = 'subject_' + subjectSelect.value;
+            dynamicInput.value = gradeInput.value;
+            
+            hiddenContainer.appendChild(dynamicInput);
             return true;
         }
 
         function openPanel(tabId) {
             try {
-                // 1. Strip classes from all buttons safely
-                const allTabs = document.querySelectorAll('.nav-link');
-                allTabs.forEach(t => t.classList.remove('active'));
-
-                // 2. Hide all panes safely
-                const allPanes = document.querySelectorAll('.tab-pane');
-                allPanes.forEach(p => {
-                    p.classList.remove('show', 'active');
-                    p.style.display = 'none';
-                });
-
-                // 3. Find the exact target elements
-                const targetTab = document.getElementById(tabId + '-tab');
                 const targetPane = document.getElementById(tabId + '-pane');
-
-                // 4. Activate only if they exist! (This prevents the 'null' crash)
-                if (targetTab !== null && targetPane !== null) {
+                const targetTab = document.getElementById(tabId + '-tab');
+                
+                if (targetPane && targetTab) {
+                    document.querySelectorAll('.tab-pane').forEach(pane => {
+                        pane.classList.remove('show', 'active');
+                        pane.style.display = 'none';
+                    });
+                    document.querySelectorAll('.nav-link').forEach(btn => btn.classList.remove('active'));
+                    
                     targetTab.classList.add('active');
                     targetPane.style.display = 'block';
                     
-                    // Small delay to allow CSS fade animation
                     setTimeout(() => {
                         targetPane.classList.add('show', 'active');
                     }, 10);
                     
                     localStorage.setItem('safeAdviserTab', tabId);
                 } else {
-                    // Fallback Safety if a bad ID was passed
                     document.getElementById('students-tab').classList.add('active');
                     document.getElementById('students-pane').style.display = 'block';
                     document.getElementById('students-pane').classList.add('show', 'active');
@@ -576,21 +576,17 @@
         }
 
         document.addEventListener("DOMContentLoaded", function() {
-            // Check URL for ?tab= parameter first
             const urlParams = new URLSearchParams(window.location.search);
             let activeTab = urlParams.get('tab');
             
-            // If empty, check browser memory
             if (!activeTab) {
                 activeTab = localStorage.getItem('safeAdviserTab');
             }
             
-            // If STILL empty, or invalid, default safely to students
             if (!activeTab || !['students', 'subjects', 'grading', 'records'].includes(activeTab)) {
                 activeTab = 'students';
             }
             
-            // Run the switch function safely
             openPanel(activeTab);
         });
     </script>

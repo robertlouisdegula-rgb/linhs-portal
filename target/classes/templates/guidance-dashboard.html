@@ -360,21 +360,20 @@
             </div>
             
             <div class="rounded border p-2" style="border-color: var(--border-color) !important; background-color: var(--dark-bg); max-height: 350px; overflow-y: auto;">
-                <th:block th:if="${allStudents != null and !#lists.isEmpty(allStudents)}">
-                    <div th:each="student : ${allStudents}" class="student-item p-3 mb-1 border-bottom" style="border-color: var(--border-color) !important;" th:onclick="|selectStudent('${student.lrn}', '${student.name}')|">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <strong class="student-name d-block text-white" th:text="${student.name}">Student Name</strong>
-                                <small class="student-lrn" style="color: var(--accent-orange); font-family: monospace;" th:text="${student.lrn}">123456789012</small>
-                            </div>
-                            <span class="badge bg-dark border text-muted" style="border-color: var(--border-color) !important;" th:text="${student.section}">Section</span>
-                        </div>
-                    </div>
-                </th:block>
-                <div th:if="${allStudents == null or #lists.isEmpty(allStudents)}" class="text-center py-4 text-muted">
-                    No students found in the global database.
+    <th:block th:if="${allStudents != null and !#lists.isEmpty(allStudents)}">
+        <div th:each="student : ${allStudents}" class="student-item p-3 mb-1 border-bottom" style="border-color: var(--border-color) !important;" th:onclick="|selectStudent('${student.lrn}', '${student.name}')|">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <strong class="student-name d-block text-white" th:text="${student.name}">Student Name</strong>
+                    <small class="student-lrn" style="color: #ff9800; font-family: monospace;" th:text="${student.lrn}">123456789012</small>
                 </div>
             </div>
+        </div>
+    </th:block>
+    <div th:if="${allStudents == null or #lists.isEmpty(allStudents)}" class="text-center py-4 text-muted">
+        No students found in the global database.
+    </div>
+</div>
         </div>
     </div>
 
