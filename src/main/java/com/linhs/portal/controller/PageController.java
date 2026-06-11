@@ -122,34 +122,30 @@ public class PageController {
             User user = userOpt.get();
             session.setAttribute("user", user);
 
-            // FIX: Gracefully handle whitespace and database formatting variations
-            String role = user.getRoleName() != null ? user.getRoleName().trim().toUpperCase() : "";
-
-            if (role.contains("ADMIN") && !role.contains("FACILITIES") && !role.contains("SPORTS")) {
+            String role = user.getRoleName();
+            if ("ADMIN".equalsIgnoreCase(role)) {
                 return "redirect:/admin-dashboard";
-            } else if (role.contains("ADVISER") || role.contains("TEACHER")) {
+            } else if ("ADVISER".equalsIgnoreCase(role)) {
                 return "redirect:/teacher-portal";
-            } else if (role.contains("FACILITIES")) {
+            } else if ("FACILITIES_ADMIN".equalsIgnoreCase(role)) {
                 return "redirect:/facilities-dashboard";
-            } else if (role.contains("GUIDANCE")) {
+            } else if ("GUIDANCE_COUNSELOR".equalsIgnoreCase(role)) {
                 return "redirect:/guidance-dashboard";
-            } else if (role.contains("NURSE") || role.contains("CLINIC")) {
+            } else if ("NURSE".equalsIgnoreCase(role)) {
                 return "redirect:/clinic-dashboard";
-            } else if (role.contains("REGISTRAR")) {
+            } else if ("REGISTRAR".equalsIgnoreCase(role)) {
                 return "redirect:/registrar-dashboard";
-            } else if (role.contains("LABORATORY") || role.contains("LAB")) {
+            } else if ("LABORATORY".equalsIgnoreCase(role)) {
                 return "redirect:/lab-dashboard";
-            } else if (role.contains("SPORTS")) {
+            } else if ("SPORTS_ADMIN".equalsIgnoreCase(role)) {
                 return "redirect:/sports-dashboard";
-            } else if (role.contains("LIBRARY")) {
+            } else if ("LIBRARY".equalsIgnoreCase(role)) {
                 return "redirect:/library-dashboard";
             }
 
-            // Fallback for an unmapped or misspelled role
-            System.out.println("Warning: Unrecognized role encountered: " + role);
             return "redirect:/";
         } else {
-            model.addAttribute("error", "Invalid username or password credential profile.");
+            model.addAttribute("error", "Invalid username or password credentials profile.");
             return "login";
         }
     }
@@ -190,29 +186,29 @@ public class PageController {
     // --- ADVISER / TEACHER PORTAL ---
     // =========================================================
 
-    @GetMapping("/teacher-portal")
+    @GetMapping({"/teacher-portal", "/adviser-dashboard"})
     public String showTeacherPortal(HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");
-        
-        // FIX: Match the flexible login role checking
-        if (user == null || user.getRoleName() == null || 
-            (!user.getRoleName().trim().toUpperCase().contains("ADVISER") && 
-             !user.getRoleName().trim().toUpperCase().contains("TEACHER"))) {
-            return "redirect:/login";
-        }
+        if (user == null || !"ADVISER".equalsIgnoreCase(user.getRoleName())) return "redirect:/login";
 
+        // Bind both 'adviser' and 'username' parameters to satisfy all html bindings
+        model.addAttribute("adviser", user);
         model.addAttribute("username", user.getName());
-        model.addAttribute("assignedSection", user.getAssignedSection() != null ? user.getAssignedSection() : "Unassigned");
+        model.addAttribute("assignedSection", user.getAssignedSection());
 
-        // FIX Error 500: Avoid querying null sections which crashes the repo
-        List<Student> assignedStudents = new ArrayList<>();
-        if (user.getAssignedSection() != null) {
-            assignedStudents = studentRepository.findBySection(user.getAssignedSection());
-        }
+        List<Student> assignedStudents = studentRepository.findBySection(user.getAssignedSection());
+        model.addAttribute("students", assignedStudents);
         model.addAttribute("assignedStudents", assignedStudents);
 
-        List<Subject> allSubjects = subjectRepository.findAll();
-        model.addAttribute("allSubjects", allSubjects != null ? allSubjects : new ArrayList<>());
+        List<Subject> sectionSubjects = subjectRepository.findAll().stream()
+                .filter(s -> s.getSection() != null && s.getSection().equalsIgnoreCase(user.getAssignedSection()))
+                .collect(Collectors.toList());
+        model.addAttribute("subjects", sectionSubjects);
+        model.addAttribute("allSubjects", subjectRepository.findAll());
+
+        // Gather all grades mapping profiles
+        List<StudentGrade> allGrades = studentGradeRepository.findAll();
+        model.addAttribute("allGrades", allGrades);
 
         return "teacher-portal";
     }
@@ -222,11 +218,7 @@ public class PageController {
     // =========================================================
 
     @GetMapping("/clearance/lookup")
-    public String showClearanceLookup(Model model) {
-        // PREVENT Error 500 on first load
-        model.addAttribute("student", null);
-        model.addAttribute("unresolvedGuidance", new ArrayList<>());
-        model.addAttribute("unresolvedFacilities", new ArrayList<>());
+    public String showClearanceLookup() {
         return "clearance-tracker";
     }
 
@@ -236,11 +228,7 @@ public class PageController {
     }
 
     @GetMapping("/clearance-tracker")
-    public String showClearanceTrackerForm(Model model) {
-        // PREVENT Error 500 on first load
-        model.addAttribute("student", null);
-        model.addAttribute("unresolvedGuidance", new ArrayList<>());
-        model.addAttribute("unresolvedFacilities", new ArrayList<>());
+    public String showClearanceTrackerForm() {
         return "clearance-tracker";
     }
 
@@ -254,12 +242,6 @@ public class PageController {
         if (studentOpt.isEmpty()) {
             model.addAttribute("error", "Student LRN not found. Please try again.");
             model.addAttribute("notFound", true);
-            
-            // FIX Error 500: Missing attributes when student not found
-            model.addAttribute("student", null);
-            model.addAttribute("unresolvedGuidance", new ArrayList<>());
-            model.addAttribute("unresolvedFacilities", new ArrayList<>());
-            
             return "clearance-status";
         }
 
@@ -276,30 +258,43 @@ public class PageController {
         List<GuidanceLog> unresolvedGuidance = guidanceLogRepository.findByLrnAndStatus(student.getLrn(), "UNSOLVED");
         List<FacilityLog> unresolvedFacilities = facilityLogRepository.findByLrnAndStatus(student.getLrn(), "UNSOLVED");
         
-        // FIX Error 500: Ensure lists are never null
-        model.addAttribute("unresolvedGuidance", unresolvedGuidance != null ? unresolvedGuidance : new ArrayList<>());
-        model.addAttribute("unresolvedFacilities", unresolvedFacilities != null ? unresolvedFacilities : new ArrayList<>());
+        model.addAttribute("unresolvedGuidance", unresolvedGuidance);
+        model.addAttribute("unresolvedFacilities", unresolvedFacilities);
 
         return "clearance-status";
     }
 
     // =========================================================
-    // --- ADMIN DASHBOARD ---
+    // --- MAIN ADMIN DASHBOARD ---
     // =========================================================
 
     @GetMapping("/admin-dashboard")
     public String showAdminDashboard(HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");
-        
-        // Flexible Admin Role Checking
-        if (user == null || user.getRoleName() == null || !user.getRoleName().trim().toUpperCase().contains("ADMIN")) {
-            return "redirect:/login";
-        }
+        if (user == null || !"ADMIN".equalsIgnoreCase(user.getRoleName())) return "redirect:/login";
 
+        // Provide mappings for admin context data objects
+        model.addAttribute("adminUser", user);
         model.addAttribute("username", user.getName());
-        model.addAttribute("allUsers", userRepository.findAll());
+        
+        // Fetch users partition matrices
+        List<User> usersList = userRepository.findAll();
+        model.addAttribute("allUsers", usersList);
+        model.addAttribute("users", usersList);
+        
+        // Filter out specific accounts matching view loop expressions
+        List<User> staffList = usersList.stream()
+                .filter(u -> !"ADVISER".equalsIgnoreCase(u.getRoleName()))
+                .collect(Collectors.toList());
+        model.addAttribute("staffAccounts", staffList);
+
+        List<User> advisersList = usersList.stream()
+                .filter(u -> "ADVISER".equalsIgnoreCase(u.getRoleName()))
+                .collect(Collectors.toList());
+        model.addAttribute("adviserAccounts", advisersList);
+
+        model.addAttribute("resources", resourceHubRepository.findAll());
         model.addAttribute("cmsAnnouncements", announcementRepository.findAll());
-        model.addAttribute("cmsResources", resourceHubRepository.findAll());
 
         return "admin-dashboard";
     }
@@ -310,33 +305,49 @@ public class PageController {
         if (existing.isPresent()) {
             User current = existing.get();
             current.setUsername(userToUpdate.getUsername());
-            current.setPassword(userToUpdate.getPassword());
+            if (userToUpdate.getPassword() != null && !userToUpdate.getPassword().trim().isEmpty()) {
+                current.setPassword(userToUpdate.getPassword());
+            }
             current.setRoleName(userToUpdate.getRoleName());
             userRepository.save(current);
-            return "redirect:/admin-dashboard?tab=1&success=Account+updated";
+            return "redirect:/admin-dashboard?tab=0&success=Account+updated";
         }
-        return "redirect:/admin-dashboard?tab=1&error=Account+not+found";
+        return "redirect:/admin-dashboard?tab=0&error=Account+not+found";
     }
 
     @PostMapping("/admin/adviser/create")
     public String adminCreateAdviser(
-            @RequestParam("name") String name,
-            @RequestParam("username") String username,
-            @RequestParam("email") String email,
-            @RequestParam("password") String password,
-            @RequestParam("assignedSection") String assignedSection) {
+            @RequestParam(value = "name", required = false) String name,
+            @RequestParam(value = "username", required = false) String username,
+            @RequestParam(value = "email", required = false) String email,
+            @RequestParam(value = "password", required = false) String password,
+            @RequestParam(value = "assignedSection", required = false) String assignedSection,
+            @RequestParam Map<String, String> allParams) {
 
         try {
+            // Flexible fallbacks to support both standard fields and any customized camelCase/lowercase naming variations
+            String finalName = (name != null) ? name : allParams.getOrDefault("name", "");
+            String finalUsername = (username != null) ? username : allParams.getOrDefault("username", "");
+            String finalEmail = (email != null) ? email : allParams.getOrDefault("email", "");
+            String finalPassword = (password != null) ? password : allParams.getOrDefault("password", "");
+            String finalSection = (assignedSection != null) ? assignedSection : allParams.getOrDefault("section", allParams.getOrDefault("assignedSection", ""));
+
+            if (finalUsername.trim().isEmpty() || finalPassword.trim().isEmpty()) {
+                return "redirect:/admin-dashboard?tab=1&error=Username+and+password+are+required+fields.";
+            }
+
             User newAdviser = new User();
-            newAdviser.setName(name);
-            newAdviser.setUsername(username);
-            newAdviser.setEmail(email);
-            newAdviser.setPassword(password);
-            newAdviser.setAssignedSection(assignedSection);
+            newAdviser.setName(finalName);
+            newAdviser.setUsername(finalUsername);
+            newAdviser.setEmail(finalEmail);
+            newAdviser.setPassword(finalPassword);
+            newAdviser.setAssignedSection(finalSection);
             newAdviser.setRoleName("ADVISER");
 
             User savedUser = authService.registerUser(newAdviser);
-            if (savedUser == null) return "redirect:/admin-dashboard?tab=1&error=Email+address+is+already+in+use.";
+            if (savedUser == null) {
+                return "redirect:/admin-dashboard?tab=1&error=Email+or+username+is+already+in+use.";
+            }
             return "redirect:/admin-dashboard?tab=1&success=Adviser+Account+Successfully+Created.";
         } catch (Exception e) {
             e.printStackTrace();
@@ -386,19 +397,19 @@ public class PageController {
         String cleanName = name.trim();
 
         if (cleanLrn.isEmpty() || cleanName.isEmpty()) {
-            return "redirect:/teacher-portal?error=LRN+and+Name+are+required";
+            return "redirect:/teacher-portal?tab=students&error=LRN+and+Name+are+required";
         }
 
         Student newStudent = new Student(cleanLrn, cleanName, section);
         studentRepository.save(newStudent);
 
-        return "redirect:/teacher-portal?success=Student+added+successfully";
+        return "redirect:/teacher-portal?tab=students&success=Student+added+successfully";
     }
 
     @PostMapping("/adviser/student/delete")
     public String deleteStudentByAdviser(@RequestParam("lrn") String lrn) {
         studentRepository.deleteById(lrn);
-        return "redirect:/teacher-portal?success=Student+deleted+successfully";
+        return "redirect:/teacher-portal?tab=students&success=Student+deleted+successfully";
     }
 
     @PostMapping("/adviser/subject/add")
@@ -408,17 +419,17 @@ public class PageController {
             String section = (loggedInUser != null && loggedInUser.getAssignedSection() != null) ? loggedInUser.getAssignedSection() : "Not Assigned";
             
             if (name == null || name.trim().isEmpty()) {
-                return "redirect:/teacher-portal?error=Subject+name+cannot+be+blank";
+                return "redirect:/teacher-portal?tab=subjects&error=Subject+name+cannot+be+blank";
             }
 
             Subject subj = new Subject();
             subj.setName(name.trim());
             subj.setSection(section);
             subjectRepository.save(subj);
-            return "redirect:/teacher-portal?success=Subject+Added";
+            return "redirect:/teacher-portal?tab=subjects&success=Subject+Added";
         } catch (Exception e) {
             e.printStackTrace();
-            return "redirect:/teacher-portal?error=Failed+to+save+subject+mapping";
+            return "redirect:/teacher-portal?tab=subjects&error=Failed+to+save+subject";
         }
     }
 
@@ -426,10 +437,10 @@ public class PageController {
     public String deleteSubjectFromSection(@RequestParam("id") Long id) {
         try {
             subjectRepository.deleteById(id);
-            return "redirect:/teacher-portal?success=Subject+Removed";
+            return "redirect:/teacher-portal?tab=subjects&success=Subject+Removed";
         } catch (Exception e) {
             e.printStackTrace();
-            return "redirect:/teacher-portal?error=Failed+to+remove+subject";
+            return "redirect:/teacher-portal?tab=subjects&error=Failed+to+remove+subject";
         }
     }
 
@@ -465,10 +476,10 @@ public class PageController {
                     }
                 }
             }
-            return "redirect:/teacher-portal?success=Grades+Saved";
+            return "redirect:/teacher-portal?tab=grading&success=Grades+Saved";
         } catch (Exception e) {
             e.printStackTrace();
-            return "redirect:/teacher-portal?error=Failed+to+process+and+lock+in+grades";
+            return "redirect:/teacher-portal?tab=grading&error=Failed+to+process+grades";
         }
     }
 
@@ -491,7 +502,7 @@ public class PageController {
     @GetMapping("/registrar-dashboard")
     public String showRegistrarDashboard(HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");
-        if (user == null || user.getRoleName() == null || !user.getRoleName().trim().toUpperCase().contains("REGISTRAR")) return "redirect:/login";
+        if (user == null || !"REGISTRAR".equalsIgnoreCase(user.getRoleName())) return "redirect:/login";
 
         List<DocumentRequest> allRequests = documentRequestRepository.findAll();
         List<DocumentRequest> pending = allRequests.stream().filter(r -> "PENDING".equalsIgnoreCase(r.getStatus())).collect(Collectors.toList());
@@ -526,7 +537,7 @@ public class PageController {
     @GetMapping("/facilities-dashboard")
     public String showFacilitiesDashboard(HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");
-        if (user == null || user.getRoleName() == null || !user.getRoleName().trim().toUpperCase().contains("FACILITIES")) return "redirect:/login";
+        if (user == null || !"FACILITIES_ADMIN".equalsIgnoreCase(user.getRoleName())) return "redirect:/login";
 
         model.addAttribute("username", user.getName());
         model.addAttribute("allStudents", studentRepository.findAllByOrderByNameAsc());
@@ -594,7 +605,7 @@ public class PageController {
     @GetMapping("/guidance-dashboard")
     public String showGuidanceDashboard(HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");
-        if (user == null || user.getRoleName() == null || !user.getRoleName().trim().toUpperCase().contains("GUIDANCE")) return "redirect:/login";
+        if (user == null || !"GUIDANCE_COUNSELOR".equalsIgnoreCase(user.getRoleName())) return "redirect:/login";
 
         model.addAttribute("allStudents", studentRepository.findAllByOrderByNameAsc()); 
         model.addAttribute("guidanceLogs", guidanceLogRepository.findAll()); 
@@ -661,7 +672,7 @@ public class PageController {
     @GetMapping({"/clinic-dashboard", "/nurse-dashboard"})
     public String showClinicDashboard(HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");
-        if (user == null || user.getRoleName() == null || (!user.getRoleName().trim().toUpperCase().contains("CLINIC") && !user.getRoleName().trim().toUpperCase().contains("NURSE"))) return "redirect:/login";
+        if (user == null || !"NURSE".equalsIgnoreCase(user.getRoleName())) return "redirect:/login";
 
         model.addAttribute("allStudents", studentRepository.findAll()); 
         model.addAttribute("clinicLogs", clinicLogRepository.findAll()); 
@@ -694,21 +705,21 @@ public class PageController {
     @GetMapping("/lab-dashboard")
     public String showLabDashboard(HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");
-        if (user == null || user.getRoleName() == null || !user.getRoleName().trim().toUpperCase().contains("LAB")) return "redirect:/login";
+        if (user == null || !"LABORATORY".equalsIgnoreCase(user.getRoleName())) return "redirect:/login";
         return "lab-dashboard"; 
     }
 
     @GetMapping("/sports-dashboard")
     public String showSportsDashboard(HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");
-        if (user == null || user.getRoleName() == null || !user.getRoleName().trim().toUpperCase().contains("SPORTS")) return "redirect:/login";
+        if (user == null || !"SPORTS_ADMIN".equalsIgnoreCase(user.getRoleName())) return "redirect:/login";
         return "sports-dashboard"; 
     }
 
     @GetMapping("/library-dashboard")
     public String showLibraryDashboard(HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");
-        if (user == null || user.getRoleName() == null || !user.getRoleName().trim().toUpperCase().contains("LIBRARY")) return "redirect:/login";
+        if (user == null || !"LIBRARY".equalsIgnoreCase(user.getRoleName())) return "redirect:/login";
         return "library-dashboard"; 
     }
 
