@@ -34,7 +34,7 @@
                     <i class="fa-solid fa-shield-halved text-emeraldAccent"></i> Main Admin Terminal
                 </h1>
                 <p class="text-zinc-400 text-sm mt-1">
-                    System Director Account: <span class="text-goldAccent font-semibold" th:text="${adminUser.name}">Administrator</span>
+                    System Director Account: <span class="text-goldAccent font-semibold" th:text="${adminUser?.name ?: 'Administrator'}">Administrator</span>
                 </p>
             </div>
             <a href="/logout" class="bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-bold px-4 py-2.5 rounded-lg transition border border-zinc-700 flex items-center gap-2">
@@ -43,11 +43,13 @@
         </div>
 
         <div th:if="${param.success != null}" class="mb-6 p-4 bg-emeraldAccent/10 border border-emeraldAccent/30 text-emeraldAccent text-sm font-semibold rounded-lg flex items-center gap-2">
-            <i class="fa-solid fa-circle-check"></i> <span th:text="${param.success[0]}">System process completed successfully.</span>
+            <i class="fa-solid fa-circle-check"></i> 
+            <span th:text="${#arrays.length(param.success) &gt; 0 ? param.success[0] : 'System process completed successfully.'}">System process completed successfully.</span>
         </div>
 
         <div th:if="${param.error != null}" class="mb-6 p-4 bg-dangerRed/10 border border-dangerRed/30 text-dangerRed text-sm font-semibold rounded-lg flex items-center gap-2">
-            <i class="fa-solid fa-circle-xmark"></i> <span th:text="${param.error[0]}">System process encountered an error.</span>
+            <i class="fa-solid fa-circle-xmark"></i> 
+            <span th:text="${#arrays.length(param.error) &gt; 0 ? param.error[0] : 'System process encountered an error.'}">System process encountered an error.</span>
         </div>
 
         <div class="flex border-b border-panelBorder mb-6 gap-2">
@@ -78,14 +80,17 @@
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-panelBorder">
+                            <tr th:if="${staffAccounts == null or #lists.isEmpty(staffAccounts)}">
+                                <td colspan="4" class="p-8 text-center text-zinc-500 text-xs font-semibold">No core staff records found in database tables.</td>
+                            </tr>
                             <tr th:each="staff : ${staffAccounts}" class="hover:bg-zinc-900/50 transition">
-                                <td class="p-4 font-semibold text-white" th:text="${staff.name}">Staff Name</td>
-                                <td class="p-4 font-mono text-zinc-400 text-xs" th:text="${staff.email}">email@domain.com</td>
+                                <td class="p-4 font-semibold text-white" th:text="${staff?.name ?: 'No Name Set'}">Staff Name</td>
+                                <td class="p-4 font-mono text-zinc-400 text-xs" th:text="${staff?.email ?: 'No Email Set'}">email@domain.com</td>
                                 <td class="p-4">
-                                    <span class="px-2.5 py-1 bg-zinc-800 text-goldAccent text-xs font-bold rounded border border-zinc-700" th:text="${staff.roleName}">ROLE</span>
+                                    <span class="px-2.5 py-1 bg-zinc-800 text-goldAccent text-xs font-bold rounded border border-zinc-700" th:text="${staff?.roleName ?: 'STAFF'}">ROLE</span>
                                 </td>
                                 <td class="p-4 text-right">
-                                    <button th:data-id="${staff.id}" th:data-name="${staff.name}" th:data-email="${staff.email}" onclick="openEditStaffModal(this)" class="text-xs bg-emeraldAccent/10 hover:bg-emeraldAccent text-emeraldAccent hover:text-darkBg font-bold px-3 py-1.5 rounded transition border border-emeraldAccent/30">
+                                    <button th:data-id="${staff?.id}" th:data-name="${staff?.name}" th:data-email="${staff?.email}" onclick="openEditStaffModal(this)" class="text-xs bg-emeraldAccent/10 hover:bg-emeraldAccent text-emeraldAccent hover:text-darkBg font-bold px-3 py-1.5 rounded transition border border-emeraldAccent/30">
                                         <i class="fa-solid fa-user-pen"></i> Rewrite
                                     </button>
                                 </td>
@@ -140,21 +145,21 @@
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-panelBorder">
+                                <tr th:if="${adviserAccounts == null or #lists.isEmpty(adviserAccounts)}">
+                                    <td colspan="4" class="p-8 text-center text-zinc-500 text-xs font-semibold">No assigned active advisory records found in database tables.</td>
+                                </tr>
                                 <tr th:each="adv : ${adviserAccounts}" class="hover:bg-zinc-900/50 transition">
-                                    <td class="p-4 font-semibold text-white" th:text="${adv.name}">Robert Louis De Gula</td>
-                                    <td class="p-4 text-emeraldAccent font-bold" th:text="${adv.assignedSection}">Grade 12 - Azurite</td>
-                                    <td class="p-4 font-mono text-zinc-400 text-xs" th:text="${adv.email}">robert@linhs.edu.ph</td>
+                                    <td class="p-4 font-semibold text-white" th:text="${adv?.name ?: 'No Name Set'}">Robert Louis De Gula</td>
+                                    <td class="p-4 text-emeraldAccent font-bold" th:text="${adv?.assignedSection ?: 'Unassigned Section'}">Grade 12 - Azurite</td>
+                                    <td class="p-4 font-mono text-zinc-400 text-xs" th:text="${adv?.email ?: 'No Email Set'}">robert@linhs.edu.ph</td>
                                     <td class="p-4 text-right">
                                         <form th:action="@{/admin/adviser/delete}" method="POST" onsubmit="return confirm('Revoke completely and remove this advisor account item from the entity tables?');">
-                                            <input type="hidden" name="id" th:value="${adv.id}" />
+                                            <input type="hidden" name="id" th:value="${adv?.id}" />
                                             <button type="submit" class="text-xs bg-dangerRed/10 hover:bg-dangerRed text-dangerRed hover:text-white px-2.5 py-1.5 font-bold rounded transition border border-dangerRed/20">
                                                 <i class="fa-solid fa-trash-can"></i> Expunge Account
                                             </button>
                                         </form>
                                     </td>
-                                </tr>
-                                <tr th:if="${#lists.isEmpty(adviserAccounts)}">
-                                    <td colspan="4" class="p-8 text-center text-zinc-500 text-xs font-semibold">No assigned active advisory records found in database tables.</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -243,24 +248,24 @@
                                         </tr>
                                     </thead>
                                     <tbody class="divide-y divide-panelBorder">
+                                        <tr th:if="${resources == null or #lists.isEmpty(resources)}">
+                                            <td colspan="3" class="p-8 text-center text-zinc-500 text-xs font-semibold">No resource files uploaded yet.</td>
+                                        </tr>
                                         <tr th:each="resource : ${resources}" class="hover:bg-zinc-900/50 transition">
-                                            <td class="p-4 font-semibold text-white" th:text="${resource.title}">Title</td>
+                                            <td class="p-4 font-semibold text-white" th:text="${resource?.title ?: 'Untitled Resource'}">Title</td>
                                             <td class="p-4">
-                                                <a th:href="${resource.fileUrl}" target="_blank" class="text-xs bg-emeraldAccent/10 hover:bg-emeraldAccent text-emeraldAccent hover:text-darkBg font-bold px-3 py-1.5 rounded transition border border-emeraldAccent/30 inline-flex items-center gap-1">
+                                                <a th:href="${resource?.fileUrl ?: '#'}" target="_blank" class="text-xs bg-emeraldAccent/10 hover:bg-emeraldAccent text-emeraldAccent hover:text-darkBg font-bold px-3 py-1.5 rounded transition border border-emeraldAccent/30 inline-flex items-center gap-1">
                                                     <i class="fa-solid fa-download"></i> View File
                                                 </a>
                                             </td>
                                             <td class="p-4 text-right">
                                                 <form th:action="@{/admin/resource/delete}" method="POST" onsubmit="return confirm('Permanently delete this file?');">
-                                                    <input type="hidden" name="id" th:value="${resource.id}">
+                                                    <input type="hidden" name="id" th:value="${resource?.id}">
                                                     <button type="submit" class="text-xs bg-dangerRed/10 hover:bg-dangerRed text-dangerRed hover:text-white px-2.5 py-1.5 font-bold rounded transition border border-dangerRed/20">
                                                         <i class="fa-solid fa-trash-can"></i> Delete
                                                     </button>
                                                 </form>
                                             </td>
-                                        </tr>
-                                        <tr th:if="${#lists.isEmpty(resources)}">
-                                            <td colspan="3" class="p-8 text-center text-zinc-500 text-xs font-semibold">No resource files uploaded yet.</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -343,16 +348,13 @@
         }
 
         document.addEventListener("DOMContentLoaded", function() {
-            // First: Look for "?tab=" passed from the Java Controller Redirect
             const urlParams = new URLSearchParams(window.location.search);
             let active = urlParams.get('tab');
             
-            // Second: If not in URL, fallback to what was last clicked (stored in localStorage)
             if (active === null) {
                 active = localStorage.getItem('adminActiveTab');
             }
             
-            // Third: If absolutely nothing is found, default to tab 0
             if (active === null) {
                 active = 0;
             }
@@ -361,5 +363,4 @@
         });
     </script>
 </body>
-
 </html>
