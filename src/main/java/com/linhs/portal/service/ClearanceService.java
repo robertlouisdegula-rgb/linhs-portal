@@ -1,9 +1,11 @@
 package com.linhs.portal.service;
 
 import com.linhs.portal.model.BorrowRecord;
-import com.linhs.portal.model.GuidanceRecord;
+import com.linhs.portal.model.FacilityLog;
+import com.linhs.portal.model.GuidanceLog;
 import com.linhs.portal.repository.BorrowRecordRepository;
-import com.linhs.portal.repository.GuidanceRecordRepository;
+import com.linhs.portal.repository.FacilityLogRepository;
+import com.linhs.portal.repository.GuidanceLogRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -13,12 +15,15 @@ import java.util.List;
 public class ClearanceService {
 
     private final BorrowRecordRepository borrowRecordRepository;
-    private final GuidanceRecordRepository guidanceRecordRepository;
+    private final GuidanceLogRepository guidanceLogRepository;
+    private final FacilityLogRepository facilityLogRepository;
 
     public ClearanceService(BorrowRecordRepository borrowRecordRepository, 
-                            GuidanceRecordRepository guidanceRecordRepository) {
+                            GuidanceLogRepository guidanceLogRepository,
+                            FacilityLogRepository facilityLogRepository) {
         this.borrowRecordRepository = borrowRecordRepository;
-        this.guidanceRecordRepository = guidanceRecordRepository;
+        this.guidanceLogRepository = guidanceLogRepository;
+        this.facilityLogRepository = facilityLogRepository;
     }
 
     /**
@@ -29,21 +34,24 @@ public class ClearanceService {
         List<String> liabilitiesList = new ArrayList<>();
 
         // 1. Check General Asset & Lab Borrowing Liabilities
-        List<BorrowRecord> unreturnedAssets = borrowRecordRepository.findByStudentLrn(lrn);
+        List<BorrowRecord> unreturnedAssets = borrowRecordRepository.findByStudentLrnAndStatus(lrn, "BORROWED");
         for (BorrowRecord record : unreturnedAssets) {
-            if ("BORROWED".equalsIgnoreCase(record.getStatus())) {
-                liabilitiesList.add(String.format("Unreturned item: '%s' (Borrowed: %s)", 
-                    record.getItemName(), record.getBorrowedAt()));
-            }
+            liabilitiesList.add(String.format("Unreturned item: '%s' (Borrowed: %s)", 
+                record.getItemName(), record.getBorrowedAt()));
         }
 
-        // 2. Check Guidance Behavioral/Incident Cases
-        List<GuidanceRecord> infractions = guidanceRecordRepository.findByStudentLrn(lrn);
-        for (GuidanceRecord incident : infractions) {
-            if (incident.getActionTaken() == null || incident.getActionTaken().isBlank()) {
-                liabilitiesList.add(String.format("Unresolved case record inside Guidance Office: %s (Logged: %s)", 
-                    incident.getIncidentDetails(), incident.getCreatedAt()));
-            }
+        // 2. Check Guidance Behavioral/Incident Cases (Now strictly checks for "UNSOLVED")
+        List<GuidanceLog> infractions = guidanceLogRepository.findByLrnAndStatus(lrn, "UNSOLVED");
+        for (GuidanceLog incident : infractions) {
+            liabilitiesList.add(String.format("Unresolved Guidance Case: %s (Logged: %s)", 
+                incident.getIncident(), incident.getDateLogged()));
+        }
+
+        // 3. Check Facilities Damages (Added to match new dashboard architecture)
+        List<FacilityLog> damages = facilityLogRepository.findByLrnAndStatus(lrn, "UNSOLVED");
+        for (FacilityLog damage : damages) {
+            liabilitiesList.add(String.format("Unpaid Facility Damage: %s - %s (Logged: %s)", 
+                damage.getFacility(), damage.getDescription(), damage.getDateLogged()));
         }
 
         return liabilitiesList;

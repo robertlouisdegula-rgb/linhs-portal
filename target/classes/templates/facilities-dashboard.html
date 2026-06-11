@@ -11,18 +11,17 @@
             --dark-bg: #09090b;
             --panel-bg: #141417;
             --border-color: #2d2d30;
-            --mint-green: #10b981;
-            --mint-hover: #059669;
             --text-main: #ffffff;
             --text-muted: #d4d4d8;
             --input-bg: #09090b;
-            --accent-orange: #ff9800;
+            --accent-blue: #3b82f6; /* Changed to Blue for Facilities */
         }
 
         body {
             background-color: var(--dark-bg);
             color: var(--text-main);
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            min-height: 100vh;
         }
 
         .navbar {
@@ -61,313 +60,384 @@
             background-color: var(--input-bg);
             border: 1px solid var(--border-color);
             color: #ffffff !important;
-            border-radius: 8px;
-        }
-
-        .form-control::placeholder {
-            color: #a1a1aa !important;
         }
 
         .form-control:focus, .form-select:focus {
             background-color: var(--input-bg);
-            border-color: var(--mint-green);
+            border-color: var(--accent-blue);
             color: #ffffff !important;
-            box-shadow: 0 0 0 0.25rem rgba(16, 185, 129, 0.25);
+            box-shadow: 0 0 0 0.25rem rgba(59, 130, 246, 0.15);
         }
 
-        .btn-mint {
-            background-color: var(--mint-green);
-            color: #ffffff !important;
-            font-weight: 600;
-            border-radius: 8px;
-            transition: all 0.2s ease;
-            border: none;
+        /* Tab Navigation Styles */
+        .nav-tabs {
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 1.5rem;
         }
 
-        .btn-mint:hover {
-            background-color: var(--mint-hover);
-            color: #ffffff !important;
-        }
-
-        .section-btn {
-            background-color: transparent;
+        .nav-tabs .nav-link {
             color: var(--text-muted);
-            border: 1px solid var(--border-color);
-            padding: 8px 16px;
-            border-radius: 8px;
-            margin-right: 8px;
-            margin-bottom: 8px;
-            transition: all 0.2s;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            font-weight: 500;
+            background: transparent;
+            cursor: pointer;
+            transition: color 0.2s ease;
         }
 
-        .section-btn:hover {
-            color: #ffffff;
-            border-color: #52525b;
+        .nav-tabs .nav-link:hover {
+            color: var(--text-main);
         }
 
-        .section-btn.active {
-            background-color: rgba(16, 185, 129, 0.1);
-            color: var(--mint-green) !important;
-            border-color: var(--mint-green);
+        .nav-tabs .nav-link.active {
+            color: var(--accent-blue) !important;
+            border-bottom: 2px solid var(--accent-blue);
+            background-color: transparent;
         }
 
+        .tab-pane {
+            display: none;
+        }
+
+        .tab-pane.show {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Table Styles */
         .table {
-            color: #ffffff !important;
+            color: var(--text-main);
+            border-color: var(--border-color);
+            margin-bottom: 0;
+        }
+
+        .table > thead {
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .table > thead > tr > th {
+            color: var(--accent-blue);
+            font-weight: 600;
+            border-bottom: 2px solid var(--border-color);
+            background-color: transparent;
+        }
+
+        .table > tbody > tr > td {
+            background-color: transparent;
+            color: var(--text-main);
+            border-bottom: 1px solid var(--border-color);
             vertical-align: middle;
         }
 
-        .table th {
-            border-bottom: 2px solid var(--border-color);
-            color: #ffffff !important;
+        .table > tbody > tr:hover > td {
+            background-color: rgba(59, 130, 246, 0.05);
+        }
+
+        /* Custom Modal Styles (Crash-Proof) */
+        .custom-modal {
+            display: none;
+            position: fixed;
+            z-index: 1050;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.7);
+            backdrop-filter: blur(4px);
+        }
+
+        .custom-modal-content {
+            background-color: var(--panel-bg);
+            margin: 5% auto;
+            padding: 24px;
+            border: 1px solid var(--border-color);
+            width: 90%;
+            max-width: 600px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .student-item {
+            transition: background-color 0.2s;
+            border-radius: 6px;
+        }
+
+        .student-item:hover {
+            background-color: #2a2a2d;
+            cursor: pointer;
+        }
+
+        .btn-blue-custom {
+            background-color: var(--accent-blue);
+            color: #fff;
             font-weight: 600;
-            text-transform: uppercase;
-            font-size: 0.85rem;
-            background-color: transparent;
+            border: none;
         }
-
-        .table td {
-            border-bottom: 1px solid var(--border-color);
-            color: #ffffff !important;
-            background-color: transparent;
+        
+        .btn-blue-custom:hover {
+            background-color: #2563eb;
+            color: #fff;
         }
-
-        .text-muted-custom {
-            color: #d4d4d8 !important;
+        
+        .badge-unsolved {
+            background-color: rgba(239, 68, 68, 0.15);
+            color: #f87171;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            padding: 6px 10px;
         }
-
-        .modal-student-row {
-            transition: all 0.2s ease;
-        }
-
-        .modal-student-row:hover {
-            background-color: rgba(16, 185, 129, 0.15) !important;
-            color: var(--mint-green) !important;
+        
+        .badge-solved {
+            background-color: rgba(16, 185, 129, 0.15);
+            color: #34d399;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            padding: 6px 10px;
         }
     </style>
 </head>
-<body>
 
-    <nav class="navbar navbar-expand-lg navbar-dark px-4 py-3">
+<body>
+    <nav class="navbar navbar-expand-lg px-4 py-3">
         <div class="container-fluid">
             <span class="navbar-brand fw-bold text-uppercase tracking-wider">
-                <i class="fas fa-tools me-2 text-warning"></i>LINHS Property & Facilities Portal
+                <i class="fas fa-hammer me-2" style="color: var(--accent-blue);"></i>LINHS Facilities Office
             </span>
             <div class="d-flex align-items-center">
-                <span class="session-user-text me-3">
-                    <i class="fas fa-user-cog me-1"></i> Logged in as: <span th:text="${session.user != null ? session.user.name : 'Property Custodian'}">Facilities Admin</span>
+                <span class="session-user-text me-4">
+                    <i class="fas fa-user-hard-hat me-1 text-muted"></i> Logged in as: <span th:text="${session.user != null ? session.user.name : 'Facilities Admin'}">Facilities Admin</span>
                 </span>
-                <a href="/logout" class="btn btn-outline-danger btn-sm rounded-3"><i class="fas fa-sign-out-alt me-1"></i> Exit</a>
+                <a href="/logout" class="btn btn-outline-danger btn-sm rounded-3">
+                    <i class="fas fa-sign-out-alt me-1"></i> Exit
+                </a>
             </div>
         </div>
     </nav>
 
     <div class="container-fluid px-4 py-4">
-        <div class="row">
-            <div class="col-xl-4 col-lg-5">
-                <div class="dashboard-card">
-                    <h5 class="fw-bold mb-4" style="color: var(--mint-green) !important;"><i class="fas fa-exclamation-triangle me-2"></i>Report Property Liability</h5>
-                    <form th:action="@{/facilities/add-liability}" method="POST">
-                        
-                        <div class="mb-3">
-                            <label class="form-label d-block">Accountable Student Profile</label>
-                            <div class="input-group">
-                                <input type="text" id="selectedStudentDisplay" class="form-control" placeholder="No student selected" readonly required style="cursor: default;">
-                                <button type="button" class="btn btn-mint" data-bs-toggle="modal" data-bs-target="#studentSearchModal">
-                                    <i class="fas fa-search me-1"></i> Find Student
-                                </button>
+        <div th:if="${param.success != null}" class="alert alert-success alert-dismissible fade show" role="alert" style="background-color: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.3); color: #34d399;">
+            <i class="fa-solid fa-check-circle me-2"></i>Action completed successfully.
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <div class="dashboard-card">
+            
+            <ul class="nav nav-tabs" id="facilitiesTabs">
+                <li class="nav-item">
+                    <button class="nav-link active" id="report-tab" onclick="openTab('report')" type="button">
+                        <i class="fa-solid fa-triangle-exclamation me-2"></i>File Damage Report
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link" id="logs-tab" onclick="openTab('logs')" type="button">
+                        <i class="fa-solid fa-clipboard-list me-2"></i>Damage Logs
+                    </button>
+                </li>
+            </ul>
+
+            <div class="tab-content" id="facilitiesTabsContent">
+
+                <div class="tab-pane fade show active" id="report-pane">
+                    <div class="row">
+                        <div class="col-lg-8 mx-auto">
+                            <div class="p-4 rounded border mt-2" style="background-color: var(--dark-bg); border-color: var(--border-color) !important;">
+                                <h5 class="fw-bold mb-4" style="color: var(--accent-blue);"><i class="fa-solid fa-toolbox me-2"></i>Record Property Damage</h5>
+                                
+                                <form action="/facilities/report/save" method="POST">
+                                    <div class="mb-4">
+                                        <label class="form-label">Search Responsible Student <span class="text-danger">*</span></label>
+                                        <div class="input-group">
+                                            <input type="hidden" name="lrn" id="selectedLrn" required>
+                                            <input type="hidden" name="studentName" id="selectedName">
+                                            
+                                            <input type="text" class="form-control py-2" id="selectedStudentDisplay" placeholder="Click 'Search Database' to select a student..." readonly required style="cursor: default;">
+                                            <button type="button" class="btn btn-outline-primary" onclick="openSearchModal()">
+                                                <i class="fas fa-search me-1"></i> Search Database
+                                            </button>
+                                        </div>
+                                        <small class="text-muted mt-1 d-block">This connects to the master database. Filing this report will hold the student liable for clearance.</small>
+                                    </div>
+
+                                    <div class="mb-4">
+                                        <label class="form-label">Facility / Equipment Damaged <span class="text-danger">*</span></label>
+                                        <input type="text" name="facility" class="form-control py-2" placeholder="e.g., Library Chair, Computer Monitor..." required>
+                                    </div>
+
+                                    <div class="mb-4">
+                                        <label class="form-label">Damage Description <span class="text-danger">*</span></label>
+                                        <textarea name="description" class="form-control" rows="3" placeholder="Describe the severity and specifics of the damage..." required></textarea>
+                                    </div>
+
+                                    <div class="d-flex justify-content-end mt-4">
+                                        <button type="reset" class="btn btn-link text-muted text-decoration-none me-3">Clear Form</button>
+                                        <button type="submit" class="btn btn-blue-custom px-4 py-2">
+                                            <i class="fa-solid fa-file-export me-2"></i> Submit Damage Report
+                                        </button>
+                                    </div>
+                                </form>
                             </div>
-                            <input type="hidden" name="studentLrn" id="hiddenStudentLrn" required>
-                            <input type="hidden" name="studentName" id="hiddenFacilitiesName" required>
                         </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Facility / Property Name</label>
-                            <input type="text" name="facilityName" class="form-control" placeholder="e.g., Computer Lab 2, Science Beaker, Armchair" required>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Damage Case Description</label>
-                            <textarea name="damageDescription" class="form-control" rows="3" placeholder="Describe property condition or liability issues clearly..." required></textarea>
-                        </div>
-
-                        <button type="submit" class="btn btn-mint w-100 py-2 mt-2"><i class="fas fa-file-invoice me-2"></i>File Liability Record</button>
-                    </form>
+                    </div>
                 </div>
-            </div>
 
-            <div class="col-xl-8 col-lg-7">
-                <div class="dashboard-card">
-                    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
-                        <div>
-                            <h5 class="fw-bold mb-1">Laboratory Clearance Configuration</h5>
-                            <p class="text-muted-custom small mb-0">Toggle section button states to change dynamic laboratory accountability lists.</p>
-                        </div>
-                        <div class="position-relative" style="width: 280px;">
-                            <i class="fas fa-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted-custom"></i>
-                            <input type="text" id="dashboardSearch" class="form-control ps-5" placeholder="Search roster records...">
-                        </div>
+                <div class="tab-pane fade" id="logs-pane">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="fw-bold mb-0">Master Facility Damage Logs</h5>
+                        <p class="mb-0 text-muted small"><i class="fa-solid fa-circle-info me-1"></i> Unsolved damage records will block the student's final clearance.</p>
                     </div>
 
-                    <div class="d-flex flex-wrap mb-4">
-                        <button th:each="secEntry, stat : ${sectionsMap}" 
-                                th:id="'btn-' + ${#strings.replace(secEntry.key, ' ', '_')}"
-                                th:classappend="${stat.index == 0} ? 'active' : ''"
-                                class="section-btn"
-                                th:onclick="showFacilitiesSection([[${#strings.replace(secEntry.key, ' ', '_')}]])">
-                            <span th:text="${secEntry.key}">Section</span>
-                        </button>
-                    </div>
-
-                    <div th:each="secEntry, stat : ${sectionsMap}" 
-                         th:id="'table-' + ${#strings.replace(secEntry.key, ' ', '_')}" 
-                         class="student-table-container table-responsive" 
-                         th:style="${stat.index == 0} ? 'display: block;' : 'display: none;'">
-                        
-                        <table class="table">
+                    <div class="table-responsive border rounded" style="border-color: var(--border-color) !important;">
+                        <table class="table table-hover">
                             <thead>
                                 <tr>
-                                    <th>LRN String Code</th>
-                                    <th>Student Full Name</th>
-                                    <th class="text-end" style="width: 200px;">Clearance Management</th>
+                                    <th class="px-3">Student Target</th>
+                                    <th>Equipment / Facility</th>
+                                    <th>Damage Description</th>
+                                    <th class="text-center">Clearance Status</th>
+                                    <th class="text-end px-3">Resolution Controls</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr th:each="student : ${secEntry.value}" class="student-row">
-                                    <td class="fw-bold text-mint search-lrn" th:text="${student.lrn}">LRN</td>
-                                    <td class="search-name text-white fw-medium" th:text="${student.name}">Student Name</td>
-                                    <td class="text-end">
-                                        <form th:action="@{/facilities/update-clearance}" method="POST" style="display: inline-block; width: 100%;">
-                                            <input type="hidden" name="studentLrn" th:value="${student.lrn}">
-                                            <select name="status" class="form-select form-select-sm backend-update-select" onchange="this.form.submit()">
-                                                <option th:selected="${student.labClearance == null || student.labClearance?.name() == 'PENDING'}" value="PENDING">❌ Pending</option>
-                                                <option th:selected="${student.labClearance?.name() == 'CLEARED'}" value="CLEARED">✅ Cleared</option>
-                                            </select>
-                                        </form>
+                                <th:block th:if="${facilityLogs != null and !#lists.isEmpty(facilityLogs)}">
+                                    <tr th:each="log : ${facilityLogs}">
+                                        <td class="px-3 py-3">
+                                            <strong class="d-block" th:text="${log.studentName}">John Doe</strong>
+                                            <small style="color: var(--accent-blue); font-family: monospace;" th:text="${log.lrn}">123456789012</small>
+                                        </td>
+                                        <td class="py-3 fw-bold">
+                                            <span th:text="${log.facility}">Computer Mouse</span>
+                                        </td>
+                                        <td class="py-3 text-muted" style="max-width: 250px;">
+                                            <span th:text="${log.description}">Cable cut</span>
+                                        </td>
+                                        <td class="text-center py-3">
+                                            <span class="badge rounded-pill" th:classappend="${log.status == 'SOLVED'} ? 'badge-solved' : 'badge-unsolved'" th:text="${log.status}">UNSOLVED</span>
+                                        </td>
+                                        <td class="text-end px-3 py-3">
+                                            <form th:if="${log.status == 'UNSOLVED'}" action="/facilities/log/solve" method="POST" class="d-inline" onsubmit="return confirm('Confirm that this student has repaired or paid for the damages?');">
+                                                <input type="hidden" name="logId" th:value="${log.id}">
+                                                <button type="submit" class="btn btn-sm btn-outline-success">
+                                                    <i class="fa-solid fa-check me-1"></i> Mark Repaired/Paid
+                                                </button>
+                                            </form>
+                                            <span th:if="${log.status == 'SOLVED'}" class="text-muted small">
+                                                <i class="fa-solid fa-lock me-1"></i> Resolved
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </th:block>
+                                <tr th:if="${facilityLogs == null or #lists.isEmpty(facilityLogs)}">
+                                    <td colspan="5" class="text-center py-5 text-muted">
+                                        <i class="fa-solid fa-folder-open fs-2 mb-3 opacity-50"></i><br>
+                                        No facility damage reports have been filed yet.
                                     </td>
-                                </tr>
-                                <tr th:if="${#lists.isEmpty(secEntry.value)}">
-                                    <td colspan="3" class="text-muted-custom text-center py-4">No student records found allocated inside this section space loop mapping.</td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
-
                 </div>
+
             </div>
         </div>
     </div>
 
-    <div class="modal fade" id="studentSearchModal" tabindex="-1" aria-labelledby="studentSearchModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content text-white" style="background-color: var(--panel-bg); border: 1px solid var(--border-color);">
-                <div class="modal-header border-bottom" style="border-color: var(--border-color) !important;">
-                    <h5 class="modal-title fw-bold" id="studentSearchModalLabel" style="color: var(--mint-green) !important;">
-                        <i class="fas fa-user-check me-2"></i>Select Student Profile Ledger
-                    </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-close="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
-                    <div class="mb-4 position-relative">
-                        <i class="fas fa-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
-                        <input type="text" id="modalStudentSearch" class="form-control ps-5" placeholder="Type student full name or LRN code string to filter...">
-                    </div>
-                    
-                    <div th:each="secEntry : ${sectionsMap}" class="mb-4 modal-section-container">
-                        <div class="d-flex align-items-center mb-2 pb-1 border-bottom border-dark">
-                            <i class="fas fa-graduation-cap me-2 text-muted small"></i>
-                            <h6 class="text-uppercase tracking-wider fw-bold text-muted mb-0 small" th:text="${secEntry.key}">Section Name</h6>
-                        </div>
-                        <div class="list-group">
-                            <button type="button" 
-                                    th:each="student : ${secEntry.value}"
-                                    class="list-group-item list-group-item-action text-white bg-transparent border-0 py-2 px-3 rounded modal-student-item mb-1 d-flex justify-content-between align-items-center"
-                                    th:data-lrn="${student.lrn}"
-                                    th:data-name="${student.name}"
-                                    onclick="selectStudentForLiability(this)">
-                                <span class="fw-medium target-modal-name" th:text="${student.name}">Student Name</span>
-                                <span class="badge bg-dark border font-monospace text-muted tracking-wide target-modal-lrn" th:text="${student.lrn}" style="border-color: var(--border-color) !important;">LRN</span>
-                            </button>
+    <div id="studentSearchModal" class="custom-modal">
+        <div class="custom-modal-content">
+            <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3" style="border-color: var(--border-color) !important;">
+                <h5 class="mb-0 fw-bold text-white"><i class="fas fa-users me-2" style="color: var(--accent-blue);"></i>Global Student Database</h5>
+                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="closeSearchModal()">
+                    <i class="fas fa-times me-1"></i> Close
+                </button>
+            </div>
+            
+            <div class="mb-3">
+                <input type="text" id="modalSearchInput" onkeyup="filterStudentList()" class="form-control py-2" placeholder="Type student name or exact LRN to filter...">
+            </div>
+            
+            <div class="rounded border p-2" style="border-color: var(--border-color) !important; background-color: var(--dark-bg); max-height: 350px; overflow-y: auto;">
+                <th:block th:if="${allStudents != null and !#lists.isEmpty(allStudents)}">
+                    <div th:each="student : ${allStudents}" class="student-item p-3 mb-1 border-bottom" style="border-color: var(--border-color) !important;" th:onclick="|selectStudent('${student.lrn}', '${student.name}')|">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong class="student-name d-block text-white" th:text="${student.name}">Student Name</strong>
+                                <small class="student-lrn" style="color: var(--accent-blue); font-family: monospace;" th:text="${student.lrn}">123456789012</small>
+                            </div>
+                            <span class="badge bg-dark border text-muted" style="border-color: var(--border-color) !important;" th:text="${student.section}">Section</span>
                         </div>
                     </div>
+                </th:block>
+                <div th:if="${allStudents == null or #lists.isEmpty(allStudents)}" class="text-center py-4 text-muted">
+                    No students found in the global database.
                 </div>
             </div>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
     <script>
-        function showFacilitiesSection(sectionId) {
-            document.querySelectorAll('.student-table-container').forEach(el => el.style.display = 'none');
-            document.querySelectorAll('.section-btn').forEach(el => el.classList.remove('active'));
-            
-            const activeTable = document.getElementById('table-' + sectionId);
-            if(activeTable) activeTable.style.display = 'block';
-            
-            const activeBtn = document.getElementById('btn-' + sectionId);
-            if(activeBtn) activeBtn.classList.add('active');
+        function openTab(tabId) {
+            document.querySelectorAll('.tab-pane').forEach(pane => {
+                pane.classList.remove('show', 'active');
+                pane.style.display = 'none';
+            });
+            document.querySelectorAll('.nav-link').forEach(btn => btn.classList.remove('active'));
 
-            document.getElementById('dashboardSearch').value = '';
-            document.querySelectorAll('.student-row').forEach(row => row.style.display = '');
-        }
-
-        // Selection engine mapping modal data attributes to target form values
-        function selectStudentForLiability(element) {
-            const lrn = element.getAttribute('data-lrn');
-            const name = element.getAttribute('data-name');
+            const targetPane = document.getElementById(tabId + '-pane');
+            const targetTab = document.getElementById(tabId + '-tab');
             
-            document.getElementById('selectedStudentDisplay').value = name + ' (' + lrn + ')';
-            document.getElementById('hiddenStudentLrn').value = lrn;
-            document.getElementById('hiddenFacilitiesName').value = name;
-            
-            const modalEl = document.getElementById('studentSearchModal');
-            const modalInstance = bootstrap.Modal.getInstance(modalEl);
-            if (modalInstance) {
-                modalInstance.hide();
+            if(targetPane && targetTab) {
+                targetPane.style.display = 'block';
+                setTimeout(() => targetPane.classList.add('show', 'active'), 10);
+                targetTab.classList.add('active');
+                localStorage.setItem('facilitiesActiveTab', tabId);
             }
         }
 
-        // Modal Live Multiplex Filter Search Logic Engine
-        document.getElementById('modalStudentSearch').addEventListener('keyup', function() {
-            let filter = this.value.toLowerCase().trim();
-            let items = document.querySelectorAll('.modal-student-item');
+        function openSearchModal() {
+            document.getElementById('studentSearchModal').style.display = 'block';
+            document.body.style.overflow = 'hidden'; 
+            document.getElementById('modalSearchInput').focus();
+        }
+
+        function closeSearchModal() {
+            document.getElementById('studentSearchModal').style.display = 'none';
+            document.body.style.overflow = 'auto'; 
+        }
+
+        function selectStudent(lrn, name) {
+            document.getElementById('selectedLrn').value = lrn;
+            document.getElementById('selectedName').value = name;
+            document.getElementById('selectedStudentDisplay').value = name + ' (LRN: ' + lrn + ')';
+            document.getElementById('selectedStudentDisplay').style.borderColor = 'var(--accent-blue)';
+            closeSearchModal();
+        }
+
+        function filterStudentList() {
+            let filter = document.getElementById('modalSearchInput').value.toLowerCase();
+            let items = document.querySelectorAll('.student-item');
             
             items.forEach(item => {
-                let name = item.querySelector('.target-modal-name').textContent.toLowerCase();
-                let lrn = item.querySelector('.target-modal-lrn').textContent.toLowerCase();
+                let name = item.querySelector('.student-name').textContent.toLowerCase();
+                let lrn = item.querySelector('.student-lrn').textContent.toLowerCase();
+                
                 if (name.includes(filter) || lrn.includes(filter)) {
-                    item.style.setProperty('display', 'flex', 'important');
+                    item.style.display = 'block';
                 } else {
-                    item.style.setProperty('display', 'none', 'important');
+                    item.style.display = 'none';
                 }
             });
+        }
 
-            // Auto-collapse layout headers if all sub-nodes are filtered out
-            document.querySelectorAll('.modal-section-container').forEach(container => {
-                let visibleItems = Array.from(container.querySelectorAll('.modal-student-item')).filter(i => i.style.display !== 'none');
-                if (visibleItems.length === 0 && filter !== '') {
-                    container.style.display = 'none';
-                } else {
-                    container.style.display = 'block';
-                }
-            });
-        });
-
-        // Main Ledger Dynamic Interface Filtering
-        document.getElementById('dashboardSearch').addEventListener('keyup', function () {
-            let filter = this.value.toLowerCase().trim();
-            let activeContainer = document.querySelector('.student-table-container[style*="display: block"]') || document.querySelector('.student-table-container:not([style*="display: none"])');
-            
-            if (activeContainer) {
-                let rows = activeContainer.querySelectorAll('.student-row');
-                rows.forEach(row => {
-                    let lrnText = row.querySelector('.search-lrn').textContent.toLowerCase();
-                    let nameText = row.querySelector('.search-name').textContent.toLowerCase();
-                    if (lrnText.includes(filter) || nameText.includes(filter)) {
-                        row.style.display = '';
-                    } else {
-                        row.style.display = 'none';
-                    }
-                });
+        document.addEventListener("DOMContentLoaded", function() {
+            let savedTab = localStorage.getItem('facilitiesActiveTab');
+            if(savedTab) {
+                openTab(savedTab);
+            } else {
+                openTab('report');
             }
         });
     </script>

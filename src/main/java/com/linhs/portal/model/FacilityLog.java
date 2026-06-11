@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import java.time.LocalDate;
 
 @Entity
-public class ClinicLog {
+public class FacilityLog {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -12,11 +12,12 @@ public class ClinicLog {
 
     private String lrn;
     private String studentName;
-    private String assessment;
-    private String medicine;
+    private String facility;
+    private String description;
+    private String status = "UNSOLVED";
     private String dateLogged = LocalDate.now().toString();
 
-    public ClinicLog() {}
+    public FacilityLog() {}
 
     // Getters and Setters
     public Long getId() { return id; }
@@ -28,11 +29,14 @@ public class ClinicLog {
     public String getStudentName() { return studentName; }
     public void setStudentName(String studentName) { this.studentName = studentName; }
 
-    public String getAssessment() { return assessment; }
-    public void setAssessment(String assessment) { this.assessment = assessment; }
+    public String getFacility() { return facility; }
+    public void setFacility(String facility) { this.facility = facility; }
 
-    public String getMedicine() { return medicine; }
-    public void setMedicine(String medicine) { this.medicine = medicine; }
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
+
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
 
     public String getDateLogged() { return dateLogged; }
     public void setDateLogged(String dateLogged) { this.dateLogged = dateLogged; }

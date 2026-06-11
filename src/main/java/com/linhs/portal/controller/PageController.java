@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,9 +21,9 @@ import com.linhs.portal.model.Announcement;
 import com.linhs.portal.model.BorrowRecord;
 import com.linhs.portal.model.ClinicLog;
 import com.linhs.portal.model.DocumentRequest;
-import com.linhs.portal.model.FacilityLiability;
+import com.linhs.portal.model.FacilityLog;
 import com.linhs.portal.model.Gallery;
-import com.linhs.portal.model.GuidanceRecord;
+import com.linhs.portal.model.GuidanceLog;
 import com.linhs.portal.model.LibraryBorrowRecord;
 import com.linhs.portal.model.ResourceHub;
 import com.linhs.portal.model.SportsEquipment;
@@ -36,9 +37,9 @@ import com.linhs.portal.repository.AnnouncementRepository;
 import com.linhs.portal.repository.BorrowRecordRepository;
 import com.linhs.portal.repository.ClinicLogRepository;
 import com.linhs.portal.repository.DocumentRequestRepository;
-import com.linhs.portal.repository.FacilityLiabilityRepository;
+import com.linhs.portal.repository.FacilityLogRepository;
 import com.linhs.portal.repository.GalleryRepository;
-import com.linhs.portal.repository.GuidanceRecordRepository;
+import com.linhs.portal.repository.GuidanceLogRepository;
 import com.linhs.portal.repository.LibraryBorrowRecordRepository;
 import com.linhs.portal.repository.ResourceHubRepository;
 import com.linhs.portal.repository.SportsEquipmentRepository;
@@ -56,10 +57,10 @@ public class PageController {
     private final StudentRepository studentRepository;
     private final BorrowRecordRepository borrowRecordRepository;
     private final SportsEquipmentRepository sportsEquipmentRepository;
-    private final GuidanceRecordRepository guidanceRecordRepository;
+    private final GuidanceLogRepository guidanceLogRepository;
     private final DocumentRequestRepository documentRequestRepository;
     private final ClinicLogRepository clinicLogRepository;
-    private final FacilityLiabilityRepository facilityLiabilityRepository;
+    private final FacilityLogRepository facilityLogRepository;
     private final SubjectRepository subjectRepository;
     private final StudentGradeRepository studentGradeRepository;
     private final ResourceHubRepository resourceHubRepository;
@@ -72,10 +73,10 @@ public class PageController {
             StudentRepository studentRepository,
             BorrowRecordRepository borrowRecordRepository,
             SportsEquipmentRepository sportsEquipmentRepository,
-            GuidanceRecordRepository guidanceRecordRepository,
+            GuidanceLogRepository guidanceLogRepository,
             DocumentRequestRepository documentRequestRepository,
             ClinicLogRepository clinicLogRepository,
-            FacilityLiabilityRepository facilityLiabilityRepository,
+            FacilityLogRepository facilityLogRepository,
             SubjectRepository subjectRepository,
             StudentGradeRepository studentGradeRepository,
             ResourceHubRepository resourceHubRepository,
@@ -87,10 +88,10 @@ public class PageController {
         this.studentRepository = studentRepository;
         this.borrowRecordRepository = borrowRecordRepository;
         this.sportsEquipmentRepository = sportsEquipmentRepository;
-        this.guidanceRecordRepository = guidanceRecordRepository;
+        this.guidanceLogRepository = guidanceLogRepository;
         this.documentRequestRepository = documentRequestRepository;
         this.clinicLogRepository = clinicLogRepository;
-        this.facilityLiabilityRepository = facilityLiabilityRepository;
+        this.facilityLogRepository = facilityLogRepository;
         this.subjectRepository = subjectRepository;
         this.studentGradeRepository = studentGradeRepository;
         this.resourceHubRepository = resourceHubRepository;
@@ -127,7 +128,7 @@ public class PageController {
                 case "ADMIN": return "redirect:/admin-dashboard";
                 case "ADVISER": return "redirect:/adviser-dashboard";
                 case "REGISTRAR": return "redirect:/registrar-dashboard";
-                case "FACILITIES_ADMIN": return "redirect:/custodian-dashboard";
+                case "FACILITIES_ADMIN": return "redirect:/facilities-dashboard";
                 case "SPORTS_ADMIN": return "redirect:/sports-dashboard";
                 case "GUIDANCE_COUNSELOR": return "redirect:/guidance-dashboard";
                 case "NURSE": return "redirect:/clinic-dashboard";
@@ -186,7 +187,7 @@ public class PageController {
             case "ADMIN": return "redirect:/admin-dashboard";
             case "ADVISER": return "redirect:/adviser-dashboard";
             case "REGISTRAR": return "redirect:/registrar-dashboard";
-            case "FACILITIES_ADMIN": return "redirect:/custodian-dashboard";
+            case "FACILITIES_ADMIN": return "redirect:/facilities-dashboard";
             case "SPORTS_ADMIN": return "redirect:/sports-dashboard";
             case "GUIDANCE_COUNSELOR": return "redirect:/guidance-dashboard";
             case "NURSE": return "redirect:/clinic-dashboard";
@@ -498,55 +499,40 @@ public class PageController {
     }
 
     // =========================================================
-    // --- FACILITIES & CUSTODIAN DASHBOARD ---
+    // --- FACILITIES / CUSTODIAN DASHBOARD ---
     // =========================================================
 
     @GetMapping({"/custodian-dashboard", "/facilities-dashboard"})
-    public String showCustodianDashboard(HttpSession session, Model model) {
+    public String showFacilitiesDashboard(HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");
         if (user == null || !"FACILITIES_ADMIN".equalsIgnoreCase(user.getRoleName())) return "redirect:/login";
 
-        List<FacilityLiability> allFacilities = facilityLiabilityRepository.findAll();
-        List<FacilityLiability> unresolved = allFacilities.stream().filter(f -> "UNRESOLVED".equalsIgnoreCase(f.getStatus())).collect(Collectors.toList());
-        List<FacilityLiability> resolved = allFacilities.stream().filter(f -> "RESOLVED".equalsIgnoreCase(f.getStatus())).collect(Collectors.toList());
-
-        model.addAttribute("username", user.getUsername());
-        model.addAttribute("students", studentRepository.findAll()); 
-        model.addAttribute("activeFacilities", unresolved); 
-        model.addAttribute("resolvedFacilities", resolved);
+        // Provide complete data required by the new facilities-dashboard.html
+        model.addAttribute("allStudents", studentRepository.findAll()); 
+        model.addAttribute("facilityLogs", facilityLogRepository.findAll()); 
         return "facilities-dashboard"; 
     }
 
-    @PostMapping("/facilities/log")
-    public String logFacilityLiability(@RequestParam("studentLrn") String studentLrn,
-                                       @RequestParam("hiddenStudentName") String studentName,
-                                       @RequestParam("itemName") String itemName,
-                                       @RequestParam("issueDetails") String issueDetails) {
+    @PostMapping("/facilities/report/save")
+    public String saveFacilityReport(@ModelAttribute FacilityLog log) {
         try {
-            FacilityLiability liability = new FacilityLiability();
-            liability.setStudentLrn(studentLrn);
-            liability.setStudentName(studentName);
-            liability.setItemName(itemName);
-            liability.setIssueDetails(issueDetails);
-            liability.setStatus("UNRESOLVED");
-            liability.setDateReported(LocalDateTime.now());
-            facilityLiabilityRepository.save(liability);
-            return "redirect:/custodian-dashboard?successMessage=Property+Liability+Logged+Successfully";
+            log.setStatus("UNSOLVED");
+            facilityLogRepository.save(log);
+            return "redirect:/facilities-dashboard?success=Report+saved";
         } catch (Exception e) {
-            e.printStackTrace();
-            return "redirect:/custodian-dashboard?errorMessage=Failed+To+Log+Liability";
+            return "redirect:/facilities-dashboard?error=Failed+to+save+report";
         }
     }
 
-    @PostMapping("/facilities/resolve")
-    public String resolveFacilityLiability(@RequestParam("id") Long id) {
-        Optional<FacilityLiability> liabilityOpt = facilityLiabilityRepository.findById(id);
-        if (liabilityOpt.isPresent()) {
-            FacilityLiability liability = liabilityOpt.get();
-            liability.setStatus("RESOLVED");
-            facilityLiabilityRepository.save(liability);
+    @PostMapping("/facilities/log/solve")
+    public String solveFacilityReport(@RequestParam("logId") Long logId) {
+        Optional<FacilityLog> logOpt = facilityLogRepository.findById(logId);
+        if (logOpt.isPresent()) {
+            FacilityLog log = logOpt.get();
+            log.setStatus("SOLVED");
+            facilityLogRepository.save(log);
         }
-        return "redirect:/custodian-dashboard?successMessage=Liability+Marked+As+Resolved";
+        return "redirect:/facilities-dashboard?success=Marked+as+solved";
     }
 
     // =========================================================
@@ -558,79 +544,56 @@ public class PageController {
         User user = (User) session.getAttribute("user");
         if (user == null || !"GUIDANCE_COUNSELOR".equalsIgnoreCase(user.getRoleName())) return "redirect:/login";
 
-        List<GuidanceRecord> allRecords = guidanceRecordRepository.findAll();
-        List<GuidanceRecord> unresolved = allRecords.stream().filter(r -> "UNRESOLVED".equalsIgnoreCase(r.getStatus()) || r.getStatus() == null).collect(Collectors.toList());
-        List<GuidanceRecord> resolved = allRecords.stream().filter(r -> "RESOLVED".equalsIgnoreCase(r.getStatus())).collect(Collectors.toList());
-
-        model.addAttribute("username", user.getUsername());
-        model.addAttribute("students", studentRepository.findAll());
-        model.addAttribute("unresolvedRecords", unresolved);
-        model.addAttribute("resolvedRecords", resolved);
+        // Provide complete data required by the new guidance-dashboard.html
+        model.addAttribute("allStudents", studentRepository.findAll());
+        model.addAttribute("guidanceLogs", guidanceLogRepository.findAll());
         return "guidance-dashboard";
     }
 
-    @PostMapping("/guidance/log")
-    public String logGuidanceLiability(@RequestParam("studentLrn") String studentLrn,
-                                       @RequestParam("studentName") String studentName,
-                                       @RequestParam("incidentDetails") String incidentDetails) {
+    @PostMapping("/guidance/report/save")
+    public String saveGuidanceReport(@ModelAttribute GuidanceLog log) {
         try {
-            GuidanceRecord record = new GuidanceRecord();
-            record.setStudentLrn(studentLrn);
-            record.setStudentName(studentName);
-            record.setIncidentDetails(incidentDetails);
-            record.setStatus("UNRESOLVED");
-            record.setCreatedAt(LocalDateTime.now());
-            guidanceRecordRepository.save(record);
-            return "redirect:/guidance-dashboard?success=Guidance+Report+Filed+Successfully";
+            log.setStatus("UNSOLVED");
+            guidanceLogRepository.save(log);
+            return "redirect:/guidance-dashboard?success=Report+saved";
         } catch (Exception e) {
-            e.printStackTrace();
-            return "redirect:/guidance-dashboard?error=Failed+to+file+report";
+            return "redirect:/guidance-dashboard?error=Failed+to+save+report";
         }
     }
 
-    @PostMapping("/guidance/resolve")
-    public String resolveGuidanceLiability(@RequestParam("id") Long id) {
-        Optional<GuidanceRecord> recOpt = guidanceRecordRepository.findById(id);
-        if (recOpt.isPresent()) {
-            GuidanceRecord rec = recOpt.get();
-            rec.setStatus("RESOLVED");
-            guidanceRecordRepository.save(rec);
+    @PostMapping("/guidance/log/solve")
+    public String solveGuidanceReport(@RequestParam("logId") Long logId) {
+        Optional<GuidanceLog> logOpt = guidanceLogRepository.findById(logId);
+        if (logOpt.isPresent()) {
+            GuidanceLog log = logOpt.get();
+            log.setStatus("SOLVED");
+            guidanceLogRepository.save(log);
         }
-        return "redirect:/guidance-dashboard?success=Report+Marked+As+Resolved";
+        return "redirect:/guidance-dashboard?success=Marked+as+solved";
     }
 
     // =========================================================
     // --- CLINIC / NURSE DASHBOARD ---
     // =========================================================
 
-    @GetMapping("/clinic-dashboard")
+    @GetMapping({"/clinic-dashboard", "/nurse-dashboard"})
     public String showClinicDashboard(HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");
         if (user == null || !"NURSE".equalsIgnoreCase(user.getRoleName())) return "redirect:/login";
 
-        model.addAttribute("username", user.getUsername());
-        model.addAttribute("students", studentRepository.findAll()); 
-        model.addAttribute("logs", clinicLogRepository.findAll()); 
-        return "nurse-dashboard"; 
+        // Provide complete data required by the new clinic-dashboard.html
+        model.addAttribute("allStudents", studentRepository.findAll()); 
+        model.addAttribute("clinicLogs", clinicLogRepository.findAll()); 
+        return "clinic-dashboard"; // Ensure your HTML file is named clinic-dashboard.html
     }
 
-    @PostMapping("/clinic/log/add")
-    public String addClinicLog(@RequestParam("studentLrn") String studentLrn,
-                               @RequestParam("studentName") String studentName,
-                               @RequestParam("reason") String reason,
-                               @RequestParam("actionTaken") String actionTaken) {
+    @PostMapping("/clinic/log/save")
+    public String saveClinicLog(@ModelAttribute ClinicLog log) {
         try {
-            ClinicLog log = new ClinicLog();
-            log.setStudentLrn(studentLrn);
-            log.setStudentName(studentName);
-            log.setReason(reason);
-            log.setActionTaken(actionTaken);
-            log.setVisitDate(LocalDateTime.now());
             clinicLogRepository.save(log);
-            return "redirect:/clinic-dashboard?success=Clinic+Visit+Logged+Successfully";
+            return "redirect:/clinic-dashboard?success=Log+saved";
         } catch (Exception e) {
-            e.printStackTrace();
-            return "redirect:/clinic-dashboard?error=Failed+to+save+clinic+record";
+            return "redirect:/clinic-dashboard?error=Failed+to+save+clinic+log";
         }
     }
 
@@ -669,6 +632,10 @@ public class PageController {
         return "library-dashboard";
     }
 
+    // =========================================================
+    // --- CLEARANCE CHECKING LOGIC ---
+    // =========================================================
+
     @GetMapping("/student-liabilities-details")
     public String showStudentLiabilitiesDetails(@RequestParam("lrn") String lrn, Model model) {
         @SuppressWarnings("null")
@@ -687,18 +654,24 @@ public class PageController {
         List<SportsEquipment> sportsRecords = sportsEquipmentRepository.findByStudentLrnAndStatus(lrn, "BORROWED");
         for (SportsEquipment se : sportsRecords) details.addOpenItem(new OpenLiabilityItem("Sports & Athletics", se.getEquipmentName() + " (Qty: " + se.getQuantity() + ")", se.getBorrowDate(), "UNRETURNED"));
 
-        List<GuidanceRecord> guidanceRecords = guidanceRecordRepository.findByStudentLrn(lrn);
-        for (GuidanceRecord gr : guidanceRecords) {
-            if ("UNRESOLVED".equalsIgnoreCase(gr.getStatus()) || gr.getStatus() == null) {
-                details.addOpenItem(new OpenLiabilityItem("Guidance Office", gr.getInfractionDescription(), gr.getLogDate(), "PENDING_RESOLUTION"));
-            }
-        }
-
         List<LibraryBorrowRecord> libraryRecords = libraryBorrowRecordRepository.findByStudentLrnAndStatus(lrn, "BORROWED");
         for (LibraryBorrowRecord lbr : libraryRecords) details.addOpenItem(new OpenLiabilityItem("School Library", "Book: " + lbr.getBookTitle(), lbr.getBorrowDate(), "OVERDUE_RETAINED"));
 
-        List<FacilityLiability> physicalRecords = facilityLiabilityRepository.findByStudentLrnAndStatus(lrn, "UNRESOLVED");
-        for (FacilityLiability fl : physicalRecords) details.addOpenItem(new OpenLiabilityItem("Facilities Damage", fl.getFacilityName() + " - " + fl.getDamageDescription(), fl.getReportedDate(), "DAMAGE_UNPAID"));
+        // ---> UPDATED GUIDANCE CHECK <---
+        List<GuidanceLog> guidanceRecords = guidanceLogRepository.findByLrnAndStatus(lrn, "UNSOLVED");
+        for (GuidanceLog gr : guidanceRecords) {
+            LocalDateTime fallbackDate = LocalDateTime.now();
+            try { fallbackDate = LocalDate.parse(gr.getDateLogged()).atStartOfDay(); } catch(Exception ignored) {}
+            details.addOpenItem(new OpenLiabilityItem("Guidance Office", gr.getIncident(), fallbackDate, "PENDING_RESOLUTION"));
+        }
+
+        // ---> UPDATED FACILITIES CHECK <---
+        List<FacilityLog> physicalRecords = facilityLogRepository.findByLrnAndStatus(lrn, "UNSOLVED");
+        for (FacilityLog fl : physicalRecords) {
+            LocalDateTime fallbackDate = LocalDateTime.now();
+            try { fallbackDate = LocalDate.parse(fl.getDateLogged()).atStartOfDay(); } catch(Exception ignored) {}
+            details.addOpenItem(new OpenLiabilityItem("Facilities Damage", fl.getFacility() + " - " + fl.getDescription(), fallbackDate, "DAMAGE_UNPAID"));
+        }
 
         model.addAttribute("details", details);
         return "student-liabilities-details";
