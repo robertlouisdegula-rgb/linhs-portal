@@ -208,7 +208,10 @@ public class PageController {
     // =========================================================
 
     @GetMapping("/clearance/lookup")
-    public String showClearanceLookup() {
+    public String showClearanceLookup(Model model) {
+        model.addAttribute("student", null);
+        model.addAttribute("unresolvedGuidance", new ArrayList<>());
+        model.addAttribute("unresolvedFacilities", new ArrayList<>());
         return "clearance-tracker";
     }
 
@@ -218,13 +221,15 @@ public class PageController {
     }
 
     @GetMapping("/clearance-tracker")
-    public String showClearanceTrackerForm() {
+    public String showClearanceTrackerForm(Model model) {
+        model.addAttribute("student", null);
+        model.addAttribute("unresolvedGuidance", new ArrayList<>());
+        model.addAttribute("unresolvedFacilities", new ArrayList<>());
         return "clearance-tracker";
     }
 
     @GetMapping("/clearance/track")
     public String performClearanceTracking(@RequestParam("lrn") String lrn, Model model) {
-        // Defensive check supporting both findByLrn and findById options
         Optional<Student> studentOpt = studentRepository.findByLrn(lrn);
         if (studentOpt.isEmpty()) {
             studentOpt = studentRepository.findById(lrn);
@@ -233,6 +238,9 @@ public class PageController {
         if (studentOpt.isEmpty()) {
             model.addAttribute("error", "Student LRN not found. Please try again.");
             model.addAttribute("notFound", true);
+            model.addAttribute("student", null);
+            model.addAttribute("unresolvedGuidance", new ArrayList<>());
+            model.addAttribute("unresolvedFacilities", new ArrayList<>());
             return "clearance-status";
         }
 
@@ -246,7 +254,6 @@ public class PageController {
         model.addAttribute("facilitiesStatus", student.getFacilitiesClearance());
         model.addAttribute("libraryStatus", student.getLibraryClearance());
 
-        // Itemized Unresolved Lists passed directly to template
         List<GuidanceLog> unresolvedGuidance = guidanceLogRepository.findByLrnAndStatus(student.getLrn(), "UNSOLVED");
         List<FacilityLog> unresolvedFacilities = facilityLogRepository.findByLrnAndStatus(student.getLrn(), "UNSOLVED");
         
