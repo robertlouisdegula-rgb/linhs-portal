@@ -13,7 +13,7 @@
             --border-color: #2d2d30;  
             --text-main: #ffffff;     
             --input-bg: #09090b;      
-            --accent-red: #ef4444;
+            --accent-red: #ef4444; 
             --accent-hover: #dc2626;
         }
 
@@ -30,11 +30,6 @@
             padding: 1rem 1.5rem;
         }
 
-        .navbar-brand {
-            color: #ffffff !important;
-            font-weight: 700;
-        }
-
         .dashboard-card {
             background-color: var(--panel-bg);
             border: 1px solid var(--border-color);
@@ -42,6 +37,7 @@
             padding: 1.5rem;
         }
 
+        /* VERTICAL SIDEBAR STYLING */
         .nav-sidebar {
             display: flex;
             flex-direction: column;
@@ -49,7 +45,6 @@
         }
 
         .nav-sidebar .nav-link {
-            color: #ffffff !important;
             border: 1px solid transparent;
             padding: 0.85rem 1.25rem;
             font-weight: 600;
@@ -68,13 +63,12 @@
         }
 
         .nav-sidebar .nav-link.active {
-            color: #ffffff !important;
-            background-color: rgba(239, 68, 68, 0.1) !important;
+            color: #000000 !important;
+            background-color: var(--accent-red) !important;
             border: 1px solid var(--accent-red) !important;
         }
 
         .table {
-            color: #ffffff !important;
             margin-bottom: 0;
             border-color: var(--border-color);
         }
@@ -84,7 +78,6 @@
         }
 
         .table > thead > tr > th {
-            color: #ffffff !important;
             font-weight: 700;
             text-transform: uppercase;
             font-size: 0.85rem;
@@ -98,17 +91,16 @@
             padding: 1.25rem 1rem;
             vertical-align: middle;
             border-bottom: 1px solid var(--border-color);
-            color: #ffffff !important;
             background-color: transparent;
         }
 
         .table > tbody > tr:hover > td {
-            background-color: rgba(255, 255, 255, 0.03); 
+            background-color: rgba(255, 255, 255, 0.03);
         }
 
         .btn-red-custom {
             background-color: var(--accent-red);
-            color: #ffffff !important;
+            color: #000000 !important;
             font-weight: 700;
             border: none;
             border-radius: 6px;
@@ -120,29 +112,27 @@
             color: #ffffff !important;
         }
 
-        .btn-outline-danger {
+        .btn-outline-red {
             border: 1px solid var(--accent-red);
             color: var(--accent-red) !important;
             background: transparent;
             font-weight: 600;
         }
 
-        .btn-outline-danger:hover {
+        .btn-outline-red:hover {
             background-color: var(--accent-red);
-            color: #ffffff !important;
+            color: #000000 !important;
         }
 
         .form-control, .form-select {
             background-color: var(--input-bg) !important;
             border: 1px solid var(--border-color) !important;
-            color: #ffffff !important;
             border-radius: 6px;
         }
 
         .form-control:focus, .form-select:focus {
             background-color: var(--input-bg) !important;
             border-color: var(--accent-red) !important;
-            color: #ffffff !important;
             box-shadow: 0 0 0 0.25rem rgba(239, 68, 68, 0.15);
         }
 
@@ -179,38 +169,35 @@
             background-color: rgba(255, 255, 255, 0.05);
         }
 
-        /* STRICT WHITE TEXT OVERRIDES */
-        p, small, label, h1, h2, h3, h4, h5, h6, 
-        .form-label, .text-muted, span, th, td, input, textarea, option, select {
+        /* =========================================
+           STRICT WHITE TEXT OVERRIDES
+           ========================================= */
+        body, p, small, label, h1, h2, h3, h4, h5, h6, 
+        .form-label, .text-muted, span, th, td, input, textarea, option, select,
+        .navbar-brand, .nav-link {
             color: #ffffff !important;
             opacity: 1 !important;
         }
 
         .form-control::placeholder, textarea::placeholder {
-            color: #a1a1aa !important;
+            color: #e4e4e7 !important; 
         }
 
-        select option {
-            background-color: var(--panel-bg) !important;
-            color: #ffffff !important;
-        }
-
-        .text-red-light {
-            color: #ff6b6b !important;
-        }
+        .text-danger-custom { color: var(--accent-red) !important; }
+        .border-danger-custom { border-color: var(--accent-red) !important; }
     </style>
 </head>
 
 <body>
     <nav class="navbar navbar-expand-lg">
-        <div class="container-fluid">
-            <span class="navbar-brand">
-                <i class="fa-solid fa-briefcase-medical me-2 text-red-light"></i>LINHS Clinic Office
+        <div class="container-fluid px-4">
+            <span class="navbar-brand d-flex align-items-center">
+                <i class="fa-solid fa-heart-pulse text-danger-custom me-2"></i>LINHS Health Clinic Portal
             </span>
             <div class="d-flex align-items-center">
-                <span class="me-4" style="font-weight: 500;">
-                    <i class="fa-solid fa-user-nurse me-2"></i>Logged in as: 
-                    <span class="fw-bold ms-1" th:text="${session.user != null ? session.user.name : 'School Nurse'}">School Nurse</span>
+                <span class="me-3" style="font-weight: 500;">
+                    Logged in as: 
+                    <span class="fw-bold ms-1" th:text="${session.user != null ? session.user.name : 'Clinic Nurse'}">Clinic Nurse</span>
                 </span>
                 <a href="/logout" class="btn btn-outline-danger btn-sm text-white">
                     <i class="fa-solid fa-right-from-bracket me-1"></i> Sign Out
@@ -221,11 +208,11 @@
 
     <div class="container-fluid px-4 py-4">
         <div th:if="${param.success != null}" class="alert alert-success alert-dismissible fade show border-0" role="alert" style="background-color: #065f46;">
-            <i class="fa-solid fa-circle-check me-2 text-white"></i><span class="text-white">Medical log saved successfully.</span>
+            <i class="fa-solid fa-circle-check me-2"></i><span>Operation completed successfully.</span>
             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
         <div th:if="${param.error != null}" class="alert alert-danger alert-dismissible fade show border-0" role="alert" style="background-color: #991b1b;">
-            <i class="fa-solid fa-triangle-exclamation me-2 text-white"></i><span class="text-white">An error occurred while saving.</span>
+            <i class="fa-solid fa-triangle-exclamation me-2"></i><span>An error occurred while saving.</span>
             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
 
@@ -235,10 +222,10 @@
                     <h5 class="fw-bold mb-3 px-2">Portal Navigation</h5>
                     <div class="nav nav-sidebar" id="clinicTabs">
                         <button class="nav-link" id="log-tab" onclick="openTab('log')" type="button">
-                            <i class="fa-solid fa-notes-medical me-2"></i>Create Medical Log
+                            <i class="fa-solid fa-notes-medical me-2"></i>Log Health Consultation
                         </button>
-                        <button class="nav-link" id="history-tab" onclick="openTab('history')" type="button">
-                            <i class="fa-solid fa-clock-rotate-left me-2"></i>Clinic History
+                        <button class="nav-link" id="records-tab" onclick="openTab('records')" type="button">
+                            <i class="fa-solid fa-clock-rotate-left me-2"></i>Consultation History
                         </button>
                     </div>
                 </div>
@@ -251,8 +238,8 @@
                         <div class="tab-pane fade" id="log-pane" style="display: none;">
                             <div class="d-flex justify-content-between align-items-center mb-4">
                                 <div>
-                                    <h5 class="fw-bold mb-1">Patient Examination Record</h5>
-                                    <p class="mb-0">Log school health visit metrics safely down to the central database logs.</p>
+                                    <h5 class="fw-bold mb-1"><i class="fas fa-stethoscope me-2 text-danger-custom"></i>New Health Record Entry</h5>
+                                    <p class="mb-0">Note: Medical consultations are logged for historical compliance mapping and do not flag clearance holds.</p>
                                 </div>
                             </div>
 
@@ -260,35 +247,35 @@
                                 <div class="col-lg-10">
                                     <div class="p-4 rounded border" style="background-color: var(--dark-bg); border-color: var(--border-color) !important;">
                                         
-                                        <form action="/clinic/log/save" method="POST">
-
+                                        <form action="/clinic/log/add" method="POST">
+                                            
                                             <div class="mb-4">
-                                                <label class="form-label fw-bold">Search Patient (Student) <span style="color: var(--accent-red) !important;">*</span></label>
+                                                <label class="form-label fw-bold">Target Student Profile *</label>
                                                 <div class="input-group">
                                                     <input type="hidden" name="lrn" id="selectedLrn" required>
                                                     <input type="hidden" name="studentName" id="selectedName" required>
                                                     
-                                                    <input type="text" class="form-control py-2" id="selectedStudentDisplay" placeholder="Select a student from database..." readonly required style="cursor: default;">
-                                                    <button type="button" class="btn btn-outline-danger" onclick="openSearchModal()">
+                                                    <input type="text" class="form-control py-2" id="selectedStudentDisplay" placeholder="Select a student from database..." readonly required style="cursor: default;" onclick="openSearchModal()">
+                                                    <button type="button" class="btn btn-outline-red" onclick="openSearchModal()">
                                                         <i class="fas fa-search me-1"></i> Search Database
                                                     </button>
                                                 </div>
                                             </div>
 
                                             <div class="mb-4">
-                                                <label class="form-label fw-bold">Clinical Assessment / Symptoms <span style="color: var(--accent-red) !important;">*</span></label>
-                                                <textarea name="assessment" class="form-control" rows="3" placeholder="e.g., Complaining of stomach ache, fever of 38.5C..." required></textarea>
+                                                <label class="form-label fw-bold">Clinical Assessment / Complaint *</label>
+                                                <textarea name="assessment" class="form-control" rows="4" placeholder="e.g., Low grade fever, localized headache, minor scratch from sports activity..." required></textarea>
                                             </div>
 
                                             <div class="mb-4">
-                                                <label class="form-label fw-bold">Medicine / Treatment Given <span style="color: #a1a1aa !important; font-weight: normal !important;">(Optional)</span></label>
-                                                <input type="text" name="medicine" class="form-control py-2" placeholder="e.g., 1 Paracetamol, Resting in bed...">
+                                                <label class="form-label fw-bold">Treatment / Medicine Administered *</label>
+                                                <input type="text" name="medicine" class="form-control py-2" placeholder="e.g., 1 tablet Paracetamol (500mg), applied antiseptic wrap, sent home..." required>
                                             </div>
 
                                             <div class="d-flex justify-content-end mt-4 pt-2 border-top" style="border-color: var(--border-color) !important;">
-                                                <button type="reset" class="btn btn-link text-decoration-none me-3 text-white">Clear Form</button>
+                                                <button type="reset" class="btn btn-link text-decoration-none me-3">Clear Form</button>
                                                 <button type="submit" class="btn btn-red-custom px-4 py-2">
-                                                    <i class="fa-solid fa-file-medical me-2"></i> Save Medical Log
+                                                    <i class="fa-solid fa-heart-pulse me-2"></i> Save Health Log
                                                 </button>
                                             </div>
                                         </form>
@@ -297,47 +284,51 @@
                             </div>
                         </div>
 
-                        <div class="tab-pane fade" id="history-pane" style="display: none;">
-                            <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div class="tab-pane fade" id="records-pane" style="display: none;">
+                            <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3" style="border-color: var(--border-color) !important;">
                                 <div>
-                                    <h5 class="fw-bold mb-1">Master Clinic Records</h5>
-                                    <p class="mb-0"><i class="fa-solid fa-circle-info me-1" style="color: var(--accent-red) !important;"></i> Pure health evaluation engine. No structural academic liability blocks apply here.</p>
+                                    <h5 class="fw-bold mb-1"><i class="fas fa-file-medical me-2 text-danger-custom"></i>Master Consultation Archive</h5>
+                                    <p class="mb-0">Historical compilation of clinical interventions.</p>
                                 </div>
+                                <form action="/clinic/log/clear" method="POST" class="m-0" onsubmit="return confirm('Are you completely sure you want to delete ALL clinic records? This cannot be undone.');">
+                                    <button type="submit" class="btn btn-danger fw-bold">
+                                        <i class="fas fa-trash-alt me-1"></i> Clear All Logs
+                                    </button>
+                                </form>
                             </div>
 
                             <div class="table-responsive border rounded" style="border-color: var(--border-color) !important;">
                                 <table class="table">
                                     <thead>
                                         <tr>
-                                            <th>Date / Time</th>
-                                            <th>Patient Details</th>
-                                            <th>Assessment / Symptoms</th>
-                                            <th>Treatment Provided</th>
+                                            <th>Date Logged</th>
+                                            <th>Student Patient</th>
+                                            <th>Assessment Findings</th>
+                                            <th>Medical Intervention</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <th:block th:if="${clinicLogs != null and !#lists.isEmpty(clinicLogs)}">
                                             <tr th:each="log : ${clinicLogs}">
-                                                <td class="small">
-                                                    <span th:text="${log.dateLogged}">Oct 10, 2024</span>
+                                                <td>
+                                                    <span class="fw-bold" th:text="${log.dateLogged}">2026-06-11</span>
                                                 </td>
                                                 <td>
                                                     <strong class="d-block" th:text="${log.studentName}">John Doe</strong>
-                                                    <small style="font-family: monospace; color: var(--accent-red) !important;" th:text="${log.lrn}">123456789012</small>
+                                                    <small style="font-family: monospace;" class="text-danger-custom" th:text="${log.lrn}">123456789012</small>
                                                 </td>
-                                                <td style="max-width: 280px; white-space: normal; word-break: break-word;">
-                                                    <span th:text="${log.assessment}">Fever and headache</span>
+                                                <td style="max-width: 250px; white-space: normal; word-break: break-word;">
+                                                    <span th:text="${log.assessment}">Headache</span>
                                                 </td>
-                                                <td>
-                                                    <span th:if="${log.medicine != null and !log.medicine.isEmpty()}" th:text="${log.medicine}">Paracetamol</span>
-                                                    <span th:if="${log.medicine == null or log.medicine.isEmpty()}" style="color: #a1a1aa !important; font-style: italic;">None given</span>
+                                                <td style="max-width: 250px; white-space: normal; word-break: break-word;">
+                                                    <span th:text="${log.medicine}">Paracetamol</span>
                                                 </td>
                                             </tr>
                                         </th:block>
                                         <tr th:if="${clinicLogs == null or #lists.isEmpty(clinicLogs)}">
                                             <td colspan="4" class="text-center py-5">
-                                                <i class="fa-solid fa-notes-medical fs-2 mb-3 opacity-50 text-red-light"></i><br>
-                                                No medical records have been logged yet.
+                                                <i class="fa-solid fa-notes-medical fs-2 mb-3 opacity-50 text-danger-custom"></i><br>
+                                                No medical consultation records found.
                                             </td>
                                         </tr>
                                     </tbody>
@@ -354,8 +345,8 @@
     <div id="studentSearchModal" class="custom-modal">
         <div class="custom-modal-content">
             <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3" style="border-color: var(--border-color) !important;">
-                <h5 class="mb-0 fw-bold"><i class="fas fa-users me-2" style="color: var(--accent-red) !important;"></i>Global Student Database</h5>
-                <button type="button" class="btn btn-sm btn-outline-light text-white" onclick="closeSearchModal()">
+                <h5 class="mb-0 fw-bold"><i class="fas fa-users me-2 text-danger-custom"></i>Global Student Database</h5>
+                <button type="button" class="btn btn-sm btn-outline-light" onclick="closeSearchModal()">
                     <i class="fas fa-times me-1"></i> Close
                 </button>
             </div>
@@ -369,16 +360,16 @@
                     <div th:each="student : ${allStudents}" 
                          class="student-item p-3 mb-1 border-bottom" 
                          style="border-color: var(--border-color) !important;" 
-                         th:attr="onclick='selectStudent(\'' + ${student.lrn} + '\', \'' + ${student.name} + '\')'">
+                         th:attr='onclick=|selectStudent("${student.lrn}", "${student.name}")|'>
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
                                 <strong class="student-name d-block" th:text="${student.name}">Student Name</strong>
-                                <small class="student-lrn text-red-light" style="font-family: monospace; color: var(--accent-red) !important;" th:text="${student.lrn}">123456789012</small>
+                                <small class="student-lrn text-danger-custom" style="font-family: monospace;" th:text="${student.lrn}">123456789012</small>
                             </div>
                         </div>
                     </div>
                 </th:block>
-                <div th:if="${allStudents == null or #lists.isEmpty(allStudents)}" class="text-center py-4 text-white">
+                <div th:if="${allStudents == null or #lists.isEmpty(allStudents)}" class="text-center py-4">
                     No active student accounts found inside the system database.
                 </div>
             </div>
@@ -412,7 +403,7 @@
         }
 
         function openSearchModal() {
-            document.getElementById('studentSearchModal').style.display = 'block';
+            document.getElementById('studentSearchModal').style.display = 'flex';
             document.body.style.overflow = 'hidden'; 
             document.getElementById('modalSearchInput').focus();
         }
