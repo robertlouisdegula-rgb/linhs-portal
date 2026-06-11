@@ -209,7 +209,7 @@ public class PageController {
 
     @GetMapping("/clearance/lookup")
     public String showClearanceLookup() {
-        return "clearance-lookup";
+        return "clearance-tracker";
     }
 
     @GetMapping("/requests")
@@ -224,7 +224,11 @@ public class PageController {
 
     @GetMapping("/clearance/track")
     public String performClearanceTracking(@RequestParam("lrn") String lrn, Model model) {
+        // Defensive check supporting both findByLrn and findById options
         Optional<Student> studentOpt = studentRepository.findByLrn(lrn);
+        if (studentOpt.isEmpty()) {
+            studentOpt = studentRepository.findById(lrn);
+        }
 
         if (studentOpt.isEmpty()) {
             model.addAttribute("error", "Student LRN not found. Please try again.");
@@ -235,7 +239,6 @@ public class PageController {
         Student student = studentOpt.get();
         model.addAttribute("student", student);
 
-        // Map clearance details directly from the Student Model columns
         model.addAttribute("adviserStatus", student.getAdviserClearance());
         model.addAttribute("labStatus", student.getLabClearance());
         model.addAttribute("sportsStatus", student.getSportsClearance());
@@ -243,7 +246,7 @@ public class PageController {
         model.addAttribute("facilitiesStatus", student.getFacilitiesClearance());
         model.addAttribute("libraryStatus", student.getLibraryClearance());
 
-        // Fetch unresolved items to show itemized details on tracker
+        // Itemized Unresolved Lists passed directly to template
         List<GuidanceLog> unresolvedGuidance = guidanceLogRepository.findByLrnAndStatus(student.getLrn(), "UNSOLVED");
         List<FacilityLog> unresolvedFacilities = facilityLogRepository.findByLrnAndStatus(student.getLrn(), "UNSOLVED");
         
@@ -500,7 +503,7 @@ public class PageController {
         return "facilities-dashboard";
     }
 
-    @PostMapping("/facilities/log/add")
+    @PostMapping({"/facilities/log/add", "/facilities/report/save"})
     public String addFacilityLog(@ModelAttribute FacilityLog log, RedirectAttributes redirectAttributes) {
         try {
             log.setStatus("UNSOLVED");
@@ -521,7 +524,7 @@ public class PageController {
         }
     }
 
-    @PostMapping("/facilities/log/solve")
+    @PostMapping({"/facilities/log/solve", "/facilities/report/solve"})
     public String solveFacilityReport(@RequestParam("logId") Long logId) {
         Optional<FacilityLog> logOpt = facilityLogRepository.findById(logId);
         if (logOpt.isPresent()) {
@@ -567,7 +570,7 @@ public class PageController {
         return "guidance-dashboard"; 
     }
 
-    @PostMapping("/guidance/log/add")
+    @PostMapping({"/guidance/log/add", "/guidance/report/save"})
     public String addGuidanceLog(@ModelAttribute GuidanceLog log, RedirectAttributes redirectAttributes) {
         try {
             log.setStatus("UNSOLVED");
@@ -588,7 +591,7 @@ public class PageController {
         }
     }
 
-    @PostMapping("/guidance/log/solve")
+    @PostMapping({"/guidance/log/solve", "/guidance/report/solve"})
     public String solveGuidanceReport(@RequestParam("logId") Long logId) {
         Optional<GuidanceLog> logOpt = guidanceLogRepository.findById(logId);
         if (logOpt.isPresent()) {
@@ -634,7 +637,7 @@ public class PageController {
         return "clinic-dashboard"; 
     }
 
-    @PostMapping("/clinic/log/add")
+    @PostMapping({"/clinic/log/add", "/clinic/log/save"})
     public String addClinicLog(@ModelAttribute ClinicLog log, RedirectAttributes redirectAttributes) {
         try {
             if (log.getDateLogged() == null) {
