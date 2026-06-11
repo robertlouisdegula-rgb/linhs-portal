@@ -272,7 +272,7 @@
     <div class="tracker-card">
 
         <form action="/clearance/track" method="GET" class="search-form">
-            <input type="text" name="lrn" class="search-input" placeholder="Enter 12-Digit Student LRN Identification code..." th:value="${param.lrn}" pattern="\d+" required autocomplete="off">
+            <input type="text" name="lrn" class="search-input" placeholder="Enter 12-Digit Student LRN Identification code..." th:value="${param.lrn != null ? param.lrn : ''}" pattern="\d+" required autocomplete="off">
             <button type="submit" class="search-btn">Query Status</button>
         </form>
 
@@ -296,49 +296,53 @@
                 <div class="department-card">
                     <div class="dept-icon">👨‍🏫</div>
                     <div class="dept-name">Class Adviser</div>
-                    <div th:class="'status-badge ' + ${student.adviserClearance != null ? #strings.toLowerCase(student.adviserClearance) : 'pending'}"
-                        th:text="${student.adviserClearance != null ? student.adviserClearance : 'PENDING'}">PENDING</div>
+                    <div class="status-badge" 
+                         th:classappend="${student.adviserClearance == 'CLEARED' ? 'cleared' : 'pending'}"
+                         th:text="${student.adviserClearance != null ? student.adviserClearance : 'PENDING'}">PENDING</div>
                 </div>
 
                 <div class="department-card">
                     <div class="dept-icon">🔬</div>
                     <div class="dept-name">Laboratory Management</div>
-                    <div th:class="'status-badge ' + ${student.labClearance != null ? #strings.toLowerCase(student.labClearance) : 'pending'}"
-                        th:text="${student.labClearance != null ? student.labClearance : 'PENDING'}">PENDING</div>
+                    <div class="status-badge" 
+                         th:classappend="${student.labClearance == 'CLEARED' ? 'cleared' : 'pending'}"
+                         th:text="${student.labClearance != null ? student.labClearance : 'PENDING'}">PENDING</div>
                 </div>
 
                 <div class="department-card">
                     <div class="dept-icon">📚</div>
                     <div class="dept-name">School Library</div>
-                    <div th:class="'status-badge ' + ${student.libraryClearance != null ? #strings.toLowerCase(student.libraryClearance) : 'pending'}"
-                        th:text="${student.libraryClearance != null ? student.libraryClearance : 'PENDING'}">PENDING</div>
+                    <div class="status-badge" 
+                         th:classappend="${student.libraryClearance == 'CLEARED' ? 'cleared' : 'pending'}"
+                         th:text="${student.libraryClearance != null ? student.libraryClearance : 'PENDING'}">PENDING</div>
                 </div>
 
                 <div class="department-card">
                     <div class="dept-icon">⚽</div>
                     <div class="dept-name">Sports Department</div>
-                    <div th:class="'status-badge ' + ${student.sportsClearance != null ? #strings.toLowerCase(student.sportsClearance) : 'pending'}"
-                        th:text="${student.sportsClearance != null ? student.sportsClearance : 'PENDING'}">PENDING</div>
+                    <div class="status-badge" 
+                         th:classappend="${student.sportsClearance == 'CLEARED' ? 'cleared' : 'pending'}"
+                         th:text="${student.sportsClearance != null ? student.sportsClearance : 'PENDING'}">PENDING</div>
                 </div>
 
                 <div class="department-card">
                     <div class="dept-icon">⚖️</div>
                     <div class="dept-name">Guidance Office</div>
-                    <div th:class="'status-badge ' + ${student.guidanceClearance != null ? #strings.toLowerCase(student.guidanceClearance) : 'pending'}"
-                        th:text="${student.guidanceClearance != null ? student.guidanceClearance : 'PENDING'}">PENDING
-                    </div>
+                    <div class="status-badge" 
+                         th:classappend="${student.guidanceClearance == 'CLEARED' ? 'cleared' : 'pending'}"
+                         th:text="${student.guidanceClearance != null ? student.guidanceClearance : 'PENDING'}">PENDING</div>
                 </div>
 
                 <div class="department-card">
                     <div class="dept-icon">🏢</div>
                     <div class="dept-name">Facilities & Property</div>
-                    <div th:class="'status-badge ' + ${student.facilitiesClearance != null ? #strings.toLowerCase(student.facilitiesClearance) : 'pending'}"
-                        th:text="${student.facilitiesClearance != null ? student.facilitiesClearance : 'PENDING'}">PENDING
-                    </div>
+                    <div class="status-badge" 
+                         th:classappend="${student.facilitiesClearance == 'CLEARED' ? 'cleared' : 'pending'}"
+                         th:text="${student.facilitiesClearance != null ? student.facilitiesClearance : 'PENDING'}">PENDING</div>
                 </div>
             </div>
 
-            <div th:if="${(unresolvedGuidance != null and !#lists.isEmpty(unresolvedGuidance)) or (unresolvedFacilities != null and !#lists.isEmpty(unresolvedFacilities))}" style="margin-bottom: 25px;">
+            <div th:if="${(unresolvedGuidance != null and unresolvedGuidance.size() > 0) or (unresolvedFacilities != null and unresolvedFacilities.size() > 0)}" style="margin-bottom: 25px;">
                 <h3 style="font-size: 16px; color: #b91c1c; margin-bottom: 12px; border-bottom: 1px solid #fca5a5; padding-bottom: 8px;">
                     ⚠️ Unresolved Infraction/Liability Item Details:
                 </h3>
@@ -353,6 +357,7 @@
                     <div th:text="${fItem.facility + ' - ' + fItem.description}">Details</div>
                 </div>
             </div>
+
             <div th:if="${student.adviserClearance == 'CLEARED' and student.labClearance == 'CLEARED' and student.sportsClearance == 'CLEARED' and student.guidanceClearance == 'CLEARED' and student.facilitiesClearance == 'CLEARED' and student.libraryClearance == 'CLEARED'}"
                 class="final-status success">
                 🎉 Congratulations! You are fully cleared for this academic period.
