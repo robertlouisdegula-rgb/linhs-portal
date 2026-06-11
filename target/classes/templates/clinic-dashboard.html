@@ -13,7 +13,7 @@
             --border-color: #2d2d30;  
             --text-main: #ffffff;     
             --input-bg: #09090b;      
-            --accent-red: #ef4444; 
+            --accent-red: #ef4444;
             --accent-hover: #dc2626;
         }
 
@@ -366,7 +366,10 @@
             
             <div class="rounded border p-2" style="border-color: var(--border-color) !important; background-color: var(--dark-bg); max-height: 350px; overflow-y: auto;">
                 <th:block th:if="${allStudents != null and !#lists.isEmpty(allStudents)}">
-                    <div th:each="student : ${allStudents}" class="student-item p-3 mb-1 border-bottom" style="border-color: var(--border-color) !important;" th:onclick="|selectStudent('${student.lrn}', '${student.name}')|">
+                    <div th:each="student : ${allStudents}" 
+                         class="student-item p-3 mb-1 border-bottom" 
+                         style="border-color: var(--border-color) !important;" 
+                         th:attr="onclick='selectStudent(\'' + ${student.lrn} + '\', \'' + ${student.name} + '\')'">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
                                 <strong class="student-name d-block" th:text="${student.name}">Student Name</strong>
