@@ -359,6 +359,9 @@ public class PageController {
     // =========================================================
     // --- ADVISER PORTAL DASHBOARD CONTROLS ---
     // =========================================================
+    // =========================================================
+    // --- ADVISER PORTAL DASHBOARD CONTROLS ---
+    // =========================================================
     @GetMapping({"/adviser/dashboard", "/adviser-dashboard"})
     public String showAdviserDashboard(HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");
@@ -370,7 +373,7 @@ public class PageController {
         model.addAttribute("subjects", subjectRepository.findBySection(section));
         model.addAttribute("allGrades", studentGradeRepository.findAll());
         return "adviser-dashboard";
-    }
+    } // <--- Make sure this closing bracket is here!
 
     @PostMapping("/adviser/student/add")
     public String addStudentToSection(@RequestParam("name") String name, @RequestParam("lrn") String lrn, HttpSession session) {
@@ -378,25 +381,29 @@ public class PageController {
             User loggedInUser = (User) session.getAttribute("user");
             String section = (loggedInUser != null && loggedInUser.getAssignedSection() != null) ? loggedInUser.getAssignedSection() : "Not Assigned";
             
-            // Strictly strip any non-numeric characters the user accidentally entered
-            String cleanLrn = lrn.replaceAll("[^a-zA-Z0-9]", "");
+            String cleanLrn = lrn.trim();
             String cleanName = name.trim();
             
             if (cleanLrn.isEmpty() || cleanName.isEmpty()) {
                 return "redirect:/adviser-dashboard?tab=students&error=LRN+and+Name+cannot+be+empty";
             }
             
-            // Check for duplicates BEFORE saving to prevent Error 500 DB Crash
             if (studentRepository.existsById(cleanLrn)) {
-                return "redirect:/adviser-dashboard?tab=students&error=Student+with+this+LRN+code+is+already+registered";
+                return "redirect:/adviser-dashboard?tab=students&error=Student+with+this+LRN+is+already+registered";
             }
             
-            studentRepository.save(new Student(cleanLrn, cleanName, section));
+            Student newStudent = new Student();
+            newStudent.setLrn(cleanLrn);
+            newStudent.setName(cleanName);
+            newStudent.setSection(section);
+            
+            studentRepository.save(newStudent);
+            
             return "redirect:/adviser-dashboard?tab=students&success=Student+Registered+Successfully";
             
         } catch (Exception e) {
-            e.printStackTrace();
-            return "redirect:/adviser-dashboard?tab=students&error=Database+Error:+Could+not+register+student+profile";
+            e.printStackTrace(); 
+            return "redirect:/adviser-dashboard?tab=students&error=System+Error:+Could+not+register+student.";
         }
     }
 
@@ -464,7 +471,6 @@ public class PageController {
                         }
                         currentGrade.setGrade(gradeValue);
                         
-                        // Clean numeric calculation fallback to prevent NullPointerExceptions
                         try {
                             double numericGrade = Double.parseDouble(gradeValue);
                             currentGrade.setRemarks(numericGrade >= 75.0 ? "PASSED" : "FAILED");

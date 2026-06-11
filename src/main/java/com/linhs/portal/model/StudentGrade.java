@@ -34,7 +34,10 @@ public class StudentGrade {
     public String getGradeValue() { return gradeValue; }
     public void setGradeValue(String gradeValue) { this.gradeValue = gradeValue; }
 
- public Double getFinalGrade() { 
+    // 🛡️ THE FIX: Added this getter so the HTML Thymeleaf ${grade.grade} doesn't crash!
+    public String getGrade() { return gradeValue; }
+
+    public Double getFinalGrade() { 
         return finalGrade; 
     }
 
@@ -61,7 +64,7 @@ public class StudentGrade {
         return remarks; 
     }
 
-    public void setRemarks(String remarks) { 
-        this.remarks = remarks; 
+    public void setRemarks(String remarks) {
+        this.remarks = remarks;
     }
 }
