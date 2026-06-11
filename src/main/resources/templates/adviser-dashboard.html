@@ -90,6 +90,32 @@
         .text-emerald {
             color: var(--emerald-green);
         }
+
+        /* --- STYLES TO FORCE PERFECTLY VISIBLE WHITE TEXT IN MODALS --- */
+        .modal-content {
+            color: #ffffff !important;
+        }
+
+        .modal-content .form-control {
+            color: #ffffff !important;
+            background-color: var(--input-bg) !important;
+            border: 1px solid var(--border-color) !important;
+        }
+
+        .modal-content .form-control::placeholder {
+            color: #71717a !important; /* Visible light grey placeholder hint */
+        }
+
+        .modal-content .form-control[readonly] {
+            color: #a1a1aa !important; /* Visible grey for locked down LRN input */
+            background-color: #27272a !important;
+            border: 1px solid var(--border-color) !important;
+            opacity: 0.8;
+        }
+        
+        .modal-content label {
+            color: #a1a1aa !important; /* Forces input labels to be high-contrast light grey */
+        }
     </style>
 </head>
 
@@ -170,11 +196,11 @@
                                 <tbody>
                                     <tr th:each="student : ${students}">
                                         <td th:text="${student.lrn}" class="fw-mono text-white">000000000000</td>
-                                        <td th:text="${student.name}" class="fw-bold">Loading Name...</td>
-                                        <td><span class="badge bg-secondary px-2 py-1" th:text="${student.section}">Section</span></td>
+                                        <td th:text="${student.name}" class="fw-bold text-white">Loading Name...</td>
+                                        <td><span class="badge bg-secondary px-2 py-1 text-white" th:text="${student.section}">Section</span></td>
                                         <td class="text-center">
                                             <div class="btn-group btn-group-sm">
-                                                <button class="btn btn-outline-light" 
+                                                <button class="btn btn-outline-light text-white" 
                                                         th:data-lrn="${student.lrn}" 
                                                         th:data-name="${student.name}"
                                                         onclick="openEditStudentModal(this)">
@@ -221,7 +247,7 @@
                                     <tr th:each="subject : ${subjects}">
                                         <td th:text="${subject.id}" class="text-muted fw-mono">1</td>
                                         <td th:text="${subject.name}" class="fw-bold text-white">Subject Title</td>
-                                        <td><span class="badge bg-secondary px-2 py-1" th:text="${subject.section}">Section</span></td>
+                                        <td><span class="badge bg-secondary px-2 py-1 text-white" th:text="${subject.section}">Section</span></td>
                                         <td class="text-center">
                                             <form action="/adviser/subject/delete" method="POST" onsubmit="return confirm('Remove this subject assignment? Grading columns for this subject will disappear.');" class="d-inline">
                                                 <input type="hidden" name="id" th:value="${subject.id}">
@@ -301,11 +327,11 @@
                                 <tbody>
                                     <tr th:each="grade : ${allGrades}">
                                         <td th:text="${grade.studentLrn}" class="fw-mono text-white">000000000000</td>
-                                        <td th:text="${grade.subjectName}" class="fw-bold">Subject Title</td>
-                                        <td th:text="${grade.gradeValue != null ? grade.gradeValue : 'No Grade'}" class="fw-bold text-center">90</td>
+                                        <td th:text="${grade.subjectName}" class="fw-bold text-white">Subject Title</td>
+                                        <td th:text="${grade.gradeValue != null ? grade.gradeValue : 'No Grade'}" class="fw-bold text-white text-center">90</td>
                                         <td>
-                                            <span th:if="${grade.remarks == 'PASSED'}" class="badge bg-success px-2 py-1"><i class="fas fa-check me-1"></i>PASSED</span>
-                                            <span th:if="${grade.remarks != 'PASSED'}" class="badge bg-danger px-2 py-1"><i class="fas fa-times me-1"></i>FAILED / RETAKE</span>
+                                            <span th:if="${grade.remarks == 'PASSED'}" class="badge bg-success px-2 py-1 text-white"><i class="fas fa-check me-1"></i>PASSED</span>
+                                            <span th:if="${grade.remarks != 'PASSED'}" class="badge bg-danger px-2 py-1 text-white"><i class="fas fa-times me-1"></i>FAILED / RETAKE</span>
                                         </td>
                                     </tr>
                                     <tr th:if="${#lists.isEmpty(allGrades)}">
@@ -320,26 +346,26 @@
             </div> </main>
     </div> <div class="modal fade" id="addStudentModal" tabindex="-1" aria-labelledby="addStudentModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content text-dark" style="background-color: var(--panel-bg); border: 1px solid var(--border-color);">
+            <div class="modal-content text-white" style="background-color: var(--panel-bg); border: 1px solid var(--border-color);">
                 <div class="modal-header" style="border-bottom: 1px solid var(--border-color);">
-                    <h5 class="modal-title text-light" id="addStudentModalLabel"><i class="fas fa-user-plus me-2 text-emerald"></i>Register New Student</h5>
+                    <h5 class="modal-title text-white" id="addStudentModalLabel"><i class="fas fa-user-plus me-2 text-emerald"></i>Register New Student</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <form action="/adviser/student/add" method="POST">
-                    <div class="modal-body text-light">
+                    <div class="modal-body text-white">
                         <div class="mb-3">
-                            <label for="studentLrn" class="form-label small text-uppercase fw-bold text-muted">Learner Reference Number (LRN)</label>
-                            <input type="text" class="form-control text-light" id="studentLrn" name="lrn" placeholder="Enter 12-digit LRN" required 
+                            <label for="studentLrn" class="form-label small text-uppercase fw-bold text-muted">Value: Learner Reference Number (LRN)</label>
+                            <input type="text" class="form-control text-white" id="studentLrn" name="lrn" placeholder="Enter 12-digit LRN" required 
                                    style="background-color: var(--input-bg); border: 1px solid var(--border-color);">
                         </div>
                         <div class="mb-3">
-                            <label for="studentName" class="form-label small text-uppercase fw-bold text-muted">Full Name</label>
-                            <input type="text" class="form-control text-light" id="studentName" name="name" placeholder="Last Name, First Name, M.I." required
+                            <label for="studentName" class="form-label small text-uppercase fw-bold text-muted">Value: Full Name</label>
+                            <input type="text" class="form-control text-white" id="studentName" name="name" placeholder="Last Name, First Name, M.I." required
                                    style="background-color: var(--input-bg); border: 1px solid var(--border-color);">
                         </div>
                     </div>
                     <div class="modal-footer" style="border-top: 1px solid var(--border-color);">
-                        <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-secondary px-4 text-white" data-bs-dismiss="modal">Cancel</button>
                         <button type="submit" class="btn btn-emerald px-4 text-white">Save Student</button>
                     </div>
                 </form>
@@ -349,13 +375,13 @@
 
     <div class="modal fade" id="editStudentModal" tabindex="-1" aria-labelledby="editStudentModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content text-dark" style="background-color: var(--panel-bg); border: 1px solid var(--border-color);">
+            <div class="modal-content text-white" style="background-color: var(--panel-bg); border: 1px solid var(--border-color);">
                 <div class="modal-header" style="border-bottom: 1px solid var(--border-color);">
-                    <h5 class="modal-title text-light" id="editStudentModalLabel"><i class="fas fa-user-edit me-2 text-emerald"></i>Modify Student Data</h5>
+                    <h5 class="modal-title text-white" id="editStudentModalLabel"><i class="fas fa-user-edit me-2 text-emerald"></i>Modify Student Data</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <form action="/adviser/student/edit" method="POST">
-                    <div class="modal-body text-light">
+                    <div class="modal-body text-white">
                         <div class="mb-3">
                             <label for="editStudentLrn" class="form-label small text-uppercase fw-bold text-muted">LRN (Read Only)</label>
                             <input type="text" class="form-control text-muted" id="editStudentLrn" name="lrn" readonly
@@ -363,12 +389,12 @@
                         </div>
                         <div class="mb-3">
                             <label for="editStudentName" class="form-label small text-uppercase fw-bold text-muted">Full Name</label>
-                            <input type="text" class="form-control text-light" id="editStudentName" name="name" required
+                            <input type="text" class="form-control text-white" id="editStudentName" name="name" required
                                    style="background-color: var(--input-bg); border: 1px solid var(--border-color);">
                         </div>
                     </div>
                     <div class="modal-footer" style="border-top: 1px solid var(--border-color);">
-                        <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-secondary px-4 text-white" data-bs-dismiss="modal">Cancel</button>
                         <button type="submit" class="btn btn-emerald px-4 text-white">Update Info</button>
                     </div>
                 </form>
@@ -378,21 +404,21 @@
 
     <div class="modal fade" id="addSubjectModal" tabindex="-1" aria-labelledby="addSubjectModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content text-dark" style="background-color: var(--panel-bg); border: 1px solid var(--border-color);">
+            <div class="modal-content text-white" style="background-color: var(--panel-bg); border: 1px solid var(--border-color);">
                 <div class="modal-header" style="border-bottom: 1px solid var(--border-color);">
-                    <h5 class="modal-title text-light" id="addSubjectModalLabel"><i class="fas fa-book-medical me-2 text-emerald"></i>Add New Subject Mapping</h5>
+                    <h5 class="modal-title text-white" id="addSubjectModalLabel"><i class="fas fa-book-medical me-2 text-emerald"></i>Add New Subject Mapping</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <form action="/adviser/subject/add" method="POST">
-                    <div class="modal-body text-light">
+                    <div class="modal-body text-white">
                         <div class="mb-3">
                             <label for="subjectName" class="form-label small text-uppercase fw-bold text-muted">Subject Title</label>
-                            <input type="text" class="form-control text-light" id="subjectName" name="name" placeholder="e.g., Oral Communication, General Mathematics" required
+                            <input type="text" class="form-control text-white" id="subjectName" name="name" placeholder="e.g., Oral Communication, General Mathematics" required
                                    style="background-color: var(--input-bg); border: 1px solid var(--border-color);">
                         </div>
                     </div>
                     <div class="modal-footer" style="border-top: 1px solid var(--border-color);">
-                        <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-secondary px-4 text-white" data-bs-dismiss="modal">Cancel</button>
                         <button type="submit" class="btn btn-emerald px-4 text-white">Add Subject</button>
                     </div>
                 </form>
