@@ -256,22 +256,22 @@
             
             <ul class="nav nav-tabs" id="dashboardTabs" role="tablist">
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="students-tab" data-bs-toggle="tab" data-bs-target="#students-pane" type="button" role="tab" aria-controls="students-pane" aria-selected="true">
+                    <button class="nav-link active" id="students-tab" type="button" role="tab">
                         <i class="fa-solid fa-user-graduate me-2"></i>Student Roster
                     </button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="subjects-tab" data-bs-toggle="tab" data-bs-target="#subjects-pane" type="button" role="tab" aria-controls="subjects-pane" aria-selected="false">
+                    <button class="nav-link" id="subjects-tab" type="button" role="tab">
                         <i class="fa-solid fa-book me-2"></i>Subjects Mapping
                     </button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="grading-tab" data-bs-toggle="tab" data-bs-target="#grading-pane" type="button" role="tab" aria-controls="grading-pane" aria-selected="false">
+                    <button class="nav-link" id="grading-tab" type="button" role="tab">
                         <i class="fa-solid fa-pen-to-square me-2"></i>Encode Grades
                     </button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="records-tab" data-bs-toggle="tab" data-bs-target="#records-pane" type="button" role="tab" aria-controls="records-pane" aria-selected="false">
+                    <button class="nav-link" id="records-tab" type="button" role="tab">
                         <i class="fa-solid fa-folder-open me-2"></i>Master Records
                     </button>
                 </li>
@@ -279,7 +279,7 @@
 
             <div class="tab-content" id="dashboardTabsContent">
 
-                <div class="tab-pane fade show active" id="students-pane" role="tabpanel" aria-labelledby="students-tab" tabindex="0">
+                <div class="tab-pane fade show active" id="students-pane" role="tabpanel">
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <div>
                             <h5 class="fw-bold mb-1">Student Roster Management</h5>
@@ -324,7 +324,7 @@
                     </div>
                 </div>
 
-                <div class="tab-pane fade" id="subjects-pane" role="tabpanel" aria-labelledby="subjects-tab" tabindex="0">
+                <div class="tab-pane fade" id="subjects-pane" role="tabpanel">
                     <div class="row">
                         <div class="col-lg-4 mb-4 mb-lg-0">
                             <div class="p-4 rounded border" style="background-color: var(--dark-bg); border-color: var(--border-color) !important;">
@@ -380,7 +380,7 @@
                     </div>
                 </div>
 
-                <div class="tab-pane fade" id="grading-pane" role="tabpanel" aria-labelledby="grading-tab" tabindex="0">
+                <div class="tab-pane fade" id="grading-pane" role="tabpanel">
                     <div class="mb-4">
                         <h5 class="fw-bold mb-1">Grade Evaluation Matrix</h5>
                         <p class="mb-0" style="color: var(--text-light-grey);">Select a target student below to encode their specific subject grades.</p>
@@ -415,7 +415,7 @@
                     </div>
                 </div>
 
-                <div class="tab-pane fade" id="records-pane" role="tabpanel" aria-labelledby="records-tab" tabindex="0">
+                <div class="tab-pane fade" id="records-pane" role="tabpanel">
                     <div class="mb-4">
                         <h5 class="fw-bold mb-1">Academic Master Records</h5>
                         <p class="mb-0" style="color: var(--text-light-grey);">Consolidated overview of all finalized encoded grades.</p>
@@ -534,7 +534,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
     <script>
-        // 1. Controller Payload Mapper - bridges frontend naming to backend dynamic ID expectations
+        // 1. Map input fields safely to the backend controller
         function mapInputNamesToControllerRequirements(lrn) {
             const selectElement = document.getElementById('subjectSelect-' + lrn);
             const inputElement = document.getElementById('gradeInput-' + lrn);
@@ -545,38 +545,58 @@
             return true;
         }
 
-        // 2. Safe Official Bootstrap 5 Implementation for Tab Persistence
+        // 2. ISOLATED TAB ENGINE - Bulletproof fix for tabs ignoring Bootstrap overrides
         document.addEventListener("DOMContentLoaded", function() {
-            // Check URL for redirect target (e.g. ?tab=subjects)
-            const urlParameters = new URLSearchParams(window.location.search);
-            let targetTabId = urlParameters.get('tab');
-            
-            // Fallback to local storage
-            if (!targetTabId) {
-                targetTabId = localStorage.getItem('adviserActiveTab');
-            }
-            
-            // Ensure valid target, default to students
-            if (!targetTabId || !['students', 'subjects', 'grading', 'records'].includes(targetTabId)) {
-                targetTabId = 'students';
-            }
-            
-            // Execute the Official Bootstrap Tab Switcher natively (no class stripping!)
-            const tabElementToActivate = document.getElementById(targetTabId + '-tab');
-            if (tabElementToActivate) {
-                const bsTabInstance = new bootstrap.Tab(tabElementToActivate);
-                bsTabInstance.show();
+            const tabButtons = document.querySelectorAll('.nav-tabs .nav-link');
+            const tabPanes = document.querySelectorAll('.tab-pane');
+
+            // Strip out Bootstrap's data-bs-toggle to prevent script conflicts
+            tabButtons.forEach(btn => btn.removeAttribute('data-bs-toggle'));
+
+            function activateTab(targetPaneId) {
+                const targetPane = document.getElementById(targetPaneId);
+                if (!targetPane) return;
+
+                // Strip active/show from everything
+                tabButtons.forEach(b => b.classList.remove('active'));
+                tabPanes.forEach(p => {
+                    p.classList.remove('show', 'active');
+                    p.style.display = 'none'; // Hard hide
+                });
+
+                // Add to clicked targets
+                const targetButtonId = targetPaneId.replace('-pane', '-tab');
+                const targetButton = document.getElementById(targetButtonId);
+                if (targetButton) targetButton.classList.add('active');
+                
+                targetPane.style.display = 'block'; // Hard show
+                setTimeout(() => targetPane.classList.add('show', 'active'), 10);
+                
+                localStorage.setItem('adviserActiveTab', targetPaneId);
             }
 
-            // Bind native Bootstrap events to save the tab memory when you click
-            const tabElements = document.querySelectorAll('button[data-bs-toggle="tab"]');
-            tabElements.forEach(btn => {
-                btn.addEventListener('shown.bs.tab', function (event) {
-                    // event.target is the active tab button
-                    const rawId = event.target.id.replace('-tab', '');
-                    localStorage.setItem('adviserActiveTab', rawId);
+            // Bind pure click events
+            tabButtons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetPaneId = this.id.replace('-tab', '-pane');
+                    activateTab(targetPaneId);
                 });
             });
+
+            // Initialize view based on URL ?tab= parameter, fallback to storage
+            const urlParams = new URLSearchParams(window.location.search);
+            let tabParam = urlParams.get('tab');
+            let initialPaneId = 'students-pane'; 
+
+            if (tabParam) {
+                initialPaneId = tabParam + '-pane';
+            } else {
+                const savedTab = localStorage.getItem('adviserActiveTab');
+                if (savedTab) initialPaneId = savedTab;
+            }
+
+            activateTab(initialPaneId);
         });
     </script>
 </body>
