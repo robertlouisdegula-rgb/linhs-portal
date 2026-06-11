@@ -250,7 +250,7 @@
             
             <ul class="nav nav-tabs" id="dashboardTabs" role="tablist">
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="students-tab" onclick="openPanel('students')" type="button">
+                    <button class="nav-link" id="students-tab" onclick="openPanel('students')" type="button">
                         <i class="fa-solid fa-user-graduate me-2"></i>Student Roster
                     </button>
                 </li>
@@ -273,7 +273,7 @@
 
             <div class="tab-content" id="dashboardTabsContent">
 
-                <div class="tab-pane fade show active" id="students-pane" style="display: block;">
+                <div class="tab-pane fade" id="students-pane">
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <div>
                             <h5 class="fw-bold mb-1">Student Roster Management</h5>
@@ -318,7 +318,7 @@
                     </div>
                 </div>
 
-                <div class="tab-pane fade" id="subjects-pane" style="display: none;">
+                <div class="tab-pane fade" id="subjects-pane">
                     <div class="row">
                         <div class="col-lg-4 mb-4 mb-lg-0">
                             <div class="p-4 rounded border" style="background-color: var(--dark-bg); border-color: var(--border-color) !important;">
@@ -374,7 +374,7 @@
                     </div>
                 </div>
 
-                <div class="tab-pane fade" id="grading-pane" style="display: none;">
+                <div class="tab-pane fade" id="grading-pane">
                     <div class="mb-4">
                         <h5 class="fw-bold mb-1">Grade Evaluation Matrix</h5>
                         <p class="mb-0" style="color: var(--text-light-grey);">Select a target student below to encode their specific subject grades.</p>
@@ -409,7 +409,7 @@
                     </div>
                 </div>
 
-                <div class="tab-pane fade" id="records-pane" style="display: none;">
+                <div class="tab-pane fade" id="records-pane">
                     <div class="mb-4">
                         <h5 class="fw-bold mb-1">Academic Master Records</h5>
                         <p class="mb-0" style="color: var(--text-light-grey);">Consolidated overview of all finalized encoded grades.</p>
@@ -565,10 +565,6 @@
                     }, 10);
                     
                     localStorage.setItem('safeAdviserTab', tabId);
-                } else {
-                    document.getElementById('students-tab').classList.add('active');
-                    document.getElementById('students-pane').style.display = 'block';
-                    document.getElementById('students-pane').classList.add('show', 'active');
                 }
             } catch (error) {
                 console.error("Tab System Encountered an Error:", error);

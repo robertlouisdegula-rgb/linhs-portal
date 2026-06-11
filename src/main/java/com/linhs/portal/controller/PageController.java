@@ -357,7 +357,7 @@ public class PageController {
     }
 
     // =========================================================
-    // --- ADVISER DASHBOARD & FEATURES ---
+    // --- ADVISER PORTAL DASHBOARD CONTROLS ---
     // =========================================================
     @GetMapping({"/adviser/dashboard", "/adviser-dashboard"})
     public String showAdviserDashboard(HttpSession session, Model model) {
@@ -374,58 +374,113 @@ public class PageController {
 
     @PostMapping("/adviser/student/add")
     public String addStudentToSection(@RequestParam("name") String name, @RequestParam("lrn") String lrn, HttpSession session) {
-        User loggedInUser = (User) session.getAttribute("user");
-        String section = (loggedInUser != null && loggedInUser.getAssignedSection() != null) ? loggedInUser.getAssignedSection() : "Not Assigned";
-        studentRepository.save(new Student(lrn, name, section));
-        return "redirect:/adviser-dashboard?tab=students&success=Student+Registered";
+        try {
+            User loggedInUser = (User) session.getAttribute("user");
+            String section = (loggedInUser != null && loggedInUser.getAssignedSection() != null) ? loggedInUser.getAssignedSection() : "Not Assigned";
+            
+            // Strictly strip any non-numeric characters the user accidentally entered
+            String cleanLrn = lrn.replaceAll("[^a-zA-Z0-9]", "");
+            String cleanName = name.trim();
+            
+            if (cleanLrn.isEmpty() || cleanName.isEmpty()) {
+                return "redirect:/adviser-dashboard?tab=students&error=LRN+and+Name+cannot+be+empty";
+            }
+            
+            // Check for duplicates BEFORE saving to prevent Error 500 DB Crash
+            if (studentRepository.existsById(cleanLrn)) {
+                return "redirect:/adviser-dashboard?tab=students&error=Student+with+this+LRN+code+is+already+registered";
+            }
+            
+            studentRepository.save(new Student(cleanLrn, cleanName, section));
+            return "redirect:/adviser-dashboard?tab=students&success=Student+Registered+Successfully";
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "redirect:/adviser-dashboard?tab=students&error=Database+Error:+Could+not+register+student+profile";
+        }
     }
 
     @PostMapping("/adviser/student/delete")
     public String deleteStudentFromSection(@RequestParam("lrn") String lrn) {
-        studentRepository.deleteById(lrn);
-        return "redirect:/adviser-dashboard?tab=students&success=Student+Removed";
+        try {
+            studentRepository.deleteById(lrn);
+            return "redirect:/adviser-dashboard?tab=students&success=Student+Removed";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "redirect:/adviser-dashboard?tab=students&error=Could+not+remove+student.+Check+for+linked+records.";
+        }
     }
 
     @PostMapping("/adviser/subject/add")
     public String addSubjectToSection(@RequestParam("name") String name, HttpSession session) {
-        User loggedInUser = (User) session.getAttribute("user");
-        String section = (loggedInUser != null && loggedInUser.getAssignedSection() != null) ? loggedInUser.getAssignedSection() : "Not Assigned";
-        Subject subj = new Subject();
-        subj.setName(name);
-        subj.setSection(section);
-        subjectRepository.save(subj);
-        return "redirect:/adviser-dashboard?tab=subjects&success=Subject+Added";
+        try {
+            User loggedInUser = (User) session.getAttribute("user");
+            String section = (loggedInUser != null && loggedInUser.getAssignedSection() != null) ? loggedInUser.getAssignedSection() : "Not Assigned";
+            
+            if (name == null || name.trim().isEmpty()) {
+                return "redirect:/adviser-dashboard?tab=subjects&error=Subject+name+cannot+be+blank";
+            }
+
+            Subject subj = new Subject();
+            subj.setName(name.trim());
+            subj.setSection(section);
+            subjectRepository.save(subj);
+            return "redirect:/adviser-dashboard?tab=subjects&success=Subject+Added";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "redirect:/adviser-dashboard?tab=subjects&error=Failed+to+save+subject+mapping";
+        }
     }
 
     @PostMapping("/adviser/subject/delete")
     public String deleteSubjectFromSection(@RequestParam("id") Long id) {
-        subjectRepository.deleteById(id);
-        return "redirect:/adviser-dashboard?tab=subjects&success=Subject+Removed";
+        try {
+            subjectRepository.deleteById(id);
+            return "redirect:/adviser-dashboard?tab=subjects&success=Subject+Removed";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "redirect:/adviser-dashboard?tab=subjects&error=Failed+to+remove+subject";
+        }
     }
 
     @PostMapping("/adviser/grade/save")
     public String saveStudentGrades(@RequestParam("studentLrn") String studentLrn, @RequestParam Map<String, String> params) {
-        for (String key : params.keySet()) {
-            if (key.startsWith("subject_")) {
-                Long subjectId = Long.parseLong(key.replace("subject_", ""));
-                String gradeValue = params.get(key);
-                Optional<Subject> subjOpt = subjectRepository.findById(subjectId);
-                if (subjOpt.isPresent()) {
-                    Subject subj = subjOpt.get();
-                    List<StudentGrade> existing = studentGradeRepository.findByStudentLrn(studentLrn);
-                    StudentGrade currentGrade = existing.stream().filter(g -> g.getSubjectId().equals(subjectId)).findFirst().orElse(new StudentGrade());
-                    if (currentGrade.getStudentLrn() == null) {
-                        currentGrade.setStudentLrn(studentLrn);
-                        currentGrade.setSubjectId(subjectId);
-                        currentGrade.setSubjectName(subj.getName());
+        try {
+            for (String key : params.keySet()) {
+                if (key.startsWith("subject_")) {
+                    Long subjectId = Long.parseLong(key.replace("subject_", ""));
+                    String gradeValue = params.get(key);
+                    Optional<Subject> subjOpt = subjectRepository.findById(subjectId);
+                    
+                    if (subjOpt.isPresent()) {
+                        Subject subj = subjOpt.get();
+                        List<StudentGrade> existing = studentGradeRepository.findByStudentLrn(studentLrn);
+                        StudentGrade currentGrade = existing.stream().filter(g -> g.getSubjectId().equals(subjectId)).findFirst().orElse(new StudentGrade());
+                        
+                        if (currentGrade.getStudentLrn() == null) {
+                            currentGrade.setStudentLrn(studentLrn);
+                            currentGrade.setSubjectId(subjectId);
+                            currentGrade.setSubjectName(subj.getName());
+                        }
+                        currentGrade.setGrade(gradeValue);
+                        
+                        // Clean numeric calculation fallback to prevent NullPointerExceptions
+                        try {
+                            double numericGrade = Double.parseDouble(gradeValue);
+                            currentGrade.setRemarks(numericGrade >= 75.0 ? "PASSED" : "FAILED");
+                        } catch (Exception ex) {
+                            currentGrade.setRemarks("FAILED");
+                        }
+                        
+                        studentGradeRepository.save(currentGrade);
                     }
-                    currentGrade.setGrade(gradeValue);
-                    currentGrade.setRemarks(currentGrade.getFinalGrade() != null && currentGrade.getFinalGrade() >= 75.0 ? "PASSED" : "FAILED");
-                    studentGradeRepository.save(currentGrade);
                 }
             }
+            return "redirect:/adviser-dashboard?tab=grading&success=Grades+Saved";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "redirect:/adviser-dashboard?tab=grading&error=Failed+to+process+and+lock+in+grades";
         }
-        return "redirect:/adviser-dashboard?tab=grading&success=Grades+Saved";
     }
 
     // =========================================================
@@ -507,7 +562,6 @@ public class PageController {
         User user = (User) session.getAttribute("user");
         if (user == null || !"FACILITIES_ADMIN".equalsIgnoreCase(user.getRoleName())) return "redirect:/login";
 
-        // Provide complete data required by the new facilities-dashboard.html
         model.addAttribute("allStudents", studentRepository.findAll()); 
         model.addAttribute("facilityLogs", facilityLogRepository.findAll()); 
         return "facilities-dashboard"; 
@@ -544,7 +598,6 @@ public class PageController {
         User user = (User) session.getAttribute("user");
         if (user == null || !"GUIDANCE_COUNSELOR".equalsIgnoreCase(user.getRoleName())) return "redirect:/login";
 
-        // Provide complete data required by the new guidance-dashboard.html
         model.addAttribute("allStudents", studentRepository.findAll());
         model.addAttribute("guidanceLogs", guidanceLogRepository.findAll());
         return "guidance-dashboard";
@@ -581,10 +634,9 @@ public class PageController {
         User user = (User) session.getAttribute("user");
         if (user == null || !"NURSE".equalsIgnoreCase(user.getRoleName())) return "redirect:/login";
 
-        // Provide complete data required by the new clinic-dashboard.html
         model.addAttribute("allStudents", studentRepository.findAll()); 
         model.addAttribute("clinicLogs", clinicLogRepository.findAll()); 
-        return "clinic-dashboard"; // Ensure your HTML file is named clinic-dashboard.html
+        return "clinic-dashboard"; 
     }
 
     @PostMapping("/clinic/log/save")
@@ -657,7 +709,6 @@ public class PageController {
         List<LibraryBorrowRecord> libraryRecords = libraryBorrowRecordRepository.findByStudentLrnAndStatus(lrn, "BORROWED");
         for (LibraryBorrowRecord lbr : libraryRecords) details.addOpenItem(new OpenLiabilityItem("School Library", "Book: " + lbr.getBookTitle(), lbr.getBorrowDate(), "OVERDUE_RETAINED"));
 
-        // ---> UPDATED GUIDANCE CHECK <---
         List<GuidanceLog> guidanceRecords = guidanceLogRepository.findByLrnAndStatus(lrn, "UNSOLVED");
         for (GuidanceLog gr : guidanceRecords) {
             LocalDateTime fallbackDate = LocalDateTime.now();
@@ -665,7 +716,6 @@ public class PageController {
             details.addOpenItem(new OpenLiabilityItem("Guidance Office", gr.getIncident(), fallbackDate, "PENDING_RESOLUTION"));
         }
 
-        // ---> UPDATED FACILITIES CHECK <---
         List<FacilityLog> physicalRecords = facilityLogRepository.findByLrnAndStatus(lrn, "UNSOLVED");
         for (FacilityLog fl : physicalRecords) {
             LocalDateTime fallbackDate = LocalDateTime.now();
