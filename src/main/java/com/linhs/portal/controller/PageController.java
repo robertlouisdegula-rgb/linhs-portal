@@ -102,14 +102,8 @@ public class PageController {
 
     @GetMapping("/")
     public String showLandingPage(Model model) {
-        try {
-            model.addAttribute("announcements", announcementRepository.findAll());
-            model.addAttribute("galleryItems", galleryRepository.findAll());
-        } catch (Exception e) {
-            e.printStackTrace();
-            model.addAttribute("announcements", new ArrayList<>());
-            model.addAttribute("galleryItems", new ArrayList<>());
-        }
+        model.addAttribute("announcements", announcementRepository.findAll());
+        model.addAttribute("galleryItems", galleryRepository.findAll());
         return "index";
     }
 
@@ -123,54 +117,46 @@ public class PageController {
             @RequestParam("password") String password,
             HttpSession session,
             Model model) {
-        try {
-            Optional<User> userOpt = authService.authenticate(username, password);
-            if (userOpt.isPresent()) {
-                User user = userOpt.get();
-                session.setAttribute("user", user);
+        Optional<User> userOpt = authService.authenticate(username, password);
+        if (userOpt.isPresent()) {
+            User user = userOpt.get();
+            session.setAttribute("user", user);
 
-                // Clean role variations and remove unexpected white spaces
-                String role = (user.getRoleName() != null) ? user.getRoleName().trim().toUpperCase() : "";
-                
-                if ("ADMIN".equals(role) || "ADMINISTRATOR".equals(role)) {
-                    return "redirect:/admin-dashboard";
-                } else if ("ADVISER".equals(role) || "TEACHER".equals(role)) {
-                    return "redirect:/teacher-portal";
-                } else if ("FACILITIES_ADMIN".equals(role) || "FACILITIES".equals(role)) {
-                    return "redirect:/facilities-dashboard";
-                } else if ("GUIDANCE_COUNSELOR".equals(role) || "GUIDANCE".equals(role)) {
-                    return "redirect:/guidance-dashboard";
-                } else if ("NURSE".equals(role) || "CLINIC".equals(role)) {
-                    return "redirect:/clinic-dashboard";
-                } else if ("REGISTRAR".equals(role)) {
-                    return "redirect:/registrar-dashboard";
-                } else if ("LABORATORY".equals(role) || "LAB".equals(role)) {
-                    return "redirect:/lab-dashboard";
-                } else if ("SPORTS_ADMIN".equals(role) || "SPORTS".equals(role)) {
-                    return "redirect:/sports-dashboard";
-                } else if ("LIBRARY".equals(role)) {
-                    return "redirect:/library-dashboard";
-                }
+            // FIX: Gracefully handle whitespace and database formatting variations
+            String role = user.getRoleName() != null ? user.getRoleName().trim().toUpperCase() : "";
 
-                return "redirect:/";
-            } else {
-                model.addAttribute("error", "Invalid username or password credential profile.");
-                return "login";
+            if (role.contains("ADMIN") && !role.contains("FACILITIES") && !role.contains("SPORTS")) {
+                return "redirect:/admin-dashboard";
+            } else if (role.contains("ADVISER") || role.contains("TEACHER")) {
+                return "redirect:/teacher-portal";
+            } else if (role.contains("FACILITIES")) {
+                return "redirect:/facilities-dashboard";
+            } else if (role.contains("GUIDANCE")) {
+                return "redirect:/guidance-dashboard";
+            } else if (role.contains("NURSE") || role.contains("CLINIC")) {
+                return "redirect:/clinic-dashboard";
+            } else if (role.contains("REGISTRAR")) {
+                return "redirect:/registrar-dashboard";
+            } else if (role.contains("LABORATORY") || role.contains("LAB")) {
+                return "redirect:/lab-dashboard";
+            } else if (role.contains("SPORTS")) {
+                return "redirect:/sports-dashboard";
+            } else if (role.contains("LIBRARY")) {
+                return "redirect:/library-dashboard";
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            model.addAttribute("error", "An internal system error occurred during login handling.");
+
+            // Fallback for an unmapped or misspelled role
+            System.out.println("Warning: Unrecognized role encountered: " + role);
+            return "redirect:/";
+        } else {
+            model.addAttribute("error", "Invalid username or password credential profile.");
             return "login";
         }
     }
 
     @GetMapping({"/logout", "/signout"})
     public String logout(HttpSession session, RedirectAttributes redirectAttributes) {
-        try {
-            session.invalidate();
-        } catch (Exception e) {
-            // Already invalidated or uninitialized session scenario
-        }
+        session.invalidate();
         redirectAttributes.addFlashAttribute("logoutMessage", "You have been successfully signed out.");
         return "redirect:/login";
     }
@@ -184,34 +170,19 @@ public class PageController {
 
     @GetMapping("/announcements")
     public String showAnnouncements(Model model) {
-        try {
-            model.addAttribute("announcements", announcementRepository.findAll());
-        } catch (Exception e) {
-            e.printStackTrace();
-            model.addAttribute("announcements", new ArrayList<>());
-        }
+        model.addAttribute("announcements", announcementRepository.findAll());
         return "announcements";
     }
 
     @GetMapping("/resources")
     public String showResources(Model model) {
-        try {
-            model.addAttribute("resources", resourceHubRepository.findAll());
-        } catch (Exception e) {
-            e.printStackTrace();
-            model.addAttribute("resources", new ArrayList<>());
-        }
+        model.addAttribute("resources", resourceHubRepository.findAll());
         return "resources";
     }
 
     @GetMapping("/gallery")
     public String showGallery(Model model) {
-        try {
-            model.addAttribute("galleryItems", galleryRepository.findAll());
-        } catch (Exception e) {
-            e.printStackTrace();
-            model.addAttribute("galleryItems", new ArrayList<>());
-        }
+        model.addAttribute("galleryItems", galleryRepository.findAll());
         return "gallery";
     }
 
@@ -221,26 +192,29 @@ public class PageController {
 
     @GetMapping("/teacher-portal")
     public String showTeacherPortal(HttpSession session, Model model) {
-        try {
-            User user = (User) session.getAttribute("user");
-            if (user == null) return "redirect:/login";
-            
-            String role = (user.getRoleName() != null) ? user.getRoleName().trim().toUpperCase() : "";
-            if (!"ADVISER".equals(role) && !"TEACHER".equals(role)) return "redirect:/login";
-
-            model.addAttribute("username", user.getName());
-            model.addAttribute("assignedSection", user.getAssignedSection());
-
-            List<Student> assignedStudents = (user.getAssignedSection() != null) 
-                    ? studentRepository.findBySection(user.getAssignedSection()) : new ArrayList<>();
-            model.addAttribute("assignedStudents", assignedStudents);
-
-            model.addAttribute("allSubjects", subjectRepository.findAll());
-            return "teacher-portal";
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "redirect:/?error=System+encountered+a+dashboard+loading+error";
+        User user = (User) session.getAttribute("user");
+        
+        // FIX: Match the flexible login role checking
+        if (user == null || user.getRoleName() == null || 
+            (!user.getRoleName().trim().toUpperCase().contains("ADVISER") && 
+             !user.getRoleName().trim().toUpperCase().contains("TEACHER"))) {
+            return "redirect:/login";
         }
+
+        model.addAttribute("username", user.getName());
+        model.addAttribute("assignedSection", user.getAssignedSection() != null ? user.getAssignedSection() : "Unassigned");
+
+        // FIX Error 500: Avoid querying null sections which crashes the repo
+        List<Student> assignedStudents = new ArrayList<>();
+        if (user.getAssignedSection() != null) {
+            assignedStudents = studentRepository.findBySection(user.getAssignedSection());
+        }
+        model.addAttribute("assignedStudents", assignedStudents);
+
+        List<Subject> allSubjects = subjectRepository.findAll();
+        model.addAttribute("allSubjects", allSubjects != null ? allSubjects : new ArrayList<>());
+
+        return "teacher-portal";
     }
 
     // =========================================================
@@ -248,7 +222,11 @@ public class PageController {
     // =========================================================
 
     @GetMapping("/clearance/lookup")
-    public String showClearanceLookup() {
+    public String showClearanceLookup(Model model) {
+        // PREVENT Error 500 on first load
+        model.addAttribute("student", null);
+        model.addAttribute("unresolvedGuidance", new ArrayList<>());
+        model.addAttribute("unresolvedFacilities", new ArrayList<>());
         return "clearance-tracker";
     }
 
@@ -258,48 +236,51 @@ public class PageController {
     }
 
     @GetMapping("/clearance-tracker")
-    public String showClearanceTrackerForm() {
+    public String showClearanceTrackerForm(Model model) {
+        // PREVENT Error 500 on first load
+        model.addAttribute("student", null);
+        model.addAttribute("unresolvedGuidance", new ArrayList<>());
+        model.addAttribute("unresolvedFacilities", new ArrayList<>());
         return "clearance-tracker";
     }
 
     @GetMapping("/clearance/track")
-    public String performClearanceTracking(@RequestParam(value = "lrn", required = false) String lrn, Model model) {
-        if (lrn == null || lrn.trim().isEmpty()) {
-            model.addAttribute("error", "LRN parameter cannot be empty.");
-            return "clearance-tracker";
+    public String performClearanceTracking(@RequestParam("lrn") String lrn, Model model) {
+        Optional<Student> studentOpt = studentRepository.findByLrn(lrn);
+        if (studentOpt.isEmpty()) {
+            studentOpt = studentRepository.findById(lrn);
         }
 
-        try {
-            Optional<Student> studentOpt = studentRepository.findByLrn(lrn.trim());
-            if (studentOpt.isEmpty()) {
-                studentOpt = studentRepository.findById(lrn.trim());
-            }
-
-            if (studentOpt.isEmpty()) {
-                model.addAttribute("error", "Student LRN not found. Please try again.");
-                model.addAttribute("notFound", true);
-                return "clearance-status";
-            }
-
-            Student student = studentOpt.get();
-            model.addAttribute("student", student);
-
-            model.addAttribute("adviserStatus", student.getAdviserClearance());
-            model.addAttribute("labStatus", student.getLabClearance());
-            model.addAttribute("sportsStatus", student.getSportsClearance());
-            model.addAttribute("guidanceStatus", student.getGuidanceClearance());
-            model.addAttribute("facilitiesStatus", student.getFacilitiesClearance());
-            model.addAttribute("libraryStatus", student.getLibraryClearance());
-
-            model.addAttribute("unresolvedGuidance", guidanceLogRepository.findByLrnAndStatus(student.getLrn(), "UNSOLVED"));
-            model.addAttribute("unresolvedFacilities", facilityLogRepository.findByLrnAndStatus(student.getLrn(), "UNSOLVED"));
-
+        if (studentOpt.isEmpty()) {
+            model.addAttribute("error", "Student LRN not found. Please try again.");
+            model.addAttribute("notFound", true);
+            
+            // FIX Error 500: Missing attributes when student not found
+            model.addAttribute("student", null);
+            model.addAttribute("unresolvedGuidance", new ArrayList<>());
+            model.addAttribute("unresolvedFacilities", new ArrayList<>());
+            
             return "clearance-status";
-        } catch (Exception e) {
-            e.printStackTrace();
-            model.addAttribute("error", "An error occurred while building the clearance tracking log profile.");
-            return "clearance-tracker";
         }
+
+        Student student = studentOpt.get();
+        model.addAttribute("student", student);
+
+        model.addAttribute("adviserStatus", student.getAdviserClearance());
+        model.addAttribute("labStatus", student.getLabClearance());
+        model.addAttribute("sportsStatus", student.getSportsClearance());
+        model.addAttribute("guidanceStatus", student.getGuidanceClearance());
+        model.addAttribute("facilitiesStatus", student.getFacilitiesClearance());
+        model.addAttribute("libraryStatus", student.getLibraryClearance());
+
+        List<GuidanceLog> unresolvedGuidance = guidanceLogRepository.findByLrnAndStatus(student.getLrn(), "UNSOLVED");
+        List<FacilityLog> unresolvedFacilities = facilityLogRepository.findByLrnAndStatus(student.getLrn(), "UNSOLVED");
+        
+        // FIX Error 500: Ensure lists are never null
+        model.addAttribute("unresolvedGuidance", unresolvedGuidance != null ? unresolvedGuidance : new ArrayList<>());
+        model.addAttribute("unresolvedFacilities", unresolvedFacilities != null ? unresolvedFacilities : new ArrayList<>());
+
+        return "clearance-status";
     }
 
     // =========================================================
@@ -308,45 +289,33 @@ public class PageController {
 
     @GetMapping("/admin-dashboard")
     public String showAdminDashboard(HttpSession session, Model model) {
-        try {
-            User user = (User) session.getAttribute("user");
-            if (user == null) return "redirect:/login";
-            
-            String role = (user.getRoleName() != null) ? user.getRoleName().trim().toUpperCase() : "";
-            if (!"ADMIN".equals(role) && !"ADMINISTRATOR".equals(role)) return "redirect:/login";
-
-            model.addAttribute("username", user.getName());
-            model.addAttribute("allUsers", userRepository.findAll());
-            model.addAttribute("cmsAnnouncements", announcementRepository.findAll());
-            model.addAttribute("cmsResources", resourceHubRepository.findAll());
-
-            return "admin-dashboard";
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "redirect:/?error=Admin+Dashboard+failed+to+render";
+        User user = (User) session.getAttribute("user");
+        
+        // Flexible Admin Role Checking
+        if (user == null || user.getRoleName() == null || !user.getRoleName().trim().toUpperCase().contains("ADMIN")) {
+            return "redirect:/login";
         }
+
+        model.addAttribute("username", user.getName());
+        model.addAttribute("allUsers", userRepository.findAll());
+        model.addAttribute("cmsAnnouncements", announcementRepository.findAll());
+        model.addAttribute("cmsResources", resourceHubRepository.findAll());
+
+        return "admin-dashboard";
     }
 
     @PostMapping("/admin/account/edit")
     public String adminEditAccount(@ModelAttribute User userToUpdate) {
-        if (userToUpdate == null || userToUpdate.getId() == null) {
-            return "redirect:/admin-dashboard?tab=1&error=Invalid+account+payload";
+        Optional<User> existing = userRepository.findById(userToUpdate.getId());
+        if (existing.isPresent()) {
+            User current = existing.get();
+            current.setUsername(userToUpdate.getUsername());
+            current.setPassword(userToUpdate.getPassword());
+            current.setRoleName(userToUpdate.getRoleName());
+            userRepository.save(current);
+            return "redirect:/admin-dashboard?tab=1&success=Account+updated";
         }
-        try {
-            Optional<User> existing = userRepository.findById(userToUpdate.getId());
-            if (existing.isPresent()) {
-                User current = existing.get();
-                current.setUsername(userToUpdate.getUsername());
-                current.setPassword(userToUpdate.getPassword());
-                current.setRoleName(userToUpdate.getRoleName());
-                userRepository.save(current);
-                return "redirect:/admin-dashboard?tab=1&success=Account+updated";
-            }
-            return "redirect:/admin-dashboard?tab=1&error=Account+not+found";
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "redirect:/admin-dashboard?tab=1&error=Exception+encountered+saving+changes";
-        }
+        return "redirect:/admin-dashboard?tab=1&error=Account+not+found";
     }
 
     @PostMapping("/admin/adviser/create")
@@ -377,46 +346,26 @@ public class PageController {
 
     @PostMapping("/admin/adviser/delete")
     public String adminDeleteAccount(@RequestParam("userId") Long userId) {
-        try {
-            userRepository.deleteById(userId);
-            return "redirect:/admin-dashboard?tab=1&success=Account+Deleted";
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "redirect:/admin-dashboard?tab=1&error=Failed+to+delete+account";
-        }
+        userRepository.deleteById(userId);
+        return "redirect:/admin-dashboard?tab=1&success=Account+Deleted";
     }
 
     @PostMapping("/admin/cms/update")
     public String updateCmsAnnouncements(@ModelAttribute Announcement announcement) {
-        try {
-            announcementRepository.save(announcement);
-            return "redirect:/admin-dashboard?tab=2&success=Announcement+Published";
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "redirect:/admin-dashboard?tab=2&error=Failed+to+publish+announcement";
-        }
+        announcementRepository.save(announcement);
+        return "redirect:/admin-dashboard?tab=2&success=Announcement+Published";
     }
 
     @PostMapping("/admin/resource/add")
     public String updateCmsResources(@ModelAttribute ResourceHub resource) {
-        try {
-            resourceHubRepository.save(resource);
-            return "redirect:/admin-dashboard?tab=2&success=Resource+Added";
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "redirect:/admin-dashboard?tab=2&error=Failed+to+add+resource";
-        }
+        resourceHubRepository.save(resource);
+        return "redirect:/admin-dashboard?tab=2&success=Resource+Added";
     }
 
     @PostMapping("/admin/resource/delete")
     public String deleteResource(@RequestParam("resourceId") Long resourceId) {
-        try {
-            resourceHubRepository.deleteById(resourceId);
-            return "redirect:/admin-dashboard?tab=2&success=Resource+Deleted";
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "redirect:/admin-dashboard?tab=2&error=Failed+to+delete+resource";
-        }
+        resourceHubRepository.deleteById(resourceId);
+        return "redirect:/admin-dashboard?tab=2&success=Resource+Deleted";
     }
 
     // =========================================================
@@ -429,37 +378,27 @@ public class PageController {
             @RequestParam("name") String name,
             HttpSession session) {
 
-        try {
-            User loggedInUser = (User) session.getAttribute("user");
-            String section = (loggedInUser != null && loggedInUser.getAssignedSection() != null) 
-                                ? loggedInUser.getAssignedSection() : "Not Assigned";
+        User loggedInUser = (User) session.getAttribute("user");
+        String section = (loggedInUser != null && loggedInUser.getAssignedSection() != null) 
+                            ? loggedInUser.getAssignedSection() : "Not Assigned";
 
-            String cleanLrn = (lrn != null) ? lrn.trim() : "";
-            String cleanName = (name != null) ? name.trim() : "";
+        String cleanLrn = lrn.trim();
+        String cleanName = name.trim();
 
-            if (cleanLrn.isEmpty() || cleanName.isEmpty()) {
-                return "redirect:/teacher-portal?error=LRN+and+Name+are+required";
-            }
-
-            Student newStudent = new Student(cleanLrn, cleanName, section);
-            studentRepository.save(newStudent);
-
-            return "redirect:/teacher-portal?success=Student+added+successfully";
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "redirect:/teacher-portal?error=Database+error+occurred+adding+student";
+        if (cleanLrn.isEmpty() || cleanName.isEmpty()) {
+            return "redirect:/teacher-portal?error=LRN+and+Name+are+required";
         }
+
+        Student newStudent = new Student(cleanLrn, cleanName, section);
+        studentRepository.save(newStudent);
+
+        return "redirect:/teacher-portal?success=Student+added+successfully";
     }
 
     @PostMapping("/adviser/student/delete")
     public String deleteStudentByAdviser(@RequestParam("lrn") String lrn) {
-        try {
-            studentRepository.deleteById(lrn);
-            return "redirect:/teacher-portal?success=Student+deleted+successfully";
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "redirect:/teacher-portal?error=Failed+to+delete+student";
-        }
+        studentRepository.deleteById(lrn);
+        return "redirect:/teacher-portal?success=Student+deleted+successfully";
     }
 
     @PostMapping("/adviser/subject/add")
@@ -544,63 +483,40 @@ public class PageController {
 
     @PostMapping("/request-document/submit")
     public String submitDocumentRequest(@ModelAttribute DocumentRequest req) {
-        try {
-            req.setStatus("PENDING");
-            documentRequestRepository.save(req);
-            return "redirect:/request-document?success=Request+Submitted";
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "redirect:/request-document?error=Submission+failed";
-        }
+        req.setStatus("PENDING");
+        documentRequestRepository.save(req);
+        return "redirect:/request-document?success=Request+Submitted";
     }
 
     @GetMapping("/registrar-dashboard")
     public String showRegistrarDashboard(HttpSession session, Model model) {
-        try {
-            User user = (User) session.getAttribute("user");
-            if (user == null) return "redirect:/login";
-            
-            String role = (user.getRoleName() != null) ? user.getRoleName().trim().toUpperCase() : "";
-            if (!"REGISTRAR".equals(role)) return "redirect:/login";
+        User user = (User) session.getAttribute("user");
+        if (user == null || user.getRoleName() == null || !user.getRoleName().trim().toUpperCase().contains("REGISTRAR")) return "redirect:/login";
 
-            List<DocumentRequest> allRequests = documentRequestRepository.findAll();
-            List<DocumentRequest> pending = allRequests.stream().filter(r -> "PENDING".equalsIgnoreCase(r.getStatus())).collect(Collectors.toList());
-            List<DocumentRequest> completed = allRequests.stream().filter(r -> "COMPLETED".equalsIgnoreCase(r.getStatus())).collect(Collectors.toList());
+        List<DocumentRequest> allRequests = documentRequestRepository.findAll();
+        List<DocumentRequest> pending = allRequests.stream().filter(r -> "PENDING".equalsIgnoreCase(r.getStatus())).collect(Collectors.toList());
+        List<DocumentRequest> completed = allRequests.stream().filter(r -> "COMPLETED".equalsIgnoreCase(r.getStatus())).collect(Collectors.toList());
 
-            model.addAttribute("pendingRequests", pending);
-            model.addAttribute("completedRequests", completed);
-            return "registrar-dashboard";
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "redirect:/?error=Registrar+Dashboard+failed+to+render";
-        }
+        model.addAttribute("pendingRequests", pending);
+        model.addAttribute("completedRequests", completed);
+        return "registrar-dashboard";
     }
 
     @PostMapping("/registrar/request/complete")
     public String markRequestComplete(@RequestParam("requestId") Long requestId) {
-        try {
-            Optional<DocumentRequest> reqOpt = documentRequestRepository.findById(requestId);
-            if (reqOpt.isPresent()) {
-                DocumentRequest r = reqOpt.get();
-                r.setStatus("COMPLETED");
-                documentRequestRepository.save(r);
-            }
-            return "redirect:/registrar-dashboard?success=Request+marked+as+Completed";
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "redirect:/registrar-dashboard?error=Action+failed";
+        Optional<DocumentRequest> reqOpt = documentRequestRepository.findById(requestId);
+        if (reqOpt.isPresent()) {
+            DocumentRequest r = reqOpt.get();
+            r.setStatus("COMPLETED");
+            documentRequestRepository.save(r);
         }
+        return "redirect:/registrar-dashboard?success=Request+marked+as+Completed";
     }
 
     @PostMapping("/registrar/request/delete")
     public String deleteDocumentRequest(@RequestParam("requestId") Long requestId) {
-        try {
-            documentRequestRepository.deleteById(requestId);
-            return "redirect:/registrar-dashboard?success=Request+Deleted";
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "redirect:/registrar-dashboard?error=Action+failed";
-        }
+        documentRequestRepository.deleteById(requestId);
+        return "redirect:/registrar-dashboard?success=Request+Deleted";
     }
 
     // =========================================================
@@ -609,21 +525,13 @@ public class PageController {
 
     @GetMapping("/facilities-dashboard")
     public String showFacilitiesDashboard(HttpSession session, Model model) {
-        try {
-            User user = (User) session.getAttribute("user");
-            if (user == null) return "redirect:/login";
-            
-            String role = (user.getRoleName() != null) ? user.getRoleName().trim().toUpperCase() : "";
-            if (!"FACILITIES_ADMIN".equals(role) && !"FACILITIES".equals(role)) return "redirect:/login";
+        User user = (User) session.getAttribute("user");
+        if (user == null || user.getRoleName() == null || !user.getRoleName().trim().toUpperCase().contains("FACILITIES")) return "redirect:/login";
 
-            model.addAttribute("username", user.getName());
-            model.addAttribute("allStudents", studentRepository.findAllByOrderByNameAsc());
-            model.addAttribute("facilityLogs", facilityLogRepository.findAll());
-            return "facilities-dashboard";
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "redirect:/?error=Facilities+Dashboard+failed+to+render";
-        }
+        model.addAttribute("username", user.getName());
+        model.addAttribute("allStudents", studentRepository.findAllByOrderByNameAsc());
+        model.addAttribute("facilityLogs", facilityLogRepository.findAll());
+        return "facilities-dashboard";
     }
 
     @PostMapping({"/facilities/log/add", "/facilities/report/save"})
@@ -649,44 +557,34 @@ public class PageController {
 
     @PostMapping({"/facilities/log/solve", "/facilities/report/solve"})
     public String solveFacilityReport(@RequestParam("logId") Long logId) {
-        try {
-            Optional<FacilityLog> logOpt = facilityLogRepository.findById(logId);
-            if (logOpt.isPresent()) {
-                FacilityLog log = logOpt.get();
-                log.setStatus("SOLVED");
-                facilityLogRepository.save(log);
-                
-                List<FacilityLog> remaining = facilityLogRepository.findByLrnAndStatus(log.getLrn(), "UNSOLVED");
-                if (remaining.isEmpty()) {
-                    Optional<Student> studentOpt = studentRepository.findByLrn(log.getLrn());
-                    if (studentOpt.isPresent()) {
-                        Student student = studentOpt.get();
-                        student.setFacilitiesClearance("CLEARED");
-                        studentRepository.save(student);
-                    }
+        Optional<FacilityLog> logOpt = facilityLogRepository.findById(logId);
+        if (logOpt.isPresent()) {
+            FacilityLog log = logOpt.get();
+            log.setStatus("SOLVED");
+            facilityLogRepository.save(log);
+            
+            List<FacilityLog> remaining = facilityLogRepository.findByLrnAndStatus(log.getLrn(), "UNSOLVED");
+            if (remaining.isEmpty()) {
+                Optional<Student> studentOpt = studentRepository.findByLrn(log.getLrn());
+                if (studentOpt.isPresent()) {
+                    Student student = studentOpt.get();
+                    student.setFacilitiesClearance("CLEARED");
+                    studentRepository.save(student);
                 }
             }
-            return "redirect:/facilities-dashboard?success=Marked+as+solved";
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "redirect:/facilities-dashboard?error=Action+failed";
         }
+        return "redirect:/facilities-dashboard?success=Marked+as+solved";
     }
 
     @PostMapping("/facilities/log/clear")
     public String clearFacilityLogs() {
-        try {
-            facilityLogRepository.deleteAll();
-            List<Student> students = studentRepository.findAll();
-            for (Student s : students) {
-                s.setFacilitiesClearance("CLEARED");
-                studentRepository.save(s);
-            }
-            return "redirect:/facilities-dashboard?success=All+logs+cleared";
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "redirect:/facilities-dashboard?error=Action+failed";
+        facilityLogRepository.deleteAll();
+        List<Student> students = studentRepository.findAll();
+        for (Student s : students) {
+            s.setFacilitiesClearance("CLEARED");
+            studentRepository.save(s);
         }
+        return "redirect:/facilities-dashboard?success=All+logs+cleared";
     }
 
     // =========================================================
@@ -695,20 +593,12 @@ public class PageController {
 
     @GetMapping("/guidance-dashboard")
     public String showGuidanceDashboard(HttpSession session, Model model) {
-        try {
-            User user = (User) session.getAttribute("user");
-            if (user == null) return "redirect:/login";
-            
-            String role = (user.getRoleName() != null) ? user.getRoleName().trim().toUpperCase() : "";
-            if (!"GUIDANCE_COUNSELOR".equals(role) && !"GUIDANCE".equals(role)) return "redirect:/login";
+        User user = (User) session.getAttribute("user");
+        if (user == null || user.getRoleName() == null || !user.getRoleName().trim().toUpperCase().contains("GUIDANCE")) return "redirect:/login";
 
-            model.addAttribute("allStudents", studentRepository.findAllByOrderByNameAsc()); 
-            model.addAttribute("guidanceLogs", guidanceLogRepository.findAll()); 
-            return "guidance-dashboard"; 
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "redirect:/?error=Guidance+Dashboard+failed+to+render";
-        }
+        model.addAttribute("allStudents", studentRepository.findAllByOrderByNameAsc()); 
+        model.addAttribute("guidanceLogs", guidanceLogRepository.findAll()); 
+        return "guidance-dashboard"; 
     }
 
     @PostMapping({"/guidance/log/add", "/guidance/report/save"})
@@ -734,44 +624,34 @@ public class PageController {
 
     @PostMapping({"/guidance/log/solve", "/guidance/report/solve"})
     public String solveGuidanceReport(@RequestParam("logId") Long logId) {
-        try {
-            Optional<GuidanceLog> logOpt = guidanceLogRepository.findById(logId);
-            if (logOpt.isPresent()) {
-                GuidanceLog log = logOpt.get();
-                log.setStatus("SOLVED");
-                guidanceLogRepository.save(log);
-                
-                List<GuidanceLog> remaining = guidanceLogRepository.findByLrnAndStatus(log.getLrn(), "UNSOLVED");
-                if (remaining.isEmpty()) {
-                    Optional<Student> studentOpt = studentRepository.findByLrn(log.getLrn());
-                    if (studentOpt.isPresent()) {
-                        Student student = studentOpt.get();
-                        student.setGuidanceClearance("CLEARED");
-                        studentRepository.save(student);
-                    }
+        Optional<GuidanceLog> logOpt = guidanceLogRepository.findById(logId);
+        if (logOpt.isPresent()) {
+            GuidanceLog log = logOpt.get();
+            log.setStatus("SOLVED");
+            guidanceLogRepository.save(log);
+            
+            List<GuidanceLog> remaining = guidanceLogRepository.findByLrnAndStatus(log.getLrn(), "UNSOLVED");
+            if (remaining.isEmpty()) {
+                Optional<Student> studentOpt = studentRepository.findByLrn(log.getLrn());
+                if (studentOpt.isPresent()) {
+                    Student student = studentOpt.get();
+                    student.setGuidanceClearance("CLEARED");
+                    studentRepository.save(student);
                 }
             }
-            return "redirect:/guidance-dashboard?success=Marked+as+solved";
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "redirect:/guidance-dashboard?error=Action+failed";
         }
+        return "redirect:/guidance-dashboard?success=Marked+as+solved";
     }
 
     @PostMapping("/guidance/log/clear")
     public String clearGuidanceLogs() {
-        try {
-            guidanceLogRepository.deleteAll();
-            List<Student> students = studentRepository.findAll();
-            for (Student s : students) {
-                s.setGuidanceClearance("CLEARED");
-                studentRepository.save(s);
-            }
-            return "redirect:/guidance-dashboard?success=All+logs+cleared";
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "redirect:/guidance-dashboard?error=Action+failed";
+        guidanceLogRepository.deleteAll();
+        List<Student> students = studentRepository.findAll();
+        for (Student s : students) {
+            s.setGuidanceClearance("CLEARED");
+            studentRepository.save(s);
         }
+        return "redirect:/guidance-dashboard?success=All+logs+cleared";
     }
 
     // =========================================================
@@ -780,20 +660,12 @@ public class PageController {
 
     @GetMapping({"/clinic-dashboard", "/nurse-dashboard"})
     public String showClinicDashboard(HttpSession session, Model model) {
-        try {
-            User user = (User) session.getAttribute("user");
-            if (user == null) return "redirect:/login";
-            
-            String role = (user.getRoleName() != null) ? user.getRoleName().trim().toUpperCase() : "";
-            if (!"NURSE".equals(role) && !"CLINIC".equals(role)) return "redirect:/login";
+        User user = (User) session.getAttribute("user");
+        if (user == null || user.getRoleName() == null || (!user.getRoleName().trim().toUpperCase().contains("CLINIC") && !user.getRoleName().trim().toUpperCase().contains("NURSE"))) return "redirect:/login";
 
-            model.addAttribute("allStudents", studentRepository.findAll()); 
-            model.addAttribute("clinicLogs", clinicLogRepository.findAll()); 
-            return "clinic-dashboard"; 
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "redirect:/?error=Clinic+Dashboard+failed+to+render";
-        }
+        model.addAttribute("allStudents", studentRepository.findAll()); 
+        model.addAttribute("clinicLogs", clinicLogRepository.findAll()); 
+        return "clinic-dashboard"; 
     }
 
     @PostMapping({"/clinic/log/add", "/clinic/log/save"})
@@ -811,13 +683,8 @@ public class PageController {
 
     @PostMapping("/clinic/log/clear")
     public String clearClinicLogs() {
-        try {
-            clinicLogRepository.deleteAll();
-            return "redirect:/clinic-dashboard?success=All+logs+cleared";
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "redirect:/clinic-dashboard?error=Action+failed";
-        }
+        clinicLogRepository.deleteAll();
+        return "redirect:/clinic-dashboard?success=All+logs+cleared";
     }
 
     // =========================================================
@@ -827,80 +694,54 @@ public class PageController {
     @GetMapping("/lab-dashboard")
     public String showLabDashboard(HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");
-        if (user == null) return "redirect:/login";
-        
-        String role = (user.getRoleName() != null) ? user.getRoleName().trim().toUpperCase() : "";
-        if (!"LABORATORY".equals(role) && !"LAB".equals(role)) return "redirect:/login";
-        
+        if (user == null || user.getRoleName() == null || !user.getRoleName().trim().toUpperCase().contains("LAB")) return "redirect:/login";
         return "lab-dashboard"; 
     }
 
     @GetMapping("/sports-dashboard")
     public String showSportsDashboard(HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");
-        if (user == null) return "redirect:/login";
-        
-        String role = (user.getRoleName() != null) ? user.getRoleName().trim().toUpperCase() : "";
-        if (!"SPORTS_ADMIN".equals(role) && !"SPORTS".equals(role)) return "redirect:/login";
-        
+        if (user == null || user.getRoleName() == null || !user.getRoleName().trim().toUpperCase().contains("SPORTS")) return "redirect:/login";
         return "sports-dashboard"; 
     }
 
     @GetMapping("/library-dashboard")
     public String showLibraryDashboard(HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");
-        if (user == null) return "redirect:/login";
-        
-        String role = (user.getRoleName() != null) ? user.getRoleName().trim().toUpperCase() : "";
-        if (!"LIBRARY".equals(role)) return "redirect:/login";
-        
+        if (user == null || user.getRoleName() == null || !user.getRoleName().trim().toUpperCase().contains("LIBRARY")) return "redirect:/login";
         return "library-dashboard"; 
     }
 
     @GetMapping("/student-liabilities-details")
     public String showStudentLiabilitiesDetails(Model model) {
-        try {
-            List<Student> allStudents = studentRepository.findAll();
-            List<LiabilityDetailsRow> details = new ArrayList<>();
+        List<Student> allStudents = studentRepository.findAll();
+        List<LiabilityDetailsRow> details = new ArrayList<>();
 
-            for (Student s : allStudents) {
-                if (s == null) continue;
-                
-                boolean isCleared = "CLEARED".equalsIgnoreCase(s.getAdviserClearance()) &&
-                                    "CLEARED".equalsIgnoreCase(s.getLabClearance()) &&
-                                    "CLEARED".equalsIgnoreCase(s.getSportsClearance()) &&
-                                    "CLEARED".equalsIgnoreCase(s.getGuidanceClearance()) &&
-                                    "CLEARED".equalsIgnoreCase(s.getFacilitiesClearance()) &&
-                                    "CLEARED".equalsIgnoreCase(s.getLibraryClearance());
+        for (Student s : allStudents) {
+            boolean isCleared = "CLEARED".equalsIgnoreCase(s.getAdviserClearance()) &&
+                                "CLEARED".equalsIgnoreCase(s.getLabClearance()) &&
+                                "CLEARED".equalsIgnoreCase(s.getSportsClearance()) &&
+                                "CLEARED".equalsIgnoreCase(s.getGuidanceClearance()) &&
+                                "CLEARED".equalsIgnoreCase(s.getFacilitiesClearance()) &&
+                                "CLEARED".equalsIgnoreCase(s.getLibraryClearance());
 
-                String overallStatus = isCleared ? "CLEARED" : "HAS UNRESOLVED LIABILITIES";
-                LiabilityDetailsRow row = new LiabilityDetailsRow(s.getName(), s.getLrn(), overallStatus);
+            String overallStatus = isCleared ? "CLEARED" : "HAS UNRESOLVED LIABILITIES";
+            LiabilityDetailsRow row = new LiabilityDetailsRow(s.getName(), s.getLrn(), overallStatus);
 
-                if (s.getLrn() != null) {
-                    List<GuidanceLog> guidLogs = guidanceLogRepository.findByLrnAndStatus(s.getLrn(), "UNSOLVED");
-                    for (GuidanceLog gl : guidLogs) {
-                        if (gl != null) {
-                            row.addOpenItem(new OpenLiabilityItem("Guidance Office", gl.getIncident(), LocalDateTime.now(), "UNSOLVED"));
-                        }
-                    }
-
-                    List<FacilityLog> facLogs = facilityLogRepository.findByLrnAndStatus(s.getLrn(), "UNSOLVED");
-                    for (FacilityLog fl : facLogs) {
-                        if (fl != null) {
-                            row.addOpenItem(new OpenLiabilityItem("Property & Facilities", fl.getFacility() + " - " + fl.getDescription(), LocalDateTime.now(), "UNSOLVED"));
-                        }
-                    }
-                }
-
-                details.add(row);
+            List<GuidanceLog> guidLogs = guidanceLogRepository.findByLrnAndStatus(s.getLrn(), "UNSOLVED");
+            for (GuidanceLog gl : guidLogs) {
+                row.addOpenItem(new OpenLiabilityItem("Guidance Office", gl.getIncident(), LocalDateTime.now(), "UNSOLVED"));
             }
 
-            model.addAttribute("details", details);
-        } catch (Exception e) {
-            e.printStackTrace();
-            model.addAttribute("details", new ArrayList<>());
-            model.addAttribute("error", "Failed to compile background liabilities details row elements.");
+            List<FacilityLog> facLogs = facilityLogRepository.findByLrnAndStatus(s.getLrn(), "UNSOLVED");
+            for (FacilityLog fl : facLogs) {
+                row.addOpenItem(new OpenLiabilityItem("Property & Facilities", fl.getFacility() + " - " + fl.getDescription(), LocalDateTime.now(), "UNSOLVED"));
+            }
+
+            details.add(row);
         }
+
+        model.addAttribute("details", details);
         return "student-liabilities-details";
     }
 
