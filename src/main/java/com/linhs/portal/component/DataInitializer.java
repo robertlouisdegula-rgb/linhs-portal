@@ -27,9 +27,29 @@ public class DataInitializer implements CommandLineRunner {
         this.passwordEncoder = passwordEncoder;
     }
 
+    /**
+     * Clears adviser test data that may cause collisions.
+     *
+     * WARNING: This is meant for dev/test only.
+     */
+    private void clearAdviserTestData() {
+        // Remove demo students that were seeded by this initializer.
+        // These are only students (not subjects/grades) so they won't affect admin-created subjects.
+        studentRepository.findAll()
+                .stream()
+                .filter(s -> {
+                    String sec = s.getSection();
+                    return sec != null && (sec.equalsIgnoreCase("Grade 12 - Azurite") || sec.equalsIgnoreCase("Grade 12-Azurite"));
+                })
+                .forEach(s -> studentRepository.deleteById(s.getLrn()));
+    }
+
     @Override
     public void run(String... args) throws Exception {
         System.out.println("🌱 Starting revised database seeding sequence...");
+
+        // Clear any dev/test adviser collisions before reseeding.
+        clearAdviserTestData();
 
         // 1. Seed Initial Mock Students
         String testLrn = "101234567890";
