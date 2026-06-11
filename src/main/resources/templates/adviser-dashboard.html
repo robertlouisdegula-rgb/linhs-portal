@@ -250,22 +250,22 @@
             
             <ul class="nav nav-tabs" id="dashboardTabs" role="tablist">
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="students-tab" data-bs-toggle="tab" data-bs-target="#students-pane" type="button" role="tab" aria-selected="true">
+                    <button class="nav-link active" id="students-tab" type="button" role="tab">
                         <i class="fa-solid fa-user-graduate me-2"></i>Student Roster
                     </button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="subjects-tab" data-bs-toggle="tab" data-bs-target="#subjects-pane" type="button" role="tab" aria-selected="false">
+                    <button class="nav-link" id="subjects-tab" type="button" role="tab">
                         <i class="fa-solid fa-book me-2"></i>Subjects Mapping
                     </button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="grading-tab" data-bs-toggle="tab" data-bs-target="#grading-pane" type="button" role="tab" aria-selected="false">
+                    <button class="nav-link" id="grading-tab" type="button" role="tab">
                         <i class="fa-solid fa-pen-to-square me-2"></i>Encode Grades
                     </button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="records-tab" data-bs-toggle="tab" data-bs-target="#records-pane" type="button" role="tab" aria-selected="false">
+                    <button class="nav-link" id="records-tab" type="button" role="tab">
                         <i class="fa-solid fa-folder-open me-2"></i>Master Records
                     </button>
                 </li>
@@ -524,6 +524,7 @@
     </th:block>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
     <script>
         function mapInputNamesToControllerRequirements(lrn) {
             const selectElement = document.getElementById('subjectSelect-' + lrn);
@@ -535,26 +536,55 @@
             return true;
         }
 
-        document.addEventListener("DOMContentLoaded", function() {
-            const urlParameters = new URLSearchParams(window.location.search);
-            let targetTabId = urlParameters.get('tab');
-            
-            if (!targetTabId) targetTabId = localStorage.getItem('adviserActiveTab');
-            if (!targetTabId || !['students', 'subjects', 'grading', 'records'].includes(targetTabId)) {
-                targetTabId = 'students';
-            }
-            
-            const tabElementToActivate = document.getElementById(targetTabId + '-tab');
-            if (tabElementToActivate) {
-                const bsTabInstance = new bootstrap.Tab(tabElementToActivate);
-                bsTabInstance.show();
-            }
+        // The EXACT tab logic you confirmed worked in your original code
+        function activateTab(tabId) {
+            try {
+                // Hide all panes
+                const panes = document.querySelectorAll('.tab-pane');
+                panes.forEach(p => p.classList.remove('show', 'active'));
 
-            document.querySelectorAll('button[data-bs-toggle="tab"]').forEach(btn => {
-                btn.addEventListener('shown.bs.tab', function (event) {
-                    localStorage.setItem('adviserActiveTab', event.target.id.replace('-tab', ''));
+                // Deactivate all tabs
+                const tabs = document.querySelectorAll('.nav-link');
+                tabs.forEach(t => t.classList.remove('active'));
+
+                // Activate target
+                const targetPane = document.getElementById(tabId + '-pane');
+                const targetTab = document.getElementById(tabId + '-tab');
+
+                if (targetTab && targetPane) {
+                    targetTab.classList.add('active');
+                    targetPane.classList.add('show', 'active');
+                    localStorage.setItem('adviserPersistenceTab', tabId);
+                }
+            } catch(e) { console.error(e); }
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            try {
+                // Check URL for redirect target (e.g. ?tab=subjects)
+                const urlParameters = new URLSearchParams(window.location.search);
+                let targetTab = urlParameters.get('tab');
+                
+                // Fallback to local storage or default to students view
+                if (!targetTab) targetTab = localStorage.getItem('adviserPersistenceTab');
+                if (!targetTab || !['students', 'subjects', 'grading', 'records'].includes(targetTab)) {
+                    targetTab = 'students';
+                }
+                
+                // Initialize view state
+                activateTab(targetTab);
+
+                // Bind pure click events to tab buttons manually
+                const tabButtons = document.querySelectorAll('.nav-tabs .nav-link');
+                tabButtons.forEach(btn => {
+                    btn.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        // Extract tab name from button ID
+                        const tabId = this.id.replace('-tab', '');
+                        activateTab(tabId);
+                    });
                 });
-            });
+            } catch(e) { console.error(e); }
         });
     </script>
 </body>
