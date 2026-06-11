@@ -265,7 +265,7 @@
     <div class="tracker-card">
 
         <form action="/clearance/track" method="GET" class="search-form">
-            <input type="text" name="lrn" class="search-input" placeholder="Enter 12-Digit Student LRN Identification code..." th:value="${student != null ? student.lrn : ''}" pattern="\d+" required autocomplete="off">
+            <input type="text" name="lrn" class="search-input" placeholder="Enter 12-Digit Student LRN Identification code..." th:value="${student != null ? student?.lrn : ''}" pattern="\d+" required autocomplete="off">
             <button type="submit" class="search-btn">Query Status</button>
         </form>
 
@@ -291,7 +291,7 @@
                     <div class="dept-name">Class Adviser</div>
                     <div class="status-badge" 
                          th:classappend="${student?.adviserClearance == 'CLEARED' ? 'cleared' : 'pending'}"
-                         th:text="${student?.adviserClearance != null ? student.adviserClearance : 'PENDING'}">PENDING</div>
+                         th:text="${student?.adviserClearance != null ? student?.adviserClearance : 'PENDING'}">PENDING</div>
                 </div>
 
                 <div class="department-card">
@@ -299,7 +299,7 @@
                     <div class="dept-name">Laboratory Management</div>
                     <div class="status-badge" 
                          th:classappend="${student?.labClearance == 'CLEARED' ? 'cleared' : 'pending'}"
-                         th:text="${student?.labClearance != null ? student.labClearance : 'PENDING'}">PENDING</div>
+                         th:text="${student?.labClearance != null ? student?.labClearance : 'PENDING'}">PENDING</div>
                 </div>
 
                 <div class="department-card">
@@ -307,7 +307,7 @@
                     <div class="dept-name">School Library</div>
                     <div class="status-badge" 
                          th:classappend="${student?.libraryClearance == 'CLEARED' ? 'cleared' : 'pending'}"
-                         th:text="${student?.libraryClearance != null ? student.libraryClearance : 'PENDING'}">PENDING</div>
+                         th:text="${student?.libraryClearance != null ? student?.libraryClearance : 'PENDING'}">PENDING</div>
                 </div>
 
                 <div class="department-card">
@@ -315,7 +315,7 @@
                     <div class="dept-name">Sports Department</div>
                     <div class="status-badge" 
                          th:classappend="${student?.sportsClearance == 'CLEARED' ? 'cleared' : 'pending'}"
-                         th:text="${student?.sportsClearance != null ? student.sportsClearance : 'PENDING'}">PENDING</div>
+                         th:text="${student?.sportsClearance != null ? student?.sportsClearance : 'PENDING'}">PENDING</div>
                 </div>
 
                 <div class="department-card">
@@ -323,7 +323,7 @@
                     <div class="dept-name">Guidance Office</div>
                     <div class="status-badge" 
                          th:classappend="${student?.guidanceClearance == 'CLEARED' ? 'cleared' : 'pending'}"
-                         th:text="${student?.guidanceClearance != null ? student.guidanceClearance : 'PENDING'}">PENDING</div>
+                         th:text="${student?.guidanceClearance != null ? student?.guidanceClearance : 'PENDING'}">PENDING</div>
                 </div>
 
                 <div class="department-card">
@@ -331,7 +331,7 @@
                     <div class="dept-name">Facilities & Property</div>
                     <div class="status-badge" 
                          th:classappend="${student?.facilitiesClearance == 'CLEARED' ? 'cleared' : 'pending'}"
-                         th:text="${student?.facilitiesClearance != null ? student.facilitiesClearance : 'PENDING'}">PENDING</div>
+                         th:text="${student?.facilitiesClearance != null ? student?.facilitiesClearance : 'PENDING'}">PENDING</div>
                 </div>
             </div>
 
@@ -342,12 +342,12 @@
                 
                 <div th:each="gItem : ${unresolvedGuidance}" class="liability-box">
                     <div class="liability-title">⚖️ Guidance Accountability Hold:</div>
-                    <div th:text="${'Incident/Violation: ' + gItem?.incident}">Details</div>
+                    <div th:text="${'Incident/Violation: ' + (gItem?.incident ?: 'Unspecified')}">Details</div>
                 </div>
                 
                 <div th:each="fItem : ${unresolvedFacilities}" class="liability-box">
                     <div class="liability-title">🏢 Facilities & Property Damage Hold:</div>
-                    <div th:text="${fItem?.facility + ' - ' + fItem?.description}">Details</div>
+                    <div th:text="${(fItem?.facility ?: 'Unknown Facility') + ' - ' + (fItem?.description ?: 'No description provided')}">Details</div>
                 </div>
             </div>
 
