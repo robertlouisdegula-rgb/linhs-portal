@@ -192,7 +192,7 @@ public class PageController {
 
     @GetMapping("/requests")
     public String showRequests() {
-        return "requests";
+        return "request-doc";
     }
 
     @GetMapping("/clearance-tracker")
