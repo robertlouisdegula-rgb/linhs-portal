@@ -836,31 +836,29 @@ public class PageController {
     @PostMapping("/sports/borrow/add")
     public String addSportsBorrow(
             @RequestParam("studentLrn") String studentLrn,
-            @RequestParam("equipmentName") String equipmentName) { // Removed the quantity parameter
+            @RequestParam("equipmentName") String equipmentName) { 
         try {
+            // SECURITY CHECK: Verify the student actually exists first!
+            java.util.Optional<Student> studentOpt = studentRepository.findById(studentLrn);
+            
+            if (studentOpt.isEmpty()) {
+                // If the LRN is fake/missing, reject the loan immediately
+                return "redirect:/sports-dashboard?tab=borrowed&error=Loan+Failed:+Student+LRN+not+found+in+database.";
+            }
+
+            // If the student exists, proceed with logging the borrow record
             BorrowRecord record = new BorrowRecord();
             record.setStudentLrn(studentLrn);
-            
-            // FIXED: Using setItemName instead of setEquipmentName
             record.setItemName(equipmentName); 
-            
-            // FIXED: Using setBorrowedAt instead of setBorrowDate
             record.setBorrowedAt(java.time.LocalDateTime.now()); 
-            
             record.setStatus("BORROWED");
             
             borrowRecordRepository.save(record);
 
-            // Automatically flag the student's PE clearance as pending
-            java.util.Optional<Student> studentOpt = studentRepository.findById(studentLrn);
-            if (studentOpt.isPresent()) {
-                Student s = studentOpt.get();
-                
-                // FIXED: Using setSportsClearance instead of setPeClearance
-                s.setSportsClearance("PENDING"); 
-                
-                studentRepository.save(s);
-            }
+            // Automatically flag the verified student's PE clearance as pending
+            Student s = studentOpt.get();
+            s.setSportsClearance("PENDING"); 
+            studentRepository.save(s);
             
             return "redirect:/sports-dashboard?tab=borrowed&success=Equipment+loan+authorized";
         } catch (Exception e) {
@@ -888,6 +886,18 @@ public class PageController {
             return "redirect:/sports-dashboard?tab=inventory&success=Equipment+updated+successfully";
         }
         return "redirect:/sports-dashboard?tab=inventory&error=Equipment+not+found";
+    }
+
+    @PostMapping("/sports/equipment/delete")
+    public String deleteSportsEquipment(@RequestParam("id") Long id) {
+        try {
+            // Delete the item from the database
+            sportsEquipmentRepository.deleteById(id);
+            return "redirect:/sports-dashboard?tab=inventory&success=Equipment+deleted+successfully";
+        } catch (Exception e) {
+            // If the item can't be deleted (e.g., it is linked to an active borrow record), catch the error safely
+            return "redirect:/sports-dashboard?tab=inventory&error=Cannot+delete+equipment.+Please+ensure+all+borrowed+units+are+returned+first.";
+        }
     }
 
     @PostMapping("/sports/liability/clear")

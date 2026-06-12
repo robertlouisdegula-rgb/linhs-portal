@@ -290,6 +290,13 @@
                                             onclick="openEditEquipmentModal(this)">
                                         <i class="fas fa-edit"></i>
                                     </button>
+
+                                    <form th:action="@{/sports/equipment/delete}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to permanently delete this equipment from the inventory?');">
+                                        <input type="hidden" name="id" th:value="${item.id}">
+                                        <button type="submit" class="btn btn-sm" style="color: var(--danger-red); border: 1px solid var(--danger-red); background: transparent;">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
                                 </td>
                             </tr>
                         </tbody>
@@ -557,6 +564,21 @@
 
             new bootstrap.Modal(document.getElementById('editEquipmentModal')).show();
         }
+
+        // Auto-dismiss alerts after 4 seconds
+        document.addEventListener("DOMContentLoaded", function() {
+            setTimeout(function() {
+                const alerts = document.querySelectorAll('.alert');
+                alerts.forEach(alert => {
+                    // Smoothly fade out the notification
+                    alert.style.transition = 'opacity 0.5s ease-out';
+                    alert.style.opacity = '0';
+                    
+                    // Remove it completely from the page after it fades
+                    setTimeout(() => alert.remove(), 500);
+                });
+            }, 4000); // 4000 milliseconds = 4 seconds
+        });
     </script>
 </body>
 </html>
