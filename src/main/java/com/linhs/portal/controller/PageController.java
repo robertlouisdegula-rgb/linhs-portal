@@ -126,7 +126,8 @@ public class PageController {
 
             String role = (user.getRoleName() != null) ? user.getRoleName().trim().toUpperCase() : "";
 
-            if (role.contains("ADMIN") && !role.contains("FACILITIES") && !role.contains("SPORTS")) {
+            // Added && !role.contains("LAB")
+            if (role.contains("ADMIN") && !role.contains("FACILITIES") && !role.contains("SPORTS") && !role.contains("LAB")) {
                 return "redirect:/admin-dashboard";
             } else if (role.contains("ADVISER") || role.contains("TEACHER")) {
                 return "redirect:/teacher-portal";
@@ -528,7 +529,7 @@ public class PageController {
     public String showRequests() {
         return "request-doc";
     }
-    
+
     @GetMapping("/request-document")
     public String showRequestDocumentForm() {
         return "request-doc";
