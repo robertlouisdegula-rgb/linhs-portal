@@ -262,10 +262,10 @@
                     <table class="table">
                         <thead>
                             <tr>
-                                <th>Item Code</th>
+                                <th>Item ID</th>
                                 <th>Equipment Name</th>
                                 <th>Total Stock</th>
-                                <th>Condition</th>
+                                <th>Status</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -277,10 +277,10 @@
                                 </td>
                             </tr>
                             <tr th:each="item : ${sportsEquipments}">
-                                <td th:text="${item.code}" style="color: var(--text-light-grey); font-family: monospace;">PE-001</td>
-                                <td th:text="${item.name}" style="font-weight: 500;">Molten Basketball (Size 7)</td>
+                                <td th:text="${item.id != null ? 'PE-' + item.id : 'PE-NEW'}" style="color: var(--text-light-grey); font-family: monospace;">PE-001</td>
+                                <td th:text="${item.equipmentName}" style="font-weight: 500;">Molten Basketball</td>
                                 <td th:text="${item.quantity}">10</td>
-                                <td><span class="status-badge status-active">Good Condition</span></td>
+                                <td><span class="status-badge status-active" th:text="${item.status != null ? item.status : 'AVAILABLE'}">AVAILABLE</span></td>
                                 <td>
                                     <button class="btn btn-sm btn-outline-secondary text-light border-secondary"><i class="fas fa-edit"></i></button>
                                 </td>
@@ -306,23 +306,21 @@
                             <tr>
                                 <th>Student Details</th>
                                 <th>Item Borrowed</th>
-                                <th>Qty</th>
                                 <th>Date Borrowed</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr th:if="${#lists.isEmpty(activeBorrows)}">
-                                <td colspan="5" class="empty-state">No active sports equipment borrows recorded.</td>
+                                <td colspan="4" class="empty-state">No active sports equipment loans recorded.</td>
                             </tr>
                             <tr th:each="borrow : ${activeBorrows}">
                                 <td>
-                                    <div style="font-weight: 500; color: white;" th:text="${borrow.studentName}">John Doe</div>
+                                    <div style="font-weight: 500; color: white;" th:text="${borrow.studentName != null ? borrow.studentName : 'Unknown Student'}">John Doe</div>
                                     <div style="font-size: 0.85rem; color: var(--text-light-grey);" th:text="${borrow.studentLrn}">123456789012</div>
                                 </td>
-                                <td th:text="${borrow.equipmentName}">Badminton Racket</td>
-                                <td th:text="${borrow.quantity}">2</td>
-                                <td th:text="${borrow.borrowDate}">2024-01-15</td>
+                                <td th:text="${borrow.itemName}">Badminton Racket</td>
+                                <td th:text="${borrow.borrowedAt != null ? #temporals.format(borrow.borrowedAt, 'yyyy-MM-dd') : 'No Date'}">2024-01-15</td>
                                 <td>
                                     <form th:action="@{/sports/borrow/return}" method="POST" class="d-inline">
                                         <input type="hidden" name="id" th:value="${borrow.id}">
@@ -403,16 +401,16 @@
                 <form action="/sports/equipment/add" method="POST">
                     <div class="modal-body">
                         <div class="mb-3">
-                            <label class="form-label" style="color: var(--text-light-grey);">Item Code</label>
-                            <input type="text" name="code" class="form-control" placeholder="e.g. PE-001" required>
-                        </div>
-                        <div class="mb-3">
                             <label class="form-label" style="color: var(--text-light-grey);">Equipment Name</label>
-                            <input type="text" name="name" class="form-control" placeholder="e.g. Molten Volleyball" required>
+                            <input type="text" name="equipmentName" class="form-control" placeholder="e.g. Molten Volleyball" required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label" style="color: var(--text-light-grey);">Initial Quantity</label>
                             <input type="number" min="1" name="quantity" class="form-control" placeholder="0" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" style="color: var(--text-light-grey);">Initial Status</label>
+                            <input type="text" name="status" class="form-control" value="AVAILABLE" required>
                         </div>
                     </div>
                     <div class="modal-footer">
