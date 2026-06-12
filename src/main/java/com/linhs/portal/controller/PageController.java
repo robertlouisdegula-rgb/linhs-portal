@@ -1,13 +1,6 @@
 package com.linhs.portal.controller;
 
 // Core Java & Spring Imports
-import jakarta.servlet.http.HttpSession;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -16,23 +9,26 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-// Application Model Imports
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 import com.linhs.portal.model.Announcement;
-import com.linhs.portal.model.BorrowRecord;
 import com.linhs.portal.model.ClinicLog;
 import com.linhs.portal.model.DocumentRequest;
 import com.linhs.portal.model.FacilityLog;
 import com.linhs.portal.model.Gallery;
 import com.linhs.portal.model.GuidanceLog;
-import com.linhs.portal.model.LibraryBorrowRecord;
 import com.linhs.portal.model.ResourceHub;
-import com.linhs.portal.model.SportsEquipment;
 import com.linhs.portal.model.Student;
 import com.linhs.portal.model.StudentGrade;
 import com.linhs.portal.model.Subject;
 import com.linhs.portal.model.User;
-
-// Application Repository Imports
 import com.linhs.portal.repository.AnnouncementRepository;
 import com.linhs.portal.repository.BorrowRecordRepository;
 import com.linhs.portal.repository.ClinicLogRepository;
@@ -48,6 +44,8 @@ import com.linhs.portal.repository.StudentRepository;
 import com.linhs.portal.repository.SubjectRepository;
 import com.linhs.portal.repository.UserRepository;
 import com.linhs.portal.service.AuthService;
+
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class PageController {
@@ -144,7 +142,7 @@ public class PageController {
                 return "redirect:/lab-dashboard";
             } else if (role.contains("SPORTS")) {
                 return "redirect:/sports-dashboard";
-            } else if (role.contains("LIBRARY")) {
+            } else if (role.contains("LIBRARIAN")) {
                 return "redirect:/library-dashboard";
             }
 
@@ -189,7 +187,7 @@ public class PageController {
 
     @GetMapping("/clearance/lookup")
     public String showClearanceLookup() {
-        return "clearance-tracker";
+        return "clearance-status";
     }
 
     @GetMapping("/requests")
@@ -199,7 +197,7 @@ public class PageController {
 
     @GetMapping("/clearance-tracker")
     public String showClearanceTrackerForm() {
-        return "clearance-tracker";
+        return "clearance-status";
     }
 
     @GetMapping("/clearance/track")
@@ -533,14 +531,14 @@ public class PageController {
 
     @GetMapping("/request-document")
     public String showRequestDocumentForm() {
-        return "request-document";
+        return "request-doc";
     }
 
     @PostMapping("/request-document/submit")
     public String submitDocumentRequest(@ModelAttribute DocumentRequest req) {
         req.setStatus("PENDING");
         documentRequestRepository.save(req);
-        return "redirect:/request-document?success=Request+Submitted";
+        return "redirect:/request-doc?success=Request+Submitted";
     }
 
     @GetMapping("/registrar-dashboard")

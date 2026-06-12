@@ -1,16 +1,16 @@
 package com.linhs.portal.component;
 
-import com.linhs.portal.model.Student;
-import com.linhs.portal.model.User;
-import com.linhs.portal.repository.StudentRepository;
-import com.linhs.portal.repository.UserRepository;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Optional;
+
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import java.util.Map;
-import java.util.LinkedHashMap;
-import java.util.Optional;
+import com.linhs.portal.model.User;
+import com.linhs.portal.repository.StudentRepository;
+import com.linhs.portal.repository.UserRepository;
 
 @Component
 public class DataInitializer implements CommandLineRunner {
