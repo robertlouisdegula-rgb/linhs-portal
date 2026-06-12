@@ -139,7 +139,7 @@ public class PageController {
             String role = (user.getRoleName() != null) ? user.getRoleName().trim().toUpperCase() : "";
 
             // Added && !role.contains("LAB")
-            if (role.contains("ADMIN") && !role.contains("FACILITIES") && !role.contains("SPORTS") && !role.contains("LAB") && !role.contains("LIBRARY")) {
+            if (role.contains("ADMIN") && !role.contains("FACILITIES") && !role.contains("SPORTS") && !role.contains("LAB")) {
                 return "redirect:/admin-dashboard";
             } else if (role.contains("ADVISER") || role.contains("TEACHER")) {
                 return "redirect:/teacher-portal";
@@ -155,7 +155,7 @@ public class PageController {
                 return "redirect:/lab-dashboard";
             } else if (role.contains("SPORTS")) {
                 return "redirect:/sports-dashboard";
-            } else if (role.contains("LIBRARIAN")) {
+            } else if (role.contains("LIBRARIAN") || role.contains("LIBRARY")) {
                 return "redirect:/library-dashboard";
             }
 
