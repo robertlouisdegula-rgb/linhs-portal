@@ -139,7 +139,7 @@ public class PageController {
             String role = (user.getRoleName() != null) ? user.getRoleName().trim().toUpperCase() : "";
 
             // Added && !role.contains("LAB")
-            if (role.contains("ADMIN") && !role.contains("FACILITIES") && !role.contains("SPORTS") && !role.contains("LAB")) {
+            if (role.contains("ADMIN") && !role.contains("FACILITIES") && !role.contains("SPORTS") && !role.contains("LAB") && (role.contains("LIBRARIAN") || role.contains("LIBRARY"))) {
                 return "redirect:/admin-dashboard";
             } else if (role.contains("ADVISER") || role.contains("TEACHER")) {
                 return "redirect:/teacher-portal";
