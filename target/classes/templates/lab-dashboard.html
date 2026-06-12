@@ -10,14 +10,20 @@
     <style>
         /* Shared Unified Theme Palette */
         :root {
-            --dark-bg: #09090b;       
-            --panel-bg: #09090b;      /* SWAPPED: Was #141417 */
+            /* 1. Main page background is now lighter */
+            --dark-bg: #141417;       
+            
+            /* 2. Panels/Cards are now darker (former input color) */
+            --panel-bg: #09090b;      
+            
+            /* 3. Inputs are now lighter (former panel color) */
+            --input-bg: #141417;      
+            
             --border-color: #2d2d30;  
             --emerald-green: #10b981;    
             --emerald-hover: #059669;    
             --text-main: #ffffff;     
             --text-light-grey: #e4e4e7;
-            --input-bg: #141417;      /* SWAPPED: Was #09090b */
             --danger-red: #ef4444;
             --warning-yellow: #f59e0b;
         }
@@ -449,7 +455,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-primary">Authorize Loan</button>
+                        <button type="submit" class="btn btn-primary">Authorize Borrow</button>
                     </div>
                 </form>
             </div>
