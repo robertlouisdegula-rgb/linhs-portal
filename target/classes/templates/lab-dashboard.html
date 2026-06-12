@@ -182,16 +182,22 @@
         }
 
         .form-control {
-            background-color: var(--input-bg);
-            border: 1px solid var(--border-color);
-            color: var(--text-main);
+            background-color: var(--input-bg) !important;
+            border: 1px solid var(--border-color) !important;
+            color: var(--text-main) !important;
+        }
+
+        /* This specifically targets the grey placeholder text */
+        .form-control::placeholder {
+            color: var(--text-light-grey) !important;
+            opacity: 0.7;
         }
 
         .form-control:focus {
-            background-color: var(--input-bg);
-            color: var(--text-main);
-            border-color: var(--emerald-green);
-            box-shadow: 0 0 0 0.25rem rgba(16, 185, 129, 0.25);
+            background-color: var(--input-bg) !important;
+            color: var(--text-main) !important;
+            border-color: var(--emerald-green) !important;
+            box-shadow: 0 0 0 0.25rem rgba(16, 185, 129, 0.25) !important;
         }
 
         .status-badge {
@@ -325,7 +331,7 @@
                         </thead>
                         <tbody>
                             <tr th:if="${#lists.isEmpty(activeBorrows)}">
-                                <td colspan="5" class="empty-state">No active equipment loans recorded.</td>
+                                <td colspan="5" class="empty-state">No active equipment borrows recorded.</td>
                             </tr>
                             <tr th:each="borrow : ${activeBorrows}">
                                 <td>
@@ -440,7 +446,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title text-white"><i class="fas fa-hand-holding me-2"></i> Log Equipment Loan</h5>
+                    <h5 class="modal-title text-white"><i class="fas fa-hand-holding me-2"></i> Log Equipment Borrow</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <form action="/lab/borrow/add" method="POST">
@@ -460,7 +466,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-primary">Authorize Loan</button>
+                        <button type="submit" class="btn btn-primary">Authorize Borrow</button>
                     </div>
                 </form>
             </div>

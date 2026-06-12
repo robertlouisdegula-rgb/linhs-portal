@@ -4,244 +4,511 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sports Admin Dashboard | LINHS Portal</title>
+    <title>Sports Dashboard | LINHS Portal</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* INVERTED THEME PALETTE */
         :root {
-            --dark-bg: #0d0d0d;
-            --panel-bg: #161616;
-            --border-color: #2a2a2a;
-            --mint-green: #20c997;
-            --mint-hover: #1aa078;
-            --text-main: #ffffff;
-            /* Crisp absolute white */
-            --text-muted: #b5b5b5;
-            /* Lightened from dark gray to prevent fading */
-            --input-bg: #0a0a0a;
-            --accent-orange: #ff9800;
+            --dark-bg: #141417;       
+            --panel-bg: #09090b;      
+            --input-bg: #141417;      
+            
+            --border-color: #2d2d30;  
+            --emerald-green: #10b981;    
+            --emerald-hover: #059669;    
+            --text-main: #ffffff;     
+            --text-light-grey: #e4e4e7;
+            --danger-red: #ef4444;
+            --warning-yellow: #f59e0b;
         }
 
         body {
             background-color: var(--dark-bg);
             color: var(--text-main);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            min-height: 100vh;
         }
 
-        .navbar {
-            background-color: var(--dark-bg) !important;
+        .top-navbar {
+            background-color: var(--panel-bg);
             border-bottom: 1px solid var(--border-color);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--emerald-green);
         }
 
         .dashboard-container {
+            padding: 30px;
             max-width: 1400px;
             margin: 0 auto;
-            padding: 2rem 1rem;
         }
 
-        .panel-card {
+        .welcome-header {
+            margin-bottom: 30px;
+        }
+
+        .welcome-header h2 {
+            font-weight: 700;
+            font-size: 2rem;
+            margin-bottom: 5px;
+        }
+
+        .welcome-header p {
+            color: var(--text-light-grey);
+            font-size: 1rem;
+        }
+
+        /* Nav Tabs */
+        .nav-tabs {
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 25px;
+        }
+
+        .nav-tabs .nav-link {
+            color: var(--text-light-grey);
+            border: none;
+            border-bottom: 2px solid transparent;
+            font-weight: 600;
+            padding: 12px 20px;
+            cursor: pointer;
+            background: transparent;
+        }
+
+        .nav-tabs .nav-link:hover {
+            color: var(--text-main);
+            border-color: transparent;
+        }
+
+        .nav-tabs .nav-link.active {
+            color: var(--emerald-green) !important;
+            background-color: transparent !important;
+            border-bottom: 2px solid var(--emerald-green) !important;
+        }
+
+        .tab-content {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.2s ease-in-out;
+        }
+
+        .tab-content.show.active {
+            display: block;
+            opacity: 1;
+        }
+
+        /* Custom Cards */
+        .custom-card {
             background-color: var(--panel-bg);
             border: 1px solid var(--border-color);
             border-radius: 12px;
-            padding: 1.5rem;
-            margin-bottom: 2rem;
+            padding: 24px;
+            margin-bottom: 24px;
         }
 
-        .form-control,
-        .form-select {
-            background-color: var(--input-bg);
-            border: 1px solid var(--border-color);
-            color: var(--text-main) !important;
+        .card-header-flex {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
         }
 
-        .form-control:focus,
-        .form-select:focus {
-            background-color: var(--input-bg);
-            border-color: var(--mint-green);
-            color: var(--text-main) !important;
-            box-shadow: 0 0 0 0.25rem rgba(32, 201, 151, 0.25);
-        }
-
-        /* Forces clean dropdown background and white name text */
-        .form-select option {
-            background-color: var(--panel-bg) !important;
-            color: var(--text-main) !important;
-        }
-
-        .btn-mint {
-            background-color: var(--mint-green);
-            color: #fff !important;
+        .card-title {
+            font-size: 1.2rem;
             font-weight: 600;
+            margin: 0;
         }
 
-        .btn-mint:hover {
-            background-color: var(--mint-hover);
-            color: #fff !important;
-        }
-
+        /* Tables */
         .table {
-            color: var(--text-main);
+            color: var(--text-main) !important;
             border-color: var(--border-color);
+            margin-bottom: 0;
         }
 
         .table th {
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-light-grey) !important;
             font-weight: 600;
-            text-transform: uppercase;
-            font-size: 0.8rem;
-            letter-spacing: 0.5px;
-            color: var(--text-muted) !important;
-            border-bottom-width: 2px;
+            padding: 12px 16px;
+            background-color: transparent !important;
         }
 
-        .table tbody td {
+        .table td {
+            border-bottom: 1px solid var(--border-color);
+            padding: 16px;
+            vertical-align: middle;
+            background-color: transparent !important;
             color: var(--text-main) !important;
         }
 
-        .text-muted {
-            color: var(--text-muted) !important;
-        }
-
-        .section-btn {
-            background: none;
-            border: 1px solid var(--border-color);
-            color: var(--text-muted);
-            padding: 0.5rem 1rem;
+        /* Buttons */
+        .btn-primary {
+            background-color: var(--emerald-green);
+            border-color: var(--emerald-green);
+            color: white;
+            font-weight: 500;
+            padding: 8px 16px;
             border-radius: 6px;
-            transition: all 0.2s;
         }
 
-        .section-btn.active {
-            background-color: rgba(32, 201, 151, 0.1);
-            border-color: var(--mint-green);
-            color: var(--mint-green);
+        .btn-primary:hover {
+            background-color: var(--emerald-hover);
+            border-color: var(--emerald-hover);
         }
+
+        .form-control {
+            background-color: var(--input-bg) !important;
+            border: 1px solid var(--border-color) !important;
+            color: var(--text-main) !important;
+        }
+
+        .form-control::placeholder {
+            color: var(--text-light-grey) !important;
+            opacity: 0.7;
+        }
+
+        .form-control:focus {
+            background-color: var(--input-bg) !important;
+            color: var(--text-main) !important;
+            border-color: var(--emerald-green) !important;
+            box-shadow: 0 0 0 0.25rem rgba(16, 185, 129, 0.25) !important;
+        }
+
+        .status-badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        .status-active { background-color: rgba(16, 185, 129, 0.15); color: #10b981; }
+        .status-danger { background-color: rgba(239, 68, 68, 0.15); color: var(--danger-red); }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-light-grey);
+        }
+
+        .modal-content {
+            background-color: var(--panel-bg);
+            border: 1px solid var(--border-color);
+        }
+        .modal-header { border-bottom: 1px solid var(--border-color); }
+        .modal-footer { border-top: 1px solid var(--border-color); }
+        .btn-close { filter: invert(1) grayscale(100%) brightness(200%); }
     </style>
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container-fluid px-4">
-            <a class="navbar-brand d-flex align-items-center gap-2" href="#">
-                <i class="fas fa-running text-danger fs-4"></i>
-                <span class="fw-bold tracking-tight">LINHS <span
-                        class="text-danger text-xs font-mono">SPORTS</span></span>
-            </a>
-            <div class="d-flex align-items-center gap-3">
-                <div class="text-end d-none d-md-block">
-                    <div class="text-sm font-semibold text-white" th:text="${adminName}">Sports Admin</div>
-                    <div class="text-xs text-muted">Athletic Director & Vault Officer</div>
-                </div>
-                <a href="/logout" class="btn btn-sm btn-outline-danger"><i class="fas fa-sign-out-alt"></i></a>
-            </div>
-        </div>
-    </nav>
+
+    <div class="top-navbar">
+        <div class="brand-title"><i class="fas fa-basketball-ball me-2"></i>LINHS Athletics Portal</div>
+        <a href="/logout" class="btn btn-outline-light btn-sm"><i class="fas fa-sign-out-alt me-2"></i>Sign Out</a>
+    </div>
 
     <div class="dashboard-container">
-        <div th:if="${successMessage}"
-            class="alert alert-success alert-dismissible fade show bg-opacity-10 text-success border border-success"
-            role="alert">
-            <i class="fas fa-check-circle me-2"></i><span th:text="${successMessage}">Vault configuration records
-                updated.</span>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        
+        <div th:if="${param.success}" class="alert alert-success" role="alert" style="background-color: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid #10b981;">
+            <i class="fas fa-check-circle me-2"></i> <span th:text="${param.success}">Success Message</span>
+        </div>
+        <div th:if="${param.error}" class="alert alert-danger" role="alert" style="background-color: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid #ef4444;">
+            <i class="fas fa-exclamation-triangle me-2"></i> <span th:text="${param.error}">Error Message</span>
         </div>
 
-        <div class="row g-4">
-            <div class="col-lg-4">
-                <div class="panel-card">
-                    <h5 class="mb-4 font-bold text-lg d-flex align-items-center gap-2"
-                        style="color: var(--mint-green);">
-                        <i class="fas fa-plus-circle"></i> Log Vault Borrow Record
-                    </h5>
-                    <form th:action="@{/sports/log}" method="POST">
-                        <input type="hidden" name="studentName" class="hiddenStudentName" value="" />
-                        <div class="mb-3">
-                            <label class="form-label text-xs font-semibold text-muted">Select Target Accountable
-                                Student</label>
-                            <select name="lrn" class="form-select select2-setup" onchange="updateHiddenName(this)"
-                                required>
-                                <option value="" disabled selected style="color: var(--text-muted);">Choose student
-                                    registry...</option>
-                                <option th:each="student : ${students}" th:value="${student.lrn}"
-                                    th:text="${student.name} + ' (' + ${student.lrn} + ')'"></option>
-                            </select>
-                        </div>
-                        <div class="mb-4">
-                            <label class="form-label text-xs font-semibold text-muted">Athletic Vault Equipment Borrow
-                                Records</label>
-                            <textarea name="equipmentDetails" class="form-control" rows="4"
-                                placeholder="Specify athletic equipment details, uniform pieces, equipment serials, or vault inventory holdings..."
-                                required></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-mint w-100 py-2"><i class="fas fa-running me-1"></i> Log
-                            Vault Borrow</button>
-                    </form>
+        <div class="welcome-header">
+            <h2><span th:text="${'Welcome, ' + (session.user != null ? session.user.name : 'Sports Admin')}">Welcome, Sports Admin</span></h2>
+            <p>Physical Education Inventory & Sports Clearance</p>
+        </div>
+
+        <ul class="nav nav-tabs" id="sportsTabs" role="tablist">
+            <li class="nav-item">
+                <button class="nav-link active" onclick="openPanel('inventory')" id="tab-inventory">
+                    <i class="fas fa-futbol me-2"></i> Sports Inventory
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" onclick="openPanel('borrowed')" id="tab-borrowed">
+                    <i class="fas fa-clipboard-list me-2"></i> Active Borrows
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link text-danger" onclick="openPanel('liabilities')" id="tab-liabilities">
+                    <i class="fas fa-exclamation-circle me-2"></i> P.E. Liabilities
+                </button>
+            </li>
+        </ul>
+
+        <div id="inventory" class="tab-content show active">
+            <div class="custom-card">
+                <div class="card-header-flex">
+                    <h3 class="card-title">Sports Equipment & Gear</h3>
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addEquipmentModal">
+                        <i class="fas fa-plus me-2"></i> Register Equipment
+                    </button>
+                </div>
+                
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Item Code</th>
+                                <th>Equipment Name</th>
+                                <th>Total Stock</th>
+                                <th>Condition</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:if="${#lists.isEmpty(sportsEquipments)}">
+                                <td colspan="5" class="empty-state">
+                                    <i class="fas fa-volleyball-ball mb-3" style="font-size: 2.5rem; opacity: 0.5;"></i><br>
+                                    Sports inventory is currently empty.
+                                </td>
+                            </tr>
+                            <tr th:each="item : ${sportsEquipments}">
+                                <td th:text="${item.code}" style="color: var(--text-light-grey); font-family: monospace;">PE-001</td>
+                                <td th:text="${item.name}" style="font-weight: 500;">Molten Basketball (Size 7)</td>
+                                <td th:text="${item.quantity}">10</td>
+                                <td><span class="status-badge status-active">Good Condition</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-secondary text-light border-secondary"><i class="fas fa-edit"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
+        </div>
 
-            <div class="col-lg-8">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h4 class="m-0 fw-bold tracking-tight text-white">Active Vault Borrow Accountabilities</h4>
-                    <div class="d-flex gap-2">
-                        <button class="section-btn active" id="btn-active" onclick="showSection('active')">Outstanding
-                            Borrows</button>
+        <div id="borrowed" class="tab-content">
+            <div class="custom-card">
+                <div class="card-header-flex">
+                    <h3 class="card-title">Currently Borrowed Gear</h3>
+                    <button class="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#logBorrowModal">
+                        <i class="fas fa-hand-holding me-2"></i> Log New Borrow
+                    </button>
+                </div>
+                
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Student Details</th>
+                                <th>Item Borrowed</th>
+                                <th>Qty</th>
+                                <th>Date Borrowed</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:if="${#lists.isEmpty(activeBorrows)}">
+                                <td colspan="5" class="empty-state">No active sports equipment loans recorded.</td>
+                            </tr>
+                            <tr th:each="borrow : ${activeBorrows}">
+                                <td>
+                                    <div style="font-weight: 500; color: white;" th:text="${borrow.studentName}">John Doe</div>
+                                    <div style="font-size: 0.85rem; color: var(--text-light-grey);" th:text="${borrow.studentLrn}">123456789012</div>
+                                </td>
+                                <td th:text="${borrow.equipmentName}">Badminton Racket</td>
+                                <td th:text="${borrow.quantity}">2</td>
+                                <td th:text="${borrow.borrowDate}">2024-01-15</td>
+                                <td>
+                                    <form th:action="@{/sports/borrow/return}" method="POST" class="d-inline">
+                                        <input type="hidden" name="id" th:value="${borrow.id}">
+                                        <button type="submit" class="btn btn-sm btn-primary">Mark Returned</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="liabilities" class="tab-content">
+            <div class="custom-card border-danger" style="border-color: rgba(239, 68, 68, 0.3) !important;">
+                <div class="card-header-flex">
+                    <div>
+                        <h3 class="card-title text-danger"><i class="fas fa-exclamation-triangle me-2"></i> Student Liabilities</h3>
+                        <small style="color: var(--text-light-grey);">Students flagged as PENDING for P.E./Sports Clearance.</small>
+                    </div>
+                    
+                    <div style="width: 320px; position: relative;">
+                        <i class="fas fa-search position-absolute top-50 start-0 translate-middle-y ms-3" style="color: var(--text-light-grey);"></i>
+                        <input type="text" id="liabilitySearch" class="form-control ps-5" placeholder="Search by Student Name or LRN...">
                     </div>
                 </div>
-
-                <div class="panel-card student-table-container" id="table-active">
-                    <div class="table-responsive">
-                        <table class="table table-dark table-hover align-middle m-0">
-                            <thead>
-                                <tr>
-                                    <th>LRN</th>
-                                    <th>Student Name</th>
-                                    <th>Athletic Vault Equipment Borrow Records</th>
-                                    <th>Logged At</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr th:each="log : ${activeBorrows}">
-                                    <td class="font-mono text-xs fw-bold" th:text="${log.lrn}"></td>
-                                    <td class="text-white fw-semibold" th:text="${log.studentName}"></td>
-                                    <td th:text="${log.equipmentDetails}"></td>
-                                    <td>
-                                        <span class="badge bg-info"
-                                            th:text="${log.loggedAt != null ? #temporals.format(log.loggedAt, 'yyyy-MM-dd | hh:mm a') : 'N/A'}"></span>
-                                    </td>
-                                    <td>
-                                        <form th:action="@{/sports/return}" method="POST">
-                                            <input type="hidden" name="id" th:value="${log.id}" />
-                                            <button type="submit" class="btn btn-sm btn-outline-success"><i
-                                                    class="fas fa-check-double me-1"></i> Confirm Vault Return</button>
-                                        </form>
-                                    </td>
-                                </tr>
-                                <tr th:if="${#lists.isEmpty(activeBorrows)}">
-                                    <td colspan="5" class="text-muted py-4 text-center">No outstanding athletic
-                                        equipment assets in circulation.</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Student Details</th>
+                                <th>Reported Liability</th>
+                                <th>Status</th>
+                                <th>Date Logged</th>
+                                <th class="text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:if="${#lists.isEmpty(sportsLiabilities)}">
+                                <td colspan="5" class="empty-state">
+                                    <i class="fas fa-check-circle mb-3" style="font-size: 2.5rem; color: var(--emerald-green); opacity: 0.7;"></i><br>
+                                    All students are currently cleared. No pending sports liabilities!
+                                </td>
+                            </tr>
+                            <tr class="liability-row" th:each="liability : ${sportsLiabilities}">
+                                <td>
+                                    <div class="fw-bold text-white search-target" th:text="${liability.studentName}">Jane Smith</div>
+                                    <div style="font-size: 0.85rem; color: var(--text-light-grey);" class="search-target" th:text="${liability.studentLrn}">987654321098</div>
+                                </td>
+                                <td th:text="${liability.description}">Lost Volleyball</td>
+                                <td><span class="status-badge status-danger">UNPAID / UNREPLACED</span></td>
+                                <td th:text="${liability.dateLogged}">2024-02-10</td>
+                                <td class="text-end">
+                                    <form th:action="@{/sports/liability/clear}" method="POST" onsubmit="return confirm('Confirm that this liability has been resolved and clear the student?');">
+                                        <input type="hidden" name="liabilityId" th:value="${liability.id}">
+                                        <button type="submit" class="btn btn-sm btn-outline-success border-success text-success" style="background: transparent;">
+                                            <i class="fas fa-check me-1"></i> Resolve & Clear
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="modal fade" id="addEquipmentModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-white"><i class="fas fa-plus-circle me-2"></i> Register Sports Equipment</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="/sports/equipment/add" method="POST">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label" style="color: var(--text-light-grey);">Item Code</label>
+                            <input type="text" name="code" class="form-control" placeholder="e.g. PE-001" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" style="color: var(--text-light-grey);">Equipment Name</label>
+                            <input type="text" name="name" class="form-control" placeholder="e.g. Molten Volleyball" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" style="color: var(--text-light-grey);">Initial Quantity</label>
+                            <input type="number" min="1" name="quantity" class="form-control" placeholder="0" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save to Inventory</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="logBorrowModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-white"><i class="fas fa-hand-holding me-2"></i> Log Sports Equipment Loan</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="/sports/borrow/add" method="POST">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label" style="color: var(--text-light-grey);">Student LRN</label>
+                            <input type="text" name="studentLrn" class="form-control" pattern="\d{12}" placeholder="12-digit LRN" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" style="color: var(--text-light-grey);">Equipment Name</label>
+                            <input type="text" name="equipmentName" class="form-control" placeholder="e.g. Badminton Racket" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" style="color: var(--text-light-grey);">Quantity Borrowed</label>
+                            <input type="number" min="1" name="quantity" class="form-control" placeholder="1" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Authorize Loan</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
     <script>
-        function showSection(sectionId) {
-            document.querySelectorAll('.student-table-container').forEach(el => el.style.display = 'none');
-            document.querySelectorAll('.section-btn').forEach(el => el.classList.remove('active'));
-            document.getElementById('table-' + sectionId).style.display = 'block';
-            document.getElementById('btn-' + sectionId).classList.add('active');
+        function openPanel(tabId) {
+            try {
+                const tabs = document.querySelectorAll('.nav-link');
+                tabs.forEach(t => t.classList.remove('active'));
+                
+                const activeBtn = document.getElementById('tab-' + tabId);
+                if(activeBtn) activeBtn.classList.add('active');
+
+                const panes = document.querySelectorAll('.tab-content');
+                panes.forEach(p => {
+                    p.classList.remove('show', 'active');
+                    p.style.display = 'none';
+                });
+
+                const targetPane = document.getElementById(tabId);
+                if (targetPane) {
+                    targetPane.style.display = 'block';
+                    
+                    setTimeout(() => {
+                        targetPane.classList.add('show', 'active');
+                    }, 10);
+                    
+                    localStorage.setItem('safeSportsTab', tabId);
+                }
+            } catch (error) {
+                console.error("Tab System Error:", error);
+            }
         }
-        function updateHiddenName(selectElement) {
-            const selectedText = selectElement.options[selectElement.selectedIndex].text;
-            const nameOnly = selectedText.substring(0, selectedText.lastIndexOf(' ('));
-            selectElement.closest('form').querySelector('.hiddenStudentName').value = nameOnly;
-        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            let activeTab = urlParams.get('tab');
+            
+            if (!activeTab) activeTab = localStorage.getItem('safeSportsTab');
+            if (!activeTab || !['inventory', 'borrowed', 'liabilities'].includes(activeTab)) {
+                activeTab = 'inventory';
+            }
+            openPanel(activeTab);
+        });
+
+        // Search Bar Logic
+        document.getElementById('liabilitySearch').addEventListener('keyup', function () {
+            let filter = this.value.toLowerCase().trim();
+            let rows = document.querySelectorAll('.liability-row');
+            
+            rows.forEach(row => {
+                let searchTargets = row.querySelectorAll('.search-target');
+                let rowText = Array.from(searchTargets).map(el => el.textContent.toLowerCase()).join(' ');
+                row.style.display = rowText.includes(filter) ? '' : 'none';
+            });
+        });
     </script>
 </body>
-
 </html>

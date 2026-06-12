@@ -26,6 +26,7 @@ import com.linhs.portal.model.FacilityLog;
 import com.linhs.portal.model.Gallery;
 import com.linhs.portal.model.GuidanceLog;
 import com.linhs.portal.model.LabLiability;
+import com.linhs.portal.model.Liability;
 import com.linhs.portal.model.ResourceHub;
 import com.linhs.portal.model.Student;
 import com.linhs.portal.model.StudentGrade;
@@ -105,6 +106,9 @@ public class PageController {
 
     @org.springframework.beans.factory.annotation.Autowired
     private com.linhs.portal.repository.LabLiabilityRepository labLiabilityRepository;
+
+    @org.springframework.beans.factory.annotation.Autowired
+    private com.linhs.portal.repository.LiabilityRepository liabilityRepository;
 
     // =========================================================
     // --- AUTHENTICATION & PUBLIC ENDPOINTS ---
@@ -799,10 +803,72 @@ public class PageController {
     }
 
     @GetMapping("/sports-dashboard")
-    public String showSportsDashboard(HttpSession session) {
+    public String showSportsDashboard(HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");
-        if (user == null || user.getRoleName() == null || !user.getRoleName().trim().toUpperCase().contains("SPORTS")) return "redirect:/login";
-        return "sports-dashboard"; 
+        // Ensure only the sports admin can access this page
+        if (user == null || user.getRoleName() == null || !user.getRoleName().trim().toUpperCase().contains("SPORTS")) {
+            return "redirect:/login";
+        }
+
+        // 1. Fetch Inventory for Tab 1
+        model.addAttribute("sportsEquipments", sportsEquipmentRepository.findAll());
+
+        // 2. Fetch Active Borrows for Tab 2
+        List<BorrowRecord> activeBorrows = borrowRecordRepository.findAll().stream()
+                .filter(b -> "BORROWED".equalsIgnoreCase(b.getStatus()))
+                .collect(Collectors.toList());
+        model.addAttribute("activeBorrows", activeBorrows);
+
+        // 3. Fetch Unresolved Liabilities for Tab 3
+        List<Liability> unresolved = liabilityRepository.findAll().stream()
+                .filter(l -> "UNPAID".equalsIgnoreCase(l.getStatus()))
+                .collect(Collectors.toList());
+        model.addAttribute("sportsLiabilities", unresolved);
+
+        return "sports-dashboard";
+    }
+
+    // --- SPORTS DASHBOARD POST ROUTES ---
+
+    @PostMapping("/sports/equipment/add")
+    public String addSportsEquipment(@ModelAttribute com.linhs.portal.model.SportsEquipment equipment) {
+        sportsEquipmentRepository.save(equipment);
+        return "redirect:/sports-dashboard?tab=inventory&success=Equipment+registered+to+inventory";
+    }
+
+    @PostMapping("/sports/borrow/add")
+    public String addSportsBorrow(
+            @RequestParam("studentLrn") String studentLrn,
+            @RequestParam("equipmentName") String equipmentName) { // Removed the quantity parameter
+        try {
+            BorrowRecord record = new BorrowRecord();
+            record.setStudentLrn(studentLrn);
+            
+            // FIXED: Using setItemName instead of setEquipmentName
+            record.setItemName(equipmentName); 
+            
+            // FIXED: Using setBorrowedAt instead of setBorrowDate
+            record.setBorrowedAt(java.time.LocalDateTime.now()); 
+            
+            record.setStatus("BORROWED");
+            
+            borrowRecordRepository.save(record);
+
+            // Automatically flag the student's PE clearance as pending
+            java.util.Optional<Student> studentOpt = studentRepository.findById(studentLrn);
+            if (studentOpt.isPresent()) {
+                Student s = studentOpt.get();
+                
+                // FIXED: Using setSportsClearance instead of setPeClearance
+                s.setSportsClearance("PENDING"); 
+                
+                studentRepository.save(s);
+            }
+            
+            return "redirect:/sports-dashboard?tab=borrowed&success=Equipment+loan+authorized";
+        } catch (Exception e) {
+            return "redirect:/sports-dashboard?tab=borrowed&error=Failed+to+record+loan";
+        }
     }
 
     @GetMapping("/library-dashboard")
