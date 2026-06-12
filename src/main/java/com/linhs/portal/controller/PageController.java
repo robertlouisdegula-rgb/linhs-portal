@@ -761,8 +761,8 @@ public class PageController {
 
         // 2. Fetch Active Borrows
         List<BorrowRecord> activeBorrows = borrowRecordRepository.findAll().stream()
-                .filter(b -> "BORROWED".equalsIgnoreCase(b.getStatus()))
-                .collect(Collectors.toList());
+                .filter(b -> "LAB_BORROWED".equalsIgnoreCase(b.getStatus()))
+                .collect(java.util.stream.Collectors.toList());
         model.addAttribute("activeBorrows", activeBorrows);
 
         // 3. Fetch Unresolved Liabilities
@@ -774,10 +774,82 @@ public class PageController {
         return "lab-dashboard"; 
     }
 
-    @PostMapping("/lab/equipment/add")
-    public String addLabEquipment(@ModelAttribute com.linhs.portal.model.LabEquipment equipment) {
-        labEquipmentRepository.save(equipment);
-        return "redirect:/lab-dashboard?tab=inventory&success=Equipment+registered+to+inventory";
+    @PostMapping("/lab/borrow/add")
+    public String addLabBorrow(
+            @RequestParam("studentLrn") String studentLrn,
+            @RequestParam("equipmentName") String equipmentName) { 
+        try {
+            // SECURITY CHECK 1: Verify the student exists
+            java.util.Optional<Student> studentOpt = studentRepository.findById(studentLrn);
+            if (studentOpt.isEmpty()) {
+                return "redirect:/lab-dashboard?tab=borrowed&error=Loan+Failed:+Student+LRN+not+found.";
+            }
+
+            // SECURITY CHECK 2: Verify the apparatus exists AND is in stock
+            java.util.Optional<com.linhs.portal.model.LabEquipment> equipOpt = labEquipmentRepository.findByName(equipmentName);
+            if (equipOpt.isEmpty()) {
+                return "redirect:/lab-dashboard?tab=borrowed&error=Loan+Failed:+Apparatus+not+found+in+inventory.";
+            }
+            
+            com.linhs.portal.model.LabEquipment equipment = equipOpt.get();
+            if (equipment.getQuantity() <= 0) {
+                return "redirect:/lab-dashboard?tab=borrowed&error=Loan+Failed:+Apparatus+is+currently+out+of+stock!";
+            }
+
+            // 1. Deduct from lab inventory
+            equipment.setQuantity(equipment.getQuantity() - 1);
+            if (equipment.getQuantity() == 0) {
+                equipment.setStatus("OUT OF STOCK"); 
+            }
+            labEquipmentRepository.save(equipment);
+
+            // 2. Log the borrow using your EXISTING BorrowRecord
+            BorrowRecord record = new BorrowRecord();
+            record.setStudentLrn(studentLrn);
+            
+            // Uses the fields specific to your BorrowRecord model
+            record.setItemName(equipmentName); 
+            record.setBorrowedAt(java.time.LocalDateTime.now()); 
+            
+            // TRICK: Saves as LAB_BORROWED so it doesn't mix with Sports items!
+            record.setStatus("LAB_BORROWED"); 
+            borrowRecordRepository.save(record);
+
+            // 3. Flag the student's Lab clearance as pending
+            Student s = studentOpt.get();
+            s.setLabClearance("PENDING"); 
+            studentRepository.save(s);
+            
+            return "redirect:/lab-dashboard?tab=borrowed&success=Apparatus+loan+authorized+and+inventory+updated";
+        } catch (Exception e) {
+            return "redirect:/lab-dashboard?tab=borrowed&error=Failed+to+record+loan";
+        }
+    }
+
+    @PostMapping("/lab/borrow/return")
+    public String returnLabBorrow(@RequestParam("id") Long id) {
+        java.util.Optional<BorrowRecord> opt = borrowRecordRepository.findById(id);
+        if (opt.isPresent()) {
+            BorrowRecord record = opt.get();
+            
+            // 1. Mark record as returned
+            record.setStatus("LAB_RETURNED");
+            borrowRecordRepository.save(record);
+
+            // 2. Add the apparatus back to the inventory stock
+            // Make sure to use getItemName() to match your model
+            java.util.Optional<com.linhs.portal.model.LabEquipment> equipOpt = labEquipmentRepository.findByName(record.getItemName());
+            if (equipOpt.isPresent()) {
+                com.linhs.portal.model.LabEquipment equipment = equipOpt.get();
+                equipment.setQuantity(equipment.getQuantity() + 1);
+                
+                if ("OUT OF STOCK".equals(equipment.getStatus()) || "UNAVAILABLE".equals(equipment.getStatus())) {
+                    equipment.setStatus("AVAILABLE");
+                }
+                labEquipmentRepository.save(equipment);
+            }
+        }
+        return "redirect:/lab-dashboard?tab=borrowed&success=Apparatus+returned+and+inventory+restocked";
     }
 
     @PostMapping("/lab/liability/clear")

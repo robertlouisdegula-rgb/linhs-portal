@@ -350,19 +350,19 @@
                                 </tr>
                                 <tr th:each="item : ${labEquipments}">
                                     <td th:text="${item.id != null ? 'LAB-' + item.id : 'LAB-NEW'}" style="color: var(--text-light-grey); font-family: monospace;">LAB-001</td>
-                                    <td th:text="${item.equipmentName}" style="font-weight: 500;">Beaker 500ml</td>
+                                    <td th:text="${item.name}" style="font-weight: 500;">Beaker 500ml</td>
                                     <td th:text="${item.quantity}">15</td>
                                     <td><span class="status-badge status-active" th:text="${item.status != null ? item.status : 'AVAILABLE'}">AVAILABLE</span></td>
                                     <td>
                                         <button class="btn btn-sm btn-outline-secondary text-light border-secondary me-2"
                                                 th:data-id="${item.id}"
-                                                th:data-name="${item.equipmentName}"
+                                                th:data-name="${item.name}"
                                                 th:data-qty="${item.quantity}"
                                                 th:data-status="${item.status != null ? item.status : 'AVAILABLE'}"
                                                 onclick="openEditLabEquipmentModal(this)">
                                             <i class="fas fa-edit"></i>
                                         </button>
-                                        <form th:action="@{/lab/equipment/delete}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to permanently delete this apparatus from the inventory?');">
+                                        <form th:action="@{/lab/equipment/delete}" method="POST" class="d-inline" onsubmit="return confirm('Delete this apparatus from the inventory?');">
                                             <input type="hidden" name="id" th:value="${item.id}">
                                             <button type="submit" class="btn btn-sm" style="color: var(--danger-red); border: 1px solid var(--danger-red); background: transparent;">
                                                 <i class="fas fa-trash"></i>
@@ -455,12 +455,12 @@
                                 </tr>
                                 <tr class="liability-row" th:each="liability : ${labLiabilities}">
                                     <td>
-                                        <div class="fw-bold text-white search-target" th:text="${liability.student != null ? liability.student.name : 'Unknown Student'}">John Doe</div>
-                                        <div style="font-size: 0.85rem; color: var(--text-light-grey);" class="search-target" th:text="${liability.student != null ? liability.student.lrn : 'No LRN'}">123456789012</div>
+                                        <div class="fw-bold text-white search-target" th:text="${liability.studentName != null ? liability.studentName : 'Unknown Student'}">John Doe</div>
+                                        <div style="font-size: 0.85rem; color: var(--text-light-grey);" class="search-target" th:text="${liability.studentLrn != null ? liability.studentLrn : 'No LRN'}">123456789012</div>
                                     </td>
                                     <td th:text="${liability.title + (liability.description != null ? ' - ' + liability.description : '')}">Broken Graduated Cylinder</td>
                                     <td><span class="status-badge status-danger" th:text="${liability.status}">PENDING</span></td>
-                                    <td th:text="${#temporals.format(liability.createdAt, 'yyyy-MM-dd')}">2024-03-10</td>
+                                    <td th:text="${liability.dateLogged != null ? #temporals.format(liability.dateLogged, 'yyyy-MM-dd') : 'No Date'}">2024-03-10</td>
                                     <td class="text-end">
                                         <form th:action="@{/lab/liability/clear}" method="POST" onsubmit="return confirm('Confirm that this liability has been resolved and clear the student?');">
                                             <input type="hidden" name="liabilityId" th:value="${liability.id}">
@@ -490,7 +490,7 @@
                     <div class="modal-body">
                         <div class="mb-3">
                             <label class="form-label">Apparatus Name</label>
-                            <input type="text" name="equipmentName" class="form-control" placeholder="e.g. Bunsen Burner" required>
+                            <input type="text" name="name" class="form-control" placeholder="e.g. Bunsen Burner" required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Initial Quantity</label>
@@ -522,7 +522,7 @@
                     <div class="modal-body">
                         <div class="mb-3">
                             <label class="form-label">Apparatus Name</label>
-                            <input type="text" name="equipmentName" id="editLabItemName" class="form-control" required>
+                            <input type="text" name="name" id="editLabItemName" class="form-control" required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Total Quantity</label>
@@ -578,7 +578,6 @@
     <script>
         // Sidebar Navigation Logic
         function switchPanel(panelId) {
-            // Update Active Link in Sidebar
             document.querySelectorAll('.sidebar-link').forEach(link => {
                 link.classList.remove('active');
                 if(link.id === 'link-liabilities') link.classList.add('text-danger'); 
@@ -590,7 +589,6 @@
                 if(panelId === 'liabilities') activeLink.classList.remove('text-danger'); 
             }
 
-            // Update Main Content Panels
             document.querySelectorAll('.tab-pane').forEach(pane => {
                 pane.classList.remove('show', 'active');
                 pane.style.display = 'none';
@@ -600,19 +598,15 @@
             if (targetPane) {
                 targetPane.style.display = 'block';
                 setTimeout(() => targetPane.classList.add('show', 'active'), 10);
-                
-                // Save state to local storage
                 localStorage.setItem('safeLabTab', panelId);
             }
         }
 
-        // Initialize state on page load
         document.addEventListener("DOMContentLoaded", function() {
             const urlParams = new URLSearchParams(window.location.search);
             let activeTab = urlParams.get('tab') || localStorage.getItem('safeLabTab') || 'inventory';
             switchPanel(activeTab);
 
-            // Auto-dismiss toasts
             setTimeout(function() {
                 document.querySelectorAll('.toast-notification').forEach(toast => {
                     toast.style.transition = 'opacity 0.5s ease-out, transform 0.5s ease-out';
@@ -623,7 +617,6 @@
             }, 4000);
         });
 
-        // Search Bar Logic for Liabilities
         document.getElementById('liabilitySearch').addEventListener('keyup', function () {
             let filter = this.value.toLowerCase().trim();
             let rows = document.querySelectorAll('.liability-row');
@@ -635,7 +628,6 @@
             });
         });
 
-        // Trigger Edit Modal and Auto-Fill
         function openEditLabEquipmentModal(button) {
             document.getElementById('editLabItemId').value = button.getAttribute('data-id');
             document.getElementById('editLabItemName').value = button.getAttribute('data-name');

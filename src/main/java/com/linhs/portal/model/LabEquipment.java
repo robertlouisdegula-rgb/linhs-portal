@@ -1,6 +1,10 @@
 package com.linhs.portal.model;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "lab_equipments")
@@ -12,6 +16,7 @@ public class LabEquipment {
     private String code;
     private String name;
     private Integer quantity;
+    private String status;
 
     // Getters and Setters
     public Long getId() { return id; }
@@ -22,4 +27,6 @@ public class LabEquipment {
     public void setName(String name) { this.name = name; }
     public Integer getQuantity() { return quantity; }
     public void setQuantity(Integer quantity) { this.quantity = quantity; }
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
 }

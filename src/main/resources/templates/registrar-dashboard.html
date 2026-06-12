@@ -287,10 +287,7 @@
         <aside class="sidebar">
             <div class="sidebar-header">Portal Navigation</div>
             
-            <a class="sidebar-link active" onclick="switchPanel('registry')" id="link-registry">
-                <i class="fas fa-user-plus w-20"></i> New Student Entry
-            </a>
-            <a class="sidebar-link" onclick="switchPanel('directory')" id="link-directory">
+            <a class="sidebar-link active" onclick="switchPanel('directory')" id="link-directory">
                 <i class="fas fa-users w-20"></i> Student Directory
             </a>
             <a class="sidebar-link" onclick="switchPanel('documents')" id="link-documents">
@@ -302,55 +299,8 @@
         </aside>
 
         <main class="main-content">
-            
-            <div id="panel-registry" class="tab-pane show active">
-                <div class="custom-card">
-                    <div class="card-header-flex">
-                        <h3 class="card-title text-white">
-                            <i class="fas fa-user-plus brand-icon"></i> Register New Student
-                        </h3>
-                    </div>
-                    <p class="card-note">Note: Entering a student here creates their foundational profile for grading, clearance, and document tracking.</p>
-                    
-                    <form action="/registrar/student/add" method="POST">
-                        <div class="mb-4">
-                            <label class="form-label">Student LRN *</label>
-                            <input type="text" name="lrn" class="form-control" placeholder="Enter 12-digit LRN..." pattern="\d{12}" required>
-                        </div>
-                        
-                        <div class="mb-4">
-                            <label class="form-label">Full Name *</label>
-                            <input type="text" name="name" class="form-control" placeholder="e.g., Dela Cruz, Juan M." required>
-                        </div>
 
-                        <div class="row mb-4">
-                            <div class="col-md-6">
-                                <label class="form-label">Grade Level *</label>
-                                <select name="gradeLevel" class="form-select" required>
-                                    <option value="" disabled selected>Select Grade...</option>
-                                    <option value="7">Grade 7</option>
-                                    <option value="8">Grade 8</option>
-                                    <option value="9">Grade 9</option>
-                                    <option value="10">Grade 10</option>
-                                    <option value="11">Grade 11</option>
-                                    <option value="12">Grade 12</option>
-                                </select>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">Section *</label>
-                                <input type="text" name="section" class="form-control" placeholder="e.g., Rizal" required>
-                            </div>
-                        </div>
-
-                        <div class="d-flex justify-content-end gap-3 mt-5">
-                            <button type="reset" class="btn btn-outline-secondary border-secondary text-light">Clear Form</button>
-                            <button type="submit" class="btn btn-primary"><i class="fas fa-save me-2"></i> Save Student Record</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
-            <div id="panel-directory" class="tab-pane">
+            <div id="panel-directory" class="tab-pane show active">
                 <div class="custom-card">
                     <div class="card-header-flex border-0 pb-0">
                         <h3 class="card-title text-white">
@@ -481,7 +431,8 @@
         // Initialize state on page load
         document.addEventListener("DOMContentLoaded", function() {
             const urlParams = new URLSearchParams(window.location.search);
-            let activeTab = urlParams.get('tab') || localStorage.getItem('safeRegistrarTab') || 'registry';
+            // Default to 'directory' instead of 'registry'
+            let activeTab = urlParams.get('tab') || localStorage.getItem('safeRegistrarTab') || 'directory';
             switchPanel(activeTab);
 
             // Auto-dismiss toasts
