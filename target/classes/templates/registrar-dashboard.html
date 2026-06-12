@@ -8,17 +8,19 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Shared Adviser/Registrar Theme Palette */
+        /* INVERTED THEME PALETTE */
         :root {
-            --dark-bg: #09090b;       
-            --panel-bg: #141417;      
+            --dark-bg: #141417;       
+            --panel-bg: #09090b;      
+            --input-bg: #141417;      
+            
             --border-color: #2d2d30;  
             --emerald-green: #10b981;    
             --emerald-hover: #059669;    
             --text-main: #ffffff;     
             --text-light-grey: #e4e4e7;
-            --input-bg: #09090b;      
             --danger-red: #ef4444;
+            --warning-yellow: #f59e0b;
         }
 
         body {
@@ -26,8 +28,11 @@
             color: var(--text-main);
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
 
+        /* Top Navbar */
         .top-navbar {
             background-color: var(--panel-bg);
             border-bottom: 1px solid var(--border-color);
@@ -35,74 +40,101 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            z-index: 10;
         }
 
         .brand-title {
             font-size: 1.25rem;
             font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .brand-icon {
             color: var(--emerald-green);
         }
 
-        .dashboard-container {
-            padding: 30px;
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        .welcome-header {
-            margin-bottom: 30px;
-        }
-
-        .welcome-header h2 {
-            font-weight: 700;
-            font-size: 2rem;
-            margin-bottom: 5px;
-        }
-
-        .welcome-header p {
+        .user-info {
+            font-size: 0.9rem;
             color: var(--text-light-grey);
-            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 15px;
         }
 
-        /* Nav Tabs Override */
-        .nav-tabs {
-            border-bottom: 1px solid var(--border-color);
-            margin-bottom: 25px;
+        /* Sidebar Layout Wrapper */
+        .layout-wrapper {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
         }
 
-        .nav-tabs .nav-link {
+        /* Sidebar Navigation */
+        .sidebar {
+            width: 280px;
+            background-color: var(--panel-bg);
+            border-right: 1px solid var(--border-color);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .sidebar-header {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
             color: var(--text-light-grey);
-            border: none;
-            border-bottom: 2px solid transparent;
             font-weight: 600;
-            padding: 12px 20px;
+            margin-bottom: 16px;
+            padding-left: 12px;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            color: var(--text-light-grey);
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.2s ease;
             cursor: pointer;
-            background: transparent;
+            border: 1px solid transparent;
         }
 
-        .nav-tabs .nav-link:hover {
+        .sidebar-link:hover {
             color: var(--text-main);
-            border-color: transparent;
+            background-color: rgba(255, 255, 255, 0.03);
         }
 
-        .nav-tabs .nav-link.active {
-            color: var(--emerald-green) !important;
-            background-color: transparent !important;
-            border-bottom: 2px solid var(--emerald-green) !important;
+        .sidebar-link.active {
+            background-color: var(--emerald-green);
+            color: #000000;
+            font-weight: 600;
+            border-color: var(--emerald-green);
         }
 
-        .tab-content {
+        /* Main Content Area */
+        .main-content {
+            flex: 1;
+            padding: 30px 40px;
+            overflow-y: auto;
+            background-color: var(--dark-bg);
+        }
+
+        .tab-pane {
             display: none;
             opacity: 0;
             transition: opacity 0.2s ease-in-out;
         }
 
-        .tab-content.show.active {
+        .tab-pane.show.active {
             display: block;
             opacity: 1;
         }
 
-        /* Custom Cards */
+        /* Custom Cards & Forms */
         .custom-card {
             background-color: var(--panel-bg);
             border: 1px solid var(--border-color);
@@ -116,298 +148,351 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
-            flex-wrap: wrap;
-            gap: 15px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 15px;
         }
 
         .card-title {
             font-size: 1.2rem;
             font-weight: 600;
             margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-note {
+            color: var(--text-light-grey);
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+        }
+
+        /* Form Inputs */
+        .form-label {
+            color: var(--text-main);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .form-control, .form-select {
+            background-color: var(--input-bg) !important;
+            border: 1px solid var(--border-color) !important;
+            color: var(--text-main) !important;
+            padding: 10px 15px;
+        }
+
+        .form-control::placeholder {
+            color: var(--text-light-grey) !important;
+            opacity: 0.5;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--emerald-green) !important;
+            box-shadow: 0 0 0 0.25rem rgba(16, 185, 129, 0.15) !important;
         }
 
         /* Tables */
         .table {
-            color: var(--text-main);
+            color: var(--text-main) !important;
             border-color: var(--border-color);
             margin-bottom: 0;
         }
 
         .table th {
             border-bottom: 1px solid var(--border-color);
-            color: var(--text-light-grey);
+            color: var(--text-light-grey) !important;
             font-weight: 600;
             padding: 12px 16px;
-            background-color: transparent;
+            background-color: transparent !important;
         }
 
         .table td {
             border-bottom: 1px solid var(--border-color);
             padding: 16px;
             vertical-align: middle;
-            background-color: transparent;
+            background-color: transparent !important;
+            color: var(--text-main) !important;
         }
 
         /* Buttons */
         .btn-primary {
             background-color: var(--emerald-green);
             border-color: var(--emerald-green);
-            color: white;
-            font-weight: 500;
-            padding: 8px 16px;
+            color: #000;
+            font-weight: 600;
+            padding: 10px 20px;
             border-radius: 6px;
         }
 
         .btn-primary:hover {
             background-color: var(--emerald-hover);
             border-color: var(--emerald-hover);
-        }
-
-        .btn-danger-custom {
-            background-color: transparent;
-            color: var(--danger-red);
-            border: 1px solid var(--danger-red);
-            font-weight: 500;
-            padding: 6px 12px;
-            border-radius: 6px;
-            transition: all 0.2s;
-        }
-
-        .btn-danger-custom:hover {
-            background-color: var(--danger-red);
             color: white;
         }
-
-        .form-control {
-            background-color: var(--input-bg);
-            border: 1px solid var(--border-color);
-            color: var(--text-main);
-        }
-
-        .form-control:focus {
-            background-color: var(--input-bg);
-            color: var(--text-main);
-            border-color: var(--emerald-green);
-            box-shadow: 0 0 0 0.25rem rgba(16, 185, 129, 0.25);
-        }
-
-        .status-badge {
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 600;
-        }
-        
-        .status-passed { background-color: rgba(16, 185, 129, 0.15); color: #10b981; }
 
         .empty-state {
             text-align: center;
             padding: 40px 20px;
             color: var(--text-light-grey);
         }
+
+        /* Floating Toasts */
+        .toast-notification {
+            position: fixed;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 9999;
+            min-width: 320px;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            animation: slideDown 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .toast-success { background-color: rgba(16, 185, 129, 0.95); color: white; border: 1px solid #10b981; }
+        .toast-danger { background-color: rgba(239, 68, 68, 0.95); color: white; border: 1px solid #ef4444; }
+
+        @keyframes slideDown {
+            from { top: -50px; opacity: 0; }
+            to { top: 30px; opacity: 1; }
+        }
     </style>
 </head>
 
 <body>
 
-    <div class="top-navbar">
-        <div class="brand-title"><i class="fas fa-archive me-2"></i>LINHS Registrar Portal</div>
-        <a href="/logout" class="btn btn-outline-light btn-sm"><i class="fas fa-sign-out-alt me-2"></i>Sign Out</a>
+    <div class="toast-notification toast-success" th:if="${param.success}">
+        <i class="fas fa-check-circle me-2"></i> <span th:text="${param.success}"></span>
+    </div>
+    <div class="toast-notification toast-danger" th:if="${param.error}">
+        <i class="fas fa-exclamation-triangle me-2"></i> <span th:text="${param.error}"></span>
     </div>
 
-    <div class="dashboard-container">
+    <nav class="top-navbar">
+        <div class="brand-title">
+            <i class="fas fa-folder-open brand-icon me-2"></i>LINHS Registrar Portal
+        </div>
+        <div class="user-info">
+            <span th:text="${'Logged in as: ' + (session.user != null ? session.user.name : 'Registrar')}">Logged in as: Registrar Admin</span>
+            <a href="/logout" class="btn btn-outline-light btn-sm"><i class="fas fa-sign-out-alt me-2"></i>Sign Out</a>
+        </div>
+    </nav>
+
+    <div class="layout-wrapper">
         
-        <div th:if="${param.success}" class="alert alert-success" role="alert" style="background-color: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid #10b981;">
-            <i class="fas fa-check-circle me-2"></i> <span th:text="${param.success}">Success Message</span>
-        </div>
+        <aside class="sidebar">
+            <div class="sidebar-header">Portal Navigation</div>
+            
+            <a class="sidebar-link active" onclick="switchPanel('registry')" id="link-registry">
+                <i class="fas fa-user-plus w-20"></i> New Student Entry
+            </a>
+            <a class="sidebar-link" onclick="switchPanel('directory')" id="link-directory">
+                <i class="fas fa-users w-20"></i> Student Directory
+            </a>
+            <a class="sidebar-link" onclick="switchPanel('documents')" id="link-documents">
+                <i class="fas fa-file-alt w-20"></i> Document Requests
+            </a>
+            <a class="sidebar-link" onclick="switchPanel('clearance')" id="link-clearance">
+                <i class="fas fa-check-double w-20"></i> Master Clearance
+            </a>
+        </aside>
 
-        <div class="welcome-header">
-            <h2><span th:text="${'Welcome, ' + (session.user != null ? session.user.name : 'Registrar')}">Welcome, Registrar</span></h2>
-            <p>Document Request Management System</p>
-        </div>
-
-        <ul class="nav nav-tabs" id="registrarTabs" role="tablist">
-            <li class="nav-item">
-                <button class="nav-link active" onclick="openPanel('pending')" id="tab-pending">
-                    <i class="fas fa-clock me-2"></i> Pending Requests 
-                    <span class="badge bg-secondary ms-1" style="font-size: 0.75rem;" th:text="${#lists.size(pendingRequests)}">0</span>
-                </button>
-            </li>
-            <li class="nav-item">
-                <button class="nav-link" onclick="openPanel('completed')" id="tab-completed">
-                    <i class="fas fa-check-double me-2"></i> Completed Archive
-                    <span class="badge bg-secondary ms-1" style="font-size: 0.75rem;" th:text="${#lists.size(completedRequests)}">0</span>
-                </button>
-            </li>
-        </ul>
-
-        <div id="pending" class="tab-content show active">
-            <div class="custom-card">
-                <div class="card-header-flex">
-                    <h3 class="card-title">Incoming Document Requests</h3>
-                    <div style="width: 280px; position: relative;">
-                        <i class="fas fa-search position-absolute top-50 start-0 translate-middle-y ms-3" style="color: var(--text-light-grey);"></i>
-                        <input type="text" class="form-control ps-5 search-input" placeholder="Search pending...">
+        <main class="main-content">
+            
+            <div id="panel-registry" class="tab-pane show active">
+                <div class="custom-card">
+                    <div class="card-header-flex">
+                        <h3 class="card-title text-white">
+                            <i class="fas fa-user-plus brand-icon"></i> Register New Student
+                        </h3>
                     </div>
-                </div>
-                
-                <div class="table-responsive">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Requester Name</th>
-                                <th>Contact / Email</th>
-                                <th>Student Details</th>
-                                <th>Document Type</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr th:if="${#lists.isEmpty(pendingRequests)}">
-                                <td colspan="5" class="empty-state">
-                                    <i class="fas fa-folder-open mb-2" style="font-size: 2rem;"></i><br>
-                                    No pending requests at this time.
-                                </td>
-                            </tr>
-                            <tr th:each="req : ${pendingRequests}">
-                                <td style="font-weight: 500; color: white;" th:text="${req.firstName + ' ' + req.lastName}">Juan Dela Cruz</td>
-                                <td>
-                                    <a th:href="'mailto:' + ${req.emailAddress}" style="color: var(--emerald-green); text-decoration: none;" th:text="${req.emailAddress}">email@test.com</a>
-                                </td>
-                                <td>
-                                    <div style="color: var(--text-light-grey); font-size: 0.85rem;" th:text="'AY: ' + ${req.academicYear}">2023</div>
-                                    <div th:text="${req.gradeSection}">Grade 10</div>
-                                </td>
-                                <td>
-                                    <div style="font-weight: 500;" th:text="${req.documentType}">Form 137</div>
-                                    <div style="color: var(--text-light-grey); font-size: 0.85rem;" th:text="${req.purpose}">Transfer</div>
-                                </td>
-                                <td>
-                                    <form th:action="@{/registrar/request/complete}" method="POST" onsubmit="return confirm('Mark this document request as completed?');">
-                                        <input type="hidden" name="requestId" th:value="${req.id}">
-                                        <button type="submit" class="btn btn-sm btn-primary">
-                                            <i class="fas fa-check me-1"></i> Mark Done
-                                        </button>
-                                    </form>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <p class="card-note">Note: Entering a student here creates their foundational profile for grading, clearance, and document tracking.</p>
+                    
+                    <form action="/registrar/student/add" method="POST">
+                        <div class="mb-4">
+                            <label class="form-label">Student LRN *</label>
+                            <input type="text" name="lrn" class="form-control" placeholder="Enter 12-digit LRN..." pattern="\d{12}" required>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label class="form-label">Full Name *</label>
+                            <input type="text" name="name" class="form-control" placeholder="e.g., Dela Cruz, Juan M." required>
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label">Grade Level *</label>
+                                <select name="gradeLevel" class="form-select" required>
+                                    <option value="" disabled selected>Select Grade...</option>
+                                    <option value="7">Grade 7</option>
+                                    <option value="8">Grade 8</option>
+                                    <option value="9">Grade 9</option>
+                                    <option value="10">Grade 10</option>
+                                    <option value="11">Grade 11</option>
+                                    <option value="12">Grade 12</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Section *</label>
+                                <input type="text" name="section" class="form-control" placeholder="e.g., Rizal" required>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-3 mt-5">
+                            <button type="reset" class="btn btn-outline-secondary border-secondary text-light">Clear Form</button>
+                            <button type="submit" class="btn btn-primary"><i class="fas fa-save me-2"></i> Save Student Record</button>
+                        </div>
+                    </form>
                 </div>
             </div>
-        </div>
 
-        <div id="completed" class="tab-content">
-            <div class="custom-card">
-                <div class="card-header-flex">
-                    <h3 class="card-title">Completed Request Archive</h3>
-                    <div style="width: 280px; position: relative;">
-                        <i class="fas fa-search position-absolute top-50 start-0 translate-middle-y ms-3" style="color: var(--text-light-grey);"></i>
-                        <input type="text" class="form-control ps-5 search-input" placeholder="Search completed...">
+            <div id="panel-directory" class="tab-pane">
+                <div class="custom-card">
+                    <div class="card-header-flex border-0 pb-0">
+                        <h3 class="card-title text-white">
+                            <i class="fas fa-users brand-icon"></i> Official Student Roster
+                        </h3>
+                        <div style="width: 300px; position: relative;">
+                            <i class="fas fa-search position-absolute top-50 start-0 translate-middle-y ms-3 text-secondary"></i>
+                            <input type="text" class="form-control ps-5" placeholder="Search roster...">
+                        </div>
+                    </div>
+                    
+                    <div class="table-responsive mt-4">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>LRN</th>
+                                    <th>Student Name</th>
+                                    <th>Grade & Section</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="text-secondary">123456789012</td>
+                                    <td class="text-white fw-bold">Juan Dela Cruz</td>
+                                    <td>Grade 10 - Rizal</td>
+                                    <td><span class="badge bg-success bg-opacity-25 text-success">Enrolled</span></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-secondary text-light"><i class="fas fa-edit"></i></button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
-                
-                <div class="table-responsive">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Requester Name</th>
-                                <th>Email Address</th>
-                                <th>Document Type</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr th:if="${#lists.isEmpty(completedRequests)}">
-                                <td colspan="5" class="empty-state">No completed requests logged yet.</td>
-                            </tr>
-                            <tr th:each="req : ${completedRequests}">
-                                <td style="font-weight: 500; color: white;" th:text="${req.firstName + ' ' + req.lastName}">Juan Dela Cruz</td>
-                                <td th:text="${req.emailAddress}" style="color: var(--text-light-grey);">email@test.com</td>
-                                <td th:text="${req.documentType}">Form 137</td>
-                                <td><span class="status-badge status-passed">Completed</span></td>
-                                <td>
-                                    <form th:action="@{/registrar/request/delete}" method="POST" onsubmit="return confirm('Permanently delete this record?');">
-                                        <input type="hidden" name="requestId" th:value="${req.id}">
-                                        <button type="submit" class="btn btn-sm btn-danger-custom">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </form>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+            </div>
+
+            <div id="panel-documents" class="tab-pane">
+                <div class="custom-card">
+                    <div class="card-header-flex">
+                        <h3 class="card-title text-white">
+                            <i class="fas fa-file-alt brand-icon"></i> Document Request Queue
+                        </h3>
+                    </div>
+                    <p class="card-note">Manage pending requests for Form 137, Good Moral Certificates, and Transcripts.</p>
+                    
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Requested By</th>
+                                    <th>Document Type</th>
+                                    <th>Date Requested</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan="5" class="empty-state">No pending document requests.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
-        </div>
 
+            <div id="panel-clearance" class="tab-pane">
+                <div class="custom-card">
+                    <div class="card-header-flex">
+                        <h3 class="card-title text-white">
+                            <i class="fas fa-check-double brand-icon"></i> Master Clearance Status
+                        </h3>
+                    </div>
+                    <p class="card-note">Overview of student clearance across all departments (Library, Lab, Sports, Adviser).</p>
+                    
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Student</th>
+                                    <th>Library</th>
+                                    <th>Laboratory</th>
+                                    <th>Sports</th>
+                                    <th>Overall Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan="5" class="empty-state">Clearance data unavailable.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </main>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
     <script>
-        // Custom Tab Logic matching the Adviser Dashboard
-        function openPanel(tabId) {
-            try {
-                const tabs = document.querySelectorAll('.nav-link');
-                tabs.forEach(t => t.classList.remove('active'));
+        // Sidebar Navigation Logic
+        function switchPanel(panelId) {
+            // Update Active Link in Sidebar
+            document.querySelectorAll('.sidebar-link').forEach(link => link.classList.remove('active'));
+            const activeLink = document.getElementById('link-' + panelId);
+            if (activeLink) activeLink.classList.add('active');
+
+            // Update Main Content Panels
+            document.querySelectorAll('.tab-pane').forEach(pane => {
+                pane.classList.remove('show', 'active');
+                pane.style.display = 'none';
+            });
+
+            const targetPane = document.getElementById('panel-' + panelId);
+            if (targetPane) {
+                targetPane.style.display = 'block';
+                setTimeout(() => targetPane.classList.add('show', 'active'), 10);
                 
-                const activeBtn = document.getElementById('tab-' + tabId);
-                if(activeBtn) activeBtn.classList.add('active');
-
-                const panes = document.querySelectorAll('.tab-content');
-                panes.forEach(p => {
-                    p.classList.remove('show', 'active');
-                    p.style.display = 'none';
-                });
-
-                const targetPane = document.getElementById(tabId);
-                if (targetPane) {
-                    targetPane.style.display = 'block';
-                    
-                    setTimeout(() => {
-                        targetPane.classList.add('show', 'active');
-                    }, 10);
-                    
-                    // Saves tab state so it doesn't reset after completing a request
-                    localStorage.setItem('safeRegistrarTab', tabId);
-                }
-            } catch (error) {
-                console.error("Tab System Encountered an Error:", error);
+                // Save state to local storage
+                localStorage.setItem('safeRegistrarTab', panelId);
             }
         }
 
+        // Initialize state on page load
         document.addEventListener("DOMContentLoaded", function() {
             const urlParams = new URLSearchParams(window.location.search);
-            let activeTab = urlParams.get('tab');
-            
-            if (!activeTab) {
-                activeTab = localStorage.getItem('safeRegistrarTab');
-            }
-            
-            if (!activeTab || !['pending', 'completed'].includes(activeTab)) {
-                activeTab = 'pending';
-            }
-            
-            openPanel(activeTab);
-        });
+            let activeTab = urlParams.get('tab') || localStorage.getItem('safeRegistrarTab') || 'registry';
+            switchPanel(activeTab);
 
-        // Search Filter Logic
-        document.querySelectorAll('.search-input').forEach(input => {
-            input.addEventListener('keyup', function () {
-                let filter = this.value.toLowerCase().trim();
-                let tableBody = this.closest('.custom-card').querySelector('tbody');
-                
-                if (tableBody) {
-                    let rows = tableBody.querySelectorAll('tr');
-                    rows.forEach(row => {
-                        // Skip hiding the empty state message
-                        if(row.querySelector('td.empty-state')) return; 
-                        let text = row.textContent.toLowerCase();
-                        row.style.display = text.includes(filter) ? '' : 'none';
-                    });
-                }
-            });
+            // Auto-dismiss toasts
+            setTimeout(function() {
+                document.querySelectorAll('.toast-notification').forEach(toast => {
+                    toast.style.transition = 'opacity 0.5s ease-out, transform 0.5s ease-out';
+                    toast.style.opacity = '0';
+                    toast.style.transform = 'translateX(-50%) translateY(-20px)';
+                    setTimeout(() => toast.remove(), 500);
+                });
+            }, 4000);
         });
     </script>
 </body>
