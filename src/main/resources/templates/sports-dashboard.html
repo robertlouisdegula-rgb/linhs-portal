@@ -282,7 +282,14 @@
                                 <td th:text="${item.quantity}">10</td>
                                 <td><span class="status-badge status-active" th:text="${item.status != null ? item.status : 'AVAILABLE'}">AVAILABLE</span></td>
                                 <td>
-                                    <button class="btn btn-sm btn-outline-secondary text-light border-secondary"><i class="fas fa-edit"></i></button>
+                                    <button class="btn btn-sm btn-outline-secondary text-light border-secondary"
+                                            th:data-id="${item.id}"
+                                            th:data-name="${item.equipmentName}"
+                                            th:data-qty="${item.quantity}"
+                                            th:data-status="${item.status != null ? item.status : 'AVAILABLE'}"
+                                            onclick="openEditEquipmentModal(this)">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
                                 </td>
                             </tr>
                         </tbody>
@@ -422,6 +429,42 @@
         </div>
     </div>
 
+    <div class="modal fade" id="editEquipmentModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-white"><i class="fas fa-edit me-2"></i> Edit Equipment</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="/sports/equipment/edit" method="POST">
+                    <input type="hidden" name="id" id="editItemId">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label" style="color: var(--text-light-grey);">Equipment Name</label>
+                            <input type="text" name="equipmentName" id="editItemName" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" style="color: var(--text-light-grey);">Total Quantity</label>
+                            <input type="number" min="0" name="quantity" id="editItemQuantity" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" style="color: var(--text-light-grey);">Condition / Status</label>
+                            <select name="status" id="editItemStatus" class="form-control" required>
+                                <option value="AVAILABLE">AVAILABLE</option>
+                                <option value="NEEDS REPAIR">NEEDS REPAIR</option>
+                                <option value="UNAVAILABLE">UNAVAILABLE</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <div class="modal fade" id="logBorrowModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -439,11 +482,7 @@
                             <label class="form-label" style="color: var(--text-light-grey);">Equipment Name</label>
                             <input type="text" name="equipmentName" class="form-control" placeholder="e.g. Badminton Racket" required>
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label" style="color: var(--text-light-grey);">Quantity Borrowed</label>
-                            <input type="number" min="1" name="quantity" class="form-control" placeholder="1" required>
                         </div>
-                    </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
                         <button type="submit" class="btn btn-primary">Authorize Loan</button>
@@ -456,6 +495,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
     <script>
+        // Tab switching logic
         function openPanel(tabId) {
             try {
                 const tabs = document.querySelectorAll('.nav-link');
@@ -507,6 +547,16 @@
                 row.style.display = rowText.includes(filter) ? '' : 'none';
             });
         });
+
+        // THE MISSING EDIT MODAL FUNCTION
+        function openEditEquipmentModal(button) {
+            document.getElementById('editItemId').value = button.getAttribute('data-id');
+            document.getElementById('editItemName').value = button.getAttribute('data-name');
+            document.getElementById('editItemQuantity').value = button.getAttribute('data-qty');
+            document.getElementById('editItemStatus').value = button.getAttribute('data-status');
+
+            new bootstrap.Modal(document.getElementById('editEquipmentModal')).show();
+        }
     </script>
 </body>
 </html>

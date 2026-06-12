@@ -868,6 +868,28 @@ public class PageController {
         }
     }
 
+    @PostMapping("/sports/equipment/edit")
+    public String editSportsEquipment(
+            @RequestParam("id") Long id,
+            @RequestParam("equipmentName") String equipmentName,
+            @RequestParam("quantity") Integer quantity,
+            @RequestParam("status") String status) {
+        
+        java.util.Optional<com.linhs.portal.model.SportsEquipment> opt = sportsEquipmentRepository.findById(id);
+        if (opt.isPresent()) {
+            com.linhs.portal.model.SportsEquipment equipment = opt.get();
+            
+            // Overwrite the old values with the new form values
+            equipment.setEquipmentName(equipmentName);
+            equipment.setQuantity(quantity);
+            equipment.setStatus(status);
+            
+            sportsEquipmentRepository.save(equipment);
+            return "redirect:/sports-dashboard?tab=inventory&success=Equipment+updated+successfully";
+        }
+        return "redirect:/sports-dashboard?tab=inventory&error=Equipment+not+found";
+    }
+
     @PostMapping("/sports/liability/clear")
     public String clearSportsLiability(@RequestParam("liabilityId") Long liabilityId) {
         java.util.Optional<com.linhs.portal.model.Liability> opt = liabilityRepository.findById(liabilityId);
