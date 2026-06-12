@@ -208,25 +208,27 @@
         .modal-footer { border-top: 1px solid var(--border-color); }
         .btn-close { filter: invert(1) grayscale(100%) brightness(200%); }
 
-        /* Floating Pop-up Notifications (Toasts) */
+        /* Floating Pop-up Notifications (Top-Center) */
         .alert {
             position: fixed;
             top: 30px;
-            right: 30px;
-            z-index: 1060; /* Ensures it pops up OVER modals and navbars */
+            left: 50%;
+            transform: translateX(-50%); /* This perfectly centers the pop-up */
+            z-index: 1060; 
             min-width: 320px;
+            text-align: center; /* Centers the text inside the notification */
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-            animation: slideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            animation: slideDown 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        /* Smooth slide-in animation */
-        @keyframes slideIn {
+        /* Smooth drop-down animation */
+        @keyframes slideDown {
             from { 
-                transform: translateX(100%); 
+                top: -50px; 
                 opacity: 0; 
             }
             to { 
-                transform: translateX(0); 
+                top: 30px; 
                 opacity: 1; 
             }
         }

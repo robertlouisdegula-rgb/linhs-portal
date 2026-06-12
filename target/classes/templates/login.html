@@ -7,6 +7,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
         :root {
             --dark-green-bg: #090d0a;
@@ -35,7 +37,6 @@
             overflow: hidden;
         }
 
-        /* Full Screen Low Opacity Background Watermark Layer */
         .watermark-bg {
             position: absolute;
             top: 0;
@@ -110,6 +111,7 @@
             font-weight: 600;
         }
 
+        input[type="text"],
         input[type="email"],
         input[type="password"] {
             width: 100%;
@@ -123,12 +125,40 @@
             transition: all 0.3s ease;
         }
 
+        input[type="text"]:focus,
         input[type="email"]:focus,
         input[type="password"]:focus {
             outline: none;
             border-color: var(--emerald-label);
             background-color: rgba(255, 255, 255, 0.05);
             box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+
+        /* Password Wrapper for Eye Icon */
+        .password-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .password-wrapper input {
+            padding-right: 45px; /* Ensures text doesn't type under the icon */
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 12px;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 1.1rem;
+            outline: none;
+            transition: color 0.2s;
+        }
+
+        .toggle-password:hover {
+            color: var(--text-light);
         }
 
         .btn-submit {
@@ -168,26 +198,6 @@
             color: var(--accent-gold);
         }
 
-        .alert {
-            padding: 0.75rem;
-            border-radius: 6px;
-            margin-bottom: 1.5rem;
-            font-size: 0.85rem;
-            text-align: center;
-        }
-
-        .alert-danger {
-            background-color: rgba(239, 68, 68, 0.1);
-            color: #fca5a5;
-            border: 1px solid rgba(239, 68, 68, 0.2);
-        }
-
-        .alert-success {
-            background-color: rgba(16, 185, 129, 0.1);
-            color: #6ee7b7;
-            border: 1px solid rgba(16, 185, 129, 0.2);
-        }
-
         ::placeholder {
             color: rgba(255, 255, 255, 0.2);
         }
@@ -201,7 +211,6 @@
             transition: background-color 5000s ease-in-out 0s;
         }
         
-        /* Apply border fix for autofill to blend in */
         input:-webkit-autofill {
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
@@ -210,9 +219,53 @@
             color: var(--text-light);
             border-color: rgba(255, 255, 255, 0.2);
         }
+
+        /* Floating Top-Center Toasts */
+        .toast-notification {
+            position: fixed;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 9999;
+            min-width: 320px;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            animation: slideDown 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .toast-danger {
+            background-color: rgba(239, 68, 68, 0.95);
+            color: white;
+            border: 1px solid #ef4444;
+        }
+
+        .toast-success {
+            background-color: rgba(16, 185, 129, 0.95);
+            color: white;
+            border: 1px solid #10b981;
+        }
+
+        @keyframes slideDown {
+            from { top: -50px; opacity: 0; }
+            to { top: 30px; opacity: 1; }
+        }
     </style>
 </head>
 <body>
+
+    <div class="toast-notification toast-danger" th:if="${error}">
+        <i class="fas fa-exclamation-triangle me-2"></i> <span th:text="${error}"></span>
+    </div>
+    <div class="toast-notification toast-danger" th:if="${errorMessage}">
+        <i class="fas fa-exclamation-triangle me-2"></i> <span th:text="${errorMessage}"></span>
+    </div>
+    <div class="toast-notification toast-success" th:if="${logoutMessage}">
+        <i class="fas fa-check-circle me-2"></i> <span th:text="${logoutMessage}"></span>
+    </div>
 
     <div class="watermark-bg">
         <img src="/lumbanglogo.jpg" alt="Watermark Background">
@@ -227,18 +280,20 @@
         <h2>LINHS Portal</h2>
         <p class="subtitle">Sign in to access your administrative dashboard</p>
 
-        <div class="alert alert-success" th:if="${logoutMessage}" th:text="${logoutMessage}"></div>
-        <div class="alert alert-danger" th:if="${errorMessage}" th:text="${errorMessage}"></div>
-
         <form th:action="@{/login}" method="POST">
             <div class="form-group">
-                <label for="email">Email Address</label>
-                <input type="email" id="email" name="username" required autocomplete="username" placeholder="yourname@domain.com">
+                <label for="username">Username / LRN / Email</label>
+                <input type="text" id="username" name="username" required autocomplete="username" placeholder="Enter your credentials">
             </div>
             
             <div class="form-group">
                 <label for="password">Security Password</label>
-                <input type="password" id="password" name="password" required autocomplete="current-password" placeholder="••••••••">
+                <div class="password-wrapper">
+                    <input type="password" id="password" name="password" required autocomplete="current-password" placeholder="••••••••">
+                    <button type="button" class="toggle-password" id="togglePasswordBtn" title="Toggle password visibility">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
             </div>
 
             <button type="submit" class="btn-submit">Authenticate Identity</button>
@@ -247,5 +302,38 @@
         <a href="/" class="back-link">&larr; Return to Public Portal</a>
     </div>
 
+    <script>
+        // Toggle Password Visibility
+        document.getElementById('togglePasswordBtn').addEventListener('click', function() {
+            const passwordInput = document.getElementById('password');
+            const icon = this.querySelector('i');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        });
+
+        // Auto-dismiss floating toasts after 4 seconds
+        document.addEventListener("DOMContentLoaded", function() {
+            setTimeout(function() {
+                const toasts = document.querySelectorAll('.toast-notification');
+                toasts.forEach(toast => {
+                    // Smoothly slide up and fade out
+                    toast.style.transition = 'opacity 0.5s ease-out, transform 0.5s ease-out';
+                    toast.style.opacity = '0';
+                    toast.style.transform = 'translateX(-50%) translateY(-20px)';
+                    
+                    // Remove from DOM entirely
+                    setTimeout(() => toast.remove(), 500);
+                });
+            }, 4000);
+        });
+    </script>
 </body>
 </html>

@@ -838,32 +838,75 @@ public class PageController {
             @RequestParam("studentLrn") String studentLrn,
             @RequestParam("equipmentName") String equipmentName) { 
         try {
-            // SECURITY CHECK: Verify the student actually exists first!
+            // SECURITY CHECK 1: Verify the student actually exists
             java.util.Optional<Student> studentOpt = studentRepository.findById(studentLrn);
-            
             if (studentOpt.isEmpty()) {
-                // If the LRN is fake/missing, reject the loan immediately
-                return "redirect:/sports-dashboard?tab=borrowed&error=Loan+Failed:+Student+LRN+not+found+in+database.";
+                return "redirect:/sports-dashboard?tab=borrowed&error=Loan+Failed:+Student+LRN+not+found.";
             }
 
-            // If the student exists, proceed with logging the borrow record
+            // SECURITY CHECK 2: Verify the item exists AND is in stock
+            java.util.Optional<com.linhs.portal.model.SportsEquipment> equipOpt = sportsEquipmentRepository.findByEquipmentName(equipmentName);
+            if (equipOpt.isEmpty()) {
+                return "redirect:/sports-dashboard?tab=borrowed&error=Loan+Failed:+Equipment+name+not+found+in+inventory.";
+            }
+            
+            com.linhs.portal.model.SportsEquipment equipment = equipOpt.get();
+            if (equipment.getQuantity() <= 0) {
+                return "redirect:/sports-dashboard?tab=borrowed&error=Loan+Failed:+Item+is+currently+out+of+stock!";
+            }
+
+            // --- ALL CHECKS PASSED: EXECUTE THE LOAN ---
+
+            // 1. Deduct from inventory
+            equipment.setQuantity(equipment.getQuantity() - 1);
+            if (equipment.getQuantity() == 0) {
+                equipment.setStatus("OUT OF STOCK"); // Auto-update status
+            }
+            sportsEquipmentRepository.save(equipment);
+
+            // 2. Log the active borrow record
             BorrowRecord record = new BorrowRecord();
             record.setStudentLrn(studentLrn);
             record.setItemName(equipmentName); 
             record.setBorrowedAt(java.time.LocalDateTime.now()); 
             record.setStatus("BORROWED");
-            
             borrowRecordRepository.save(record);
 
-            // Automatically flag the verified student's PE clearance as pending
+            // 3. Flag the student's PE clearance as pending
             Student s = studentOpt.get();
             s.setSportsClearance("PENDING"); 
             studentRepository.save(s);
             
-            return "redirect:/sports-dashboard?tab=borrowed&success=Equipment+loan+authorized";
+            return "redirect:/sports-dashboard?tab=borrowed&success=Equipment+loan+authorized+and+inventory+updated";
         } catch (Exception e) {
             return "redirect:/sports-dashboard?tab=borrowed&error=Failed+to+record+loan";
         }
+    }
+
+    @PostMapping("/sports/borrow/return")
+    public String returnSportsBorrow(@RequestParam("id") Long id) {
+        java.util.Optional<BorrowRecord> opt = borrowRecordRepository.findById(id);
+        if (opt.isPresent()) {
+            BorrowRecord record = opt.get();
+            
+            // 1. Mark record as returned
+            record.setStatus("RETURNED");
+            borrowRecordRepository.save(record);
+
+            // 2. Add the item back to the inventory stock
+            java.util.Optional<com.linhs.portal.model.SportsEquipment> equipOpt = sportsEquipmentRepository.findByEquipmentName(record.getItemName());
+            if (equipOpt.isPresent()) {
+                com.linhs.portal.model.SportsEquipment equipment = equipOpt.get();
+                equipment.setQuantity(equipment.getQuantity() + 1);
+                
+                // If it was previously out of stock, mark it available again
+                if ("OUT OF STOCK".equals(equipment.getStatus())) {
+                    equipment.setStatus("AVAILABLE");
+                }
+                sportsEquipmentRepository.save(equipment);
+            }
+        }
+        return "redirect:/sports-dashboard?tab=borrowed&success=Item+returned+and+inventory+restocked";
     }
 
     @PostMapping("/sports/equipment/edit")
