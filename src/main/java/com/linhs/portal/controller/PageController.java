@@ -190,11 +190,6 @@ public class PageController {
         return "clearance-status";
     }
 
-    @GetMapping("/requests")
-    public String showRequests() {
-        return "request-doc";
-    }
-
     @GetMapping("/clearance-tracker")
     public String showClearanceTrackerForm() {
         return "clearance-status";
@@ -529,6 +524,11 @@ public class PageController {
     // --- REQUEST DOCUMENTS (PUBLIC & REGISTRAR) ---
     // =========================================================
 
+    @GetMapping("/requests")
+    public String showRequests() {
+        return "request-doc";
+    }
+    
     @GetMapping("/request-document")
     public String showRequestDocumentForm() {
         return "request-doc";
@@ -538,7 +538,7 @@ public class PageController {
     public String submitDocumentRequest(@ModelAttribute DocumentRequest req) {
         req.setStatus("PENDING");
         documentRequestRepository.save(req);
-        return "redirect:/request-doc?success=Request+Submitted";
+        return "redirect:/request-document?success=Request+Submitted";
     }
 
     @GetMapping("/registrar-dashboard")
