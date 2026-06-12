@@ -139,7 +139,7 @@ public class PageController {
             String role = (user.getRoleName() != null) ? user.getRoleName().trim().toUpperCase() : "";
 
             // Added && !role.contains("LAB")
-            if (role.contains("ADMIN") && !role.contains("FACILITIES") && !role.contains("SPORTS") && !role.contains("LAB") && (role.contains("LIBRARIAN") || role.contains("LIBRARY"))) {
+            if (role.contains("ADMIN") && !role.contains("FACILITIES") && !role.contains("SPORTS") && !role.contains("LAB") && (role.contains("LIBRARIAN") && role.contains("LIBRARY"))) {
                 return "redirect:/admin-dashboard";
             } else if (role.contains("ADVISER") || role.contains("TEACHER")) {
                 return "redirect:/teacher-portal";
@@ -1036,7 +1036,11 @@ public class PageController {
     @GetMapping("/library-dashboard")
     public String showLibraryDashboard(HttpSession session) {
         User user = (User) session.getAttribute("user");
-        if (user == null || user.getRoleName() == null || !user.getRoleName().trim().toUpperCase().contains("LIBRARY")) return "redirect:/login";
+        if (user == null || user.getRoleName() == null || 
+           (!user.getRoleName().trim().toUpperCase().contains("LIBRARY") && 
+            !user.getRoleName().trim().toUpperCase().contains("LIBRARIAN"))) {
+            return "redirect:/login";
+        }
         return "library-dashboard"; 
     }
 
