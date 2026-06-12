@@ -1,281 +1,412 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registrar Dashboard | LINHS</title>
+    <title>Registrar Dashboard | LINHS Portal</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* Shared Adviser/Registrar Theme Palette */
         :root {
-            --dark-bg: #09090b;
-            --panel-bg: #141417;
-            --border-color: #2d2d30;
-            --mint-green: #20c997;
-            --mint-hover: #1aa078;
-            --text-main: #ffffff;
-            --text-muted: #d4d4d8;
-            --input-bg: #09090b;
+            --dark-bg: #09090b;       
+            --panel-bg: #141417;      
+            --border-color: #2d2d30;  
+            --emerald-green: #10b981;    
+            --emerald-hover: #059669;    
+            --text-main: #ffffff;     
+            --text-light-grey: #e4e4e7;
+            --input-bg: #09090b;      
+            --danger-red: #ef4444;
         }
 
-        body { 
-            background-color: var(--dark-bg); 
-            color: var(--text-main); 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+        body {
+            background-color: var(--dark-bg);
+            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            min-height: 100vh;
         }
 
-        .navbar {
+        .top-navbar {
             background-color: var(--panel-bg);
             border-bottom: 1px solid var(--border-color);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        .navbar-brand, .session-user-text {
-            color: var(--text-main) !important;
+        .brand-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--emerald-green);
+        }
+
+        .dashboard-container {
+            padding: 30px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .welcome-header {
+            margin-bottom: 30px;
+        }
+
+        .welcome-header h2 {
+            font-weight: 700;
+            font-size: 2rem;
+            margin-bottom: 5px;
+        }
+
+        .welcome-header p {
+            color: var(--text-light-grey);
+            font-size: 1rem;
+        }
+
+        /* Nav Tabs Override */
+        .nav-tabs {
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 25px;
+        }
+
+        .nav-tabs .nav-link {
+            color: var(--text-light-grey);
+            border: none;
+            border-bottom: 2px solid transparent;
             font-weight: 600;
+            padding: 12px 20px;
+            cursor: pointer;
+            background: transparent;
         }
 
-        .dashboard-card {
+        .nav-tabs .nav-link:hover {
+            color: var(--text-main);
+            border-color: transparent;
+        }
+
+        .nav-tabs .nav-link.active {
+            color: var(--emerald-green) !important;
+            background-color: transparent !important;
+            border-bottom: 2px solid var(--emerald-green) !important;
+        }
+
+        .tab-content {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.2s ease-in-out;
+        }
+
+        .tab-content.show.active {
+            display: block;
+            opacity: 1;
+        }
+
+        /* Custom Cards */
+        .custom-card {
             background-color: var(--panel-bg);
             border: 1px solid var(--border-color);
             border-radius: 12px;
             padding: 24px;
             margin-bottom: 24px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
         }
 
-        .form-control {
-            background-color: var(--input-bg);
-            border: 1px solid var(--border-color);
-            color: #ffffff !important;
-            border-radius: 8px;
-        }
-        .form-control::placeholder {
-            color: #a1a1aa !important;
-        }
-        .form-control:focus {
-            background-color: var(--input-bg);
-            border-color: var(--mint-green);
-            box-shadow: 0 0 0 0.25rem rgba(32, 201, 151, 0.25);
+        .card-header-flex {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
         }
 
-        /* Custom Tab Styling */
-        .nav-pills .nav-link {
-            color: var(--text-muted);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            margin-right: 10px;
-            transition: all 0.2s;
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin: 0;
         }
 
-        .nav-pills .nav-link:hover {
-            color: #fff;
-            border-color: #52525b;
-        }
-
-        .nav-pills .nav-link.active {
-            background-color: rgba(32, 201, 151, 0.1);
-            color: var(--mint-green) !important;
-            border-color: var(--mint-green);
-        }
-
+        /* Tables */
         .table {
-            color: #ffffff !important;
-            vertical-align: middle;
+            color: var(--text-main);
+            border-color: var(--border-color);
+            margin-bottom: 0;
         }
 
         .table th {
-            border-bottom: 2px solid var(--border-color);
-            color: #a1a1aa !important;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-light-grey);
             font-weight: 600;
-            text-transform: uppercase;
-            font-size: 0.85rem;
+            padding: 12px 16px;
             background-color: transparent;
         }
 
         .table td {
             border-bottom: 1px solid var(--border-color);
-            color: #ffffff !important;
+            padding: 16px;
+            vertical-align: middle;
             background-color: transparent;
         }
 
-        .btn-mint {
-            background-color: var(--mint-green);
-            color: #000;
-            font-weight: 600;
-            border: none;
+        /* Buttons */
+        .btn-primary {
+            background-color: var(--emerald-green);
+            border-color: var(--emerald-green);
+            color: white;
+            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: 6px;
         }
 
-        .btn-mint:hover {
-            background-color: var(--mint-hover);
-            color: #000;
+        .btn-primary:hover {
+            background-color: var(--emerald-hover);
+            border-color: var(--emerald-hover);
+        }
+
+        .btn-danger-custom {
+            background-color: transparent;
+            color: var(--danger-red);
+            border: 1px solid var(--danger-red);
+            font-weight: 500;
+            padding: 6px 12px;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .btn-danger-custom:hover {
+            background-color: var(--danger-red);
+            color: white;
+        }
+
+        .form-control {
+            background-color: var(--input-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+        }
+
+        .form-control:focus {
+            background-color: var(--input-bg);
+            color: var(--text-main);
+            border-color: var(--emerald-green);
+            box-shadow: 0 0 0 0.25rem rgba(16, 185, 129, 0.25);
+        }
+
+        .status-badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
         }
         
-        .badge-completed { background-color: var(--mint-green); color: #000; }
+        .status-passed { background-color: rgba(16, 185, 129, 0.15); color: #10b981; }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-light-grey);
+        }
     </style>
 </head>
+
 <body>
 
-    <nav class="navbar navbar-expand-lg px-4 py-3">
-        <div class="container-fluid">
-            <span class="navbar-brand text-uppercase tracking-wider">
-                <i class="fas fa-archive me-2" style="color: var(--mint-green);"></i>LINHS Registrar Portal
-            </span>
-            <div class="d-flex align-items-center">
-                <span class="session-user-text me-3">
-                    <i class="fas fa-user-circle me-1"></i> Logged in as: <span th:text="${session.user != null ? session.user.name : 'Registrar Officer'}">Registrar Admin</span>
-                </span>
-                <a href="/logout" class="btn btn-outline-danger btn-sm rounded-3"><i class="fas fa-sign-out-alt me-1"></i> Exit</a>
-            </div>
-        </div>
-    </nav>
+    <div class="top-navbar">
+        <div class="brand-title"><i class="fas fa-archive me-2"></i>LINHS Registrar Portal</div>
+        <a href="/logout" class="btn btn-outline-light btn-sm"><i class="fas fa-sign-out-alt me-2"></i>Sign Out</a>
+    </div>
 
-    <div class="container-fluid px-4 py-4">
+    <div class="dashboard-container">
         
-        <div th:if="${param.success}" class="alert alert-success bg-success bg-opacity-25 text-success border-success mb-4">
-            <i class="fas fa-check-circle me-2"></i><span th:text="${param.success}"></span>
+        <div th:if="${param.success}" class="alert alert-success" role="alert" style="background-color: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid #10b981;">
+            <i class="fas fa-check-circle me-2"></i> <span th:text="${param.success}">Success Message</span>
         </div>
 
-        <div class="row">
-            <div class="col-12">
-                
-                <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
-                    <ul class="nav nav-pills" id="registrarTabs" role="tablist">
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link active fw-bold" id="pending-tab" data-bs-toggle="pill" data-bs-target="#pending" type="button" role="tab">
-                                <i class="fas fa-clock me-1"></i> Pending Requests
-                                <span class="badge bg-secondary ms-1" th:text="${#lists.size(pendingRequests)}">0</span>
-                            </button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link fw-bold" id="completed-tab" data-bs-toggle="pill" data-bs-target="#completed" type="button" role="tab">
-                                <i class="fas fa-check-double me-1"></i> Completed Archive
-                                <span class="badge bg-secondary ms-1" th:text="${#lists.size(completedRequests)}">0</span>
-                            </button>
-                        </li>
-                    </ul>
+        <div class="welcome-header">
+            <h2><span th:text="${'Welcome, ' + (session.user != null ? session.user.name : 'Registrar')}">Welcome, Registrar</span></h2>
+            <p>Document Request Management System</p>
+        </div>
 
-                    <div class="position-relative" style="width: 280px;">
-                        <i class="fas fa-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
-                        <input type="text" id="searchInput" class="form-control ps-5" placeholder="Search requests...">
+        <ul class="nav nav-tabs" id="registrarTabs" role="tablist">
+            <li class="nav-item">
+                <button class="nav-link active" onclick="openPanel('pending')" id="tab-pending">
+                    <i class="fas fa-clock me-2"></i> Pending Requests 
+                    <span class="badge bg-secondary ms-1" style="font-size: 0.75rem;" th:text="${#lists.size(pendingRequests)}">0</span>
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" onclick="openPanel('completed')" id="tab-completed">
+                    <i class="fas fa-check-double me-2"></i> Completed Archive
+                    <span class="badge bg-secondary ms-1" style="font-size: 0.75rem;" th:text="${#lists.size(completedRequests)}">0</span>
+                </button>
+            </li>
+        </ul>
+
+        <div id="pending" class="tab-content show active">
+            <div class="custom-card">
+                <div class="card-header-flex">
+                    <h3 class="card-title">Incoming Document Requests</h3>
+                    <div style="width: 280px; position: relative;">
+                        <i class="fas fa-search position-absolute top-50 start-0 translate-middle-y ms-3" style="color: var(--text-light-grey);"></i>
+                        <input type="text" class="form-control ps-5 search-input" placeholder="Search pending...">
                     </div>
                 </div>
-
-                <div class="tab-content" id="registrarTabsContent">
-                    
-                    <div class="tab-pane fade show active" id="pending" role="tabpanel">
-                        <div class="dashboard-card">
-                            <div class="table-responsive">
-                                <table class="table table-hover">
-                                    <thead>
-                                        <tr>
-                                            <th>Requester Name</th>
-                                            <th>Email Address</th>
-                                            <th>Details</th>
-                                            <th>Document Type</th>
-                                            <th>Purpose</th>
-                                            <th class="text-end">Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr th:each="req : ${pendingRequests}">
-                                            <td class="fw-bold" th:text="${req.firstName + ' ' + req.lastName}">Juan Dela Cruz</td>
-                                            <td>
-                                                <a th:href="'mailto:' + ${req.emailAddress}" class="text-info text-decoration-none" th:text="${req.emailAddress}">email@test.com</a>
-                                            </td>
-                                            <td>
-                                                <div class="small text-muted" th:text="'AY: ' + ${req.academicYear}">2023</div>
-                                                <div class="small" th:text="${req.gradeSection}">Grade 10</div>
-                                            </td>
-                                            <td class="text-warning fw-bold" th:text="${req.documentType}">Form 137</td>
-                                            <td th:text="${req.purpose}">Transfer</td>
-                                            <td class="text-end">
-                                                <form th:action="@{/registrar/request/complete}" method="POST">
-                                                    <input type="hidden" name="requestId" th:value="${req.id}">
-                                                    <button type="submit" class="btn btn-mint btn-sm" onclick="return confirm('Mark this document request as completed?');">
-                                                        <i class="fas fa-check me-1"></i> Mark Done
-                                                    </button>
-                                                </form>
-                                            </td>
-                                        </tr>
-                                        <tr th:if="${#lists.isEmpty(pendingRequests)}">
-                                            <td colspan="6" class="text-center text-muted py-4">
-                                                <i class="fas fa-folder-open mb-2 fs-3 d-block"></i>
-                                                No pending requests at this time.
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="tab-pane fade" id="completed" role="tabpanel">
-                        <div class="dashboard-card border-secondary">
-                            <div class="table-responsive">
-                                <table class="table table-hover">
-                                    <thead>
-                                        <tr>
-                                            <th>Requester Name</th>
-                                            <th>Email Address</th>
-                                            <th>Document Type</th>
-                                            <th>Status</th>
-                                            <th class="text-end">Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr th:each="req : ${completedRequests}">
-                                            <td class="fw-bold" th:text="${req.firstName + ' ' + req.lastName}">Juan Dela Cruz</td>
-                                            <td th:text="${req.emailAddress}">email@test.com</td>
-                                            <td th:text="${req.documentType}">Form 137</td>
-                                            <td><span class="badge badge-completed">Completed</span></td>
-                                            <td class="text-end">
-                                                <form th:action="@{/registrar/request/delete}" method="POST">
-                                                    <input type="hidden" name="requestId" th:value="${req.id}">
-                                                    <button type="submit" class="btn btn-outline-danger btn-sm" onclick="return confirm('Permanently delete this record?');">
-                                                        <i class="fas fa-trash-alt"></i>
-                                                    </button>
-                                                </form>
-                                            </td>
-                                        </tr>
-                                        <tr th:if="${#lists.isEmpty(completedRequests)}">
-                                            <td colspan="5" class="text-center text-muted py-4">No completed requests logged yet.</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-
+                
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Requester Name</th>
+                                <th>Contact / Email</th>
+                                <th>Student Details</th>
+                                <th>Document Type</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:if="${#lists.isEmpty(pendingRequests)}">
+                                <td colspan="5" class="empty-state">
+                                    <i class="fas fa-folder-open mb-2" style="font-size: 2rem;"></i><br>
+                                    No pending requests at this time.
+                                </td>
+                            </tr>
+                            <tr th:each="req : ${pendingRequests}">
+                                <td style="font-weight: 500; color: white;" th:text="${req.firstName + ' ' + req.lastName}">Juan Dela Cruz</td>
+                                <td>
+                                    <a th:href="'mailto:' + ${req.emailAddress}" style="color: var(--emerald-green); text-decoration: none;" th:text="${req.emailAddress}">email@test.com</a>
+                                </td>
+                                <td>
+                                    <div style="color: var(--text-light-grey); font-size: 0.85rem;" th:text="'AY: ' + ${req.academicYear}">2023</div>
+                                    <div th:text="${req.gradeSection}">Grade 10</div>
+                                </td>
+                                <td>
+                                    <div style="font-weight: 500;" th:text="${req.documentType}">Form 137</div>
+                                    <div style="color: var(--text-light-grey); font-size: 0.85rem;" th:text="${req.purpose}">Transfer</div>
+                                </td>
+                                <td>
+                                    <form th:action="@{/registrar/request/complete}" method="POST" onsubmit="return confirm('Mark this document request as completed?');">
+                                        <input type="hidden" name="requestId" th:value="${req.id}">
+                                        <button type="submit" class="btn btn-sm btn-primary">
+                                            <i class="fas fa-check me-1"></i> Mark Done
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
+
+        <div id="completed" class="tab-content">
+            <div class="custom-card">
+                <div class="card-header-flex">
+                    <h3 class="card-title">Completed Request Archive</h3>
+                    <div style="width: 280px; position: relative;">
+                        <i class="fas fa-search position-absolute top-50 start-0 translate-middle-y ms-3" style="color: var(--text-light-grey);"></i>
+                        <input type="text" class="form-control ps-5 search-input" placeholder="Search completed...">
+                    </div>
+                </div>
+                
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Requester Name</th>
+                                <th>Email Address</th>
+                                <th>Document Type</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:if="${#lists.isEmpty(completedRequests)}">
+                                <td colspan="5" class="empty-state">No completed requests logged yet.</td>
+                            </tr>
+                            <tr th:each="req : ${completedRequests}">
+                                <td style="font-weight: 500; color: white;" th:text="${req.firstName + ' ' + req.lastName}">Juan Dela Cruz</td>
+                                <td th:text="${req.emailAddress}" style="color: var(--text-light-grey);">email@test.com</td>
+                                <td th:text="${req.documentType}">Form 137</td>
+                                <td><span class="status-badge status-passed">Completed</span></td>
+                                <td>
+                                    <form th:action="@{/registrar/request/delete}" method="POST" onsubmit="return confirm('Permanently delete this record?');">
+                                        <input type="hidden" name="requestId" th:value="${req.id}">
+                                        <button type="submit" class="btn btn-sm btn-danger-custom">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
     <script>
-        document.getElementById('searchInput').addEventListener('keyup', function () {
-            let filter = this.value.toLowerCase().trim();
-            // Find which tab is currently visible
-            let activePane = document.querySelector('.tab-pane.active');
-            
-            if (activePane) {
-                let rows = activePane.querySelectorAll('tbody tr');
-                rows.forEach(row => {
-                    // Don't hide the "Empty" message row if it exists
-                    if(row.querySelector('td').getAttribute('colspan')) return;
-                    
-                    let text = row.textContent.toLowerCase();
-                    row.style.display = text.includes(filter) ? '' : 'none';
+        // Custom Tab Logic matching the Adviser Dashboard
+        function openPanel(tabId) {
+            try {
+                const tabs = document.querySelectorAll('.nav-link');
+                tabs.forEach(t => t.classList.remove('active'));
+                
+                const activeBtn = document.getElementById('tab-' + tabId);
+                if(activeBtn) activeBtn.classList.add('active');
+
+                const panes = document.querySelectorAll('.tab-content');
+                panes.forEach(p => {
+                    p.classList.remove('show', 'active');
+                    p.style.display = 'none';
                 });
+
+                const targetPane = document.getElementById(tabId);
+                if (targetPane) {
+                    targetPane.style.display = 'block';
+                    
+                    setTimeout(() => {
+                        targetPane.classList.add('show', 'active');
+                    }, 10);
+                    
+                    // Saves tab state so it doesn't reset after completing a request
+                    localStorage.setItem('safeRegistrarTab', tabId);
+                }
+            } catch (error) {
+                console.error("Tab System Encountered an Error:", error);
             }
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            let activeTab = urlParams.get('tab');
+            
+            if (!activeTab) {
+                activeTab = localStorage.getItem('safeRegistrarTab');
+            }
+            
+            if (!activeTab || !['pending', 'completed'].includes(activeTab)) {
+                activeTab = 'pending';
+            }
+            
+            openPanel(activeTab);
         });
 
-        // Clear search when switching tabs
-        document.querySelectorAll('button[data-bs-toggle="pill"]').forEach(tab => {
-            tab.addEventListener('shown.bs.tab', event => {
-                document.getElementById('searchInput').value = '';
-                document.querySelectorAll('tbody tr').forEach(row => row.style.display = '');
+        // Search Filter Logic
+        document.querySelectorAll('.search-input').forEach(input => {
+            input.addEventListener('keyup', function () {
+                let filter = this.value.toLowerCase().trim();
+                let tableBody = this.closest('.custom-card').querySelector('tbody');
+                
+                if (tableBody) {
+                    let rows = tableBody.querySelectorAll('tr');
+                    rows.forEach(row => {
+                        // Skip hiding the empty state message
+                        if(row.querySelector('td.empty-state')) return; 
+                        let text = row.textContent.toLowerCase();
+                        row.style.display = text.includes(filter) ? '' : 'none';
+                    });
+                }
             });
         });
     </script>
