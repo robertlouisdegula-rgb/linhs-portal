@@ -19,11 +19,13 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.linhs.portal.model.Announcement;
+import com.linhs.portal.model.BorrowRecord;
 import com.linhs.portal.model.ClinicLog;
 import com.linhs.portal.model.DocumentRequest;
 import com.linhs.portal.model.FacilityLog;
 import com.linhs.portal.model.Gallery;
 import com.linhs.portal.model.GuidanceLog;
+import com.linhs.portal.model.LabLiability;
 import com.linhs.portal.model.ResourceHub;
 import com.linhs.portal.model.Student;
 import com.linhs.portal.model.StudentGrade;
@@ -97,6 +99,12 @@ public class PageController {
         this.announcementRepository = announcementRepository;
         this.libraryBorrowRecordRepository = libraryBorrowRecordRepository;
     }
+
+    @org.springframework.beans.factory.annotation.Autowired
+    private com.linhs.portal.repository.LabEquipmentRepository labEquipmentRepository;
+
+    @org.springframework.beans.factory.annotation.Autowired
+    private com.linhs.portal.repository.LabLiabilityRepository labLiabilityRepository;
 
     // =========================================================
     // --- AUTHENTICATION & PUBLIC ENDPOINTS ---
@@ -739,11 +747,55 @@ public class PageController {
     // --- SPORTS & LAB & LIBRARY DASHBOARDS ---
     // =========================================================
     
-    @GetMapping("/lab-dashboard")
-    public String showLabDashboard(HttpSession session) {
+   @GetMapping("/lab-dashboard")
+    public String showLabDashboard(HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");
         if (user == null || user.getRoleName() == null || !user.getRoleName().trim().toUpperCase().contains("LAB")) return "redirect:/login";
+
+        // 1. Fetch Inventory
+        model.addAttribute("labEquipments", labEquipmentRepository.findAll());
+
+        // 2. Fetch Active Borrows
+        List<BorrowRecord> activeBorrows = borrowRecordRepository.findAll().stream()
+                .filter(b -> "BORROWED".equalsIgnoreCase(b.getStatus()))
+                .collect(Collectors.toList());
+        model.addAttribute("activeBorrows", activeBorrows);
+
+        // 3. Fetch Unresolved Liabilities
+        List<LabLiability> unresolved = labLiabilityRepository.findAll().stream()
+                .filter(l -> "UNPAID".equalsIgnoreCase(l.getStatus()))
+                .collect(Collectors.toList());
+        model.addAttribute("labLiabilities", unresolved);
+
         return "lab-dashboard"; 
+    }
+
+    @PostMapping("/lab/equipment/add")
+    public String addLabEquipment(@ModelAttribute com.linhs.portal.model.LabEquipment equipment) {
+        labEquipmentRepository.save(equipment);
+        return "redirect:/lab-dashboard?tab=inventory&success=Equipment+registered+to+inventory";
+    }
+
+    @PostMapping("/lab/liability/clear")
+    public String clearLabLiability(@RequestParam("liabilityId") Long liabilityId) {
+        java.util.Optional<com.linhs.portal.model.LabLiability> opt = labLiabilityRepository.findById(liabilityId);
+        if (opt.isPresent()) {
+            com.linhs.portal.model.LabLiability liability = opt.get();
+            liability.setStatus("CLEARED");
+            labLiabilityRepository.save(liability);
+            
+            // Check if student has other pending liabilities before fully clearing them
+            List<com.linhs.portal.model.LabLiability> remaining = labLiabilityRepository.findByStudentLrnAndStatus(liability.getStudentLrn(), "UNPAID");
+            if (remaining.isEmpty()) {
+                java.util.Optional<Student> studentOpt = studentRepository.findById(liability.getStudentLrn());
+                if (studentOpt.isPresent()) {
+                    Student s = studentOpt.get();
+                    s.setLabClearance("CLEARED");
+                    studentRepository.save(s);
+                }
+            }
+        }
+        return "redirect:/lab-dashboard?tab=liabilities&success=Liability+resolved+and+student+cleared";
     }
 
     @GetMapping("/sports-dashboard")
