@@ -805,23 +805,20 @@ public class PageController {
     @GetMapping("/sports-dashboard")
     public String showSportsDashboard(HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");
-        // Ensure only the sports admin can access this page
         if (user == null || user.getRoleName() == null || !user.getRoleName().trim().toUpperCase().contains("SPORTS")) {
             return "redirect:/login";
         }
 
-        // 1. Fetch Inventory for Tab 1
         model.addAttribute("sportsEquipments", sportsEquipmentRepository.findAll());
 
-        // 2. Fetch Active Borrows for Tab 2
         List<BorrowRecord> activeBorrows = borrowRecordRepository.findAll().stream()
                 .filter(b -> "BORROWED".equalsIgnoreCase(b.getStatus()))
                 .collect(Collectors.toList());
         model.addAttribute("activeBorrows", activeBorrows);
 
-        // 3. Fetch Unresolved Liabilities for Tab 3
+        // FIXED: Filter by "PENDING" to match your Liability.java model
         List<Liability> unresolved = liabilityRepository.findAll().stream()
-                .filter(l -> "UNPAID".equalsIgnoreCase(l.getStatus()))
+                .filter(l -> "PENDING".equalsIgnoreCase(l.getStatus()))
                 .collect(Collectors.toList());
         model.addAttribute("sportsLiabilities", unresolved);
 
@@ -869,6 +866,24 @@ public class PageController {
         } catch (Exception e) {
             return "redirect:/sports-dashboard?tab=borrowed&error=Failed+to+record+loan";
         }
+    }
+
+    @PostMapping("/sports/liability/clear")
+    public String clearSportsLiability(@RequestParam("liabilityId") Long liabilityId) {
+        java.util.Optional<com.linhs.portal.model.Liability> opt = liabilityRepository.findById(liabilityId);
+        if (opt.isPresent()) {
+            com.linhs.portal.model.Liability liability = opt.get();
+            liability.setStatus("CLEARED");
+            liabilityRepository.save(liability);
+            
+            // FIXED: Properly fetches the student using your Entity relationship
+            Student s = liability.getStudent();
+            if (s != null) {
+                s.setSportsClearance("CLEARED");
+                studentRepository.save(s);
+            }
+        }
+        return "redirect:/sports-dashboard?tab=liabilities&success=Liability+resolved+and+student+cleared";
     }
 
     @GetMapping("/library-dashboard")
