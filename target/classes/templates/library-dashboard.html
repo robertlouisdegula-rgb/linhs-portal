@@ -166,9 +166,34 @@
             box-shadow: 0 0 0 0.25rem rgba(16, 185, 129, 0.15) !important;
         }
 
-        .table { color: var(--text-main) !important; border-color: var(--border-color); margin-bottom: 0; }
-        .table th { border-bottom: 1px solid var(--border-color); color: var(--text-light-grey) !important; font-weight: 600; padding: 12px 16px; }
-        .table td { border-bottom: 1px solid var(--border-color); padding: 16px; vertical-align: middle; }
+        /* STRIPPED OUT BOOTSTRAP WHITE BACKGROUNDS */
+        .table { 
+            color: var(--text-main) !important; 
+            border-color: var(--border-color); 
+            margin-bottom: 0; 
+        }
+        .table th { 
+            border-bottom: 1px solid var(--border-color); 
+            color: var(--text-light-grey) !important; 
+            font-weight: 600; 
+            padding: 12px 16px; 
+            background-color: transparent !important; /* Forces dark theme */
+        }
+        .table td { 
+            border-bottom: 1px solid var(--border-color); 
+            padding: 16px; 
+            vertical-align: middle; 
+            background-color: transparent !important; /* Forces dark theme */
+            color: var(--text-main) !important;
+        }
+        
+        /* EYE-PLEASING ROW HOVER EFFECT */
+        .table tbody tr {
+            transition: background-color 0.2s ease;
+        }
+        .table tbody tr:hover td {
+            background-color: rgba(16, 185, 129, 0.04) !important;
+        }
 
         .btn-primary {
             background-color: var(--emerald-green);
@@ -388,7 +413,6 @@
 
         document.addEventListener("DOMContentLoaded", function() {
             const urlParams = new URLSearchParams(window.location.search);
-            // Default to 'borrowed' since inventory is removed
             let activeTab = urlParams.get('tab') || localStorage.getItem('safeLibTab') || 'borrowed';
             switchPanel(activeTab);
             setTimeout(function() { document.querySelectorAll('.toast-notification').forEach(toast => { toast.style.transition = 'opacity 0.5s ease-out, transform 0.5s ease-out'; toast.style.opacity = '0'; toast.style.transform = 'translateX(-50%) translateY(-20px)'; setTimeout(() => toast.remove(), 500); }); }, 4000);
