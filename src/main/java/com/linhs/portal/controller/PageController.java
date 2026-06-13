@@ -137,9 +137,12 @@ public class PageController {
             session.setAttribute("user", user);
 
             String role = (user.getRoleName() != null) ? user.getRoleName().trim().toUpperCase() : "";
+            
+            // Debug print so we can see exactly what happens in your IDE terminal
+            System.out.println("==== SUCCESSFUL LOGIN | User Role: [" + role + "] ====");
 
-            // Added && !role.contains("LAB")
-            if (role.contains("ADMIN") && !role.contains("FACILITIES") && !role.contains("SPORTS") && !role.contains("LAB") && (role.contains("LIBRARIAN") && role.contains("LIBRARY"))) {
+            // THE FIX: Uses '!' to make sure the Admin is NOT a librarian
+            if (role.contains("ADMIN") && !role.contains("FACILITIES") && !role.contains("SPORTS") && !role.contains("LAB") && !role.contains("LIBRARY") && !role.contains("LIBRARIAN")) {
                 return "redirect:/admin-dashboard";
             } else if (role.contains("ADVISER") || role.contains("TEACHER")) {
                 return "redirect:/teacher-portal";
@@ -155,10 +158,11 @@ public class PageController {
                 return "redirect:/lab-dashboard";
             } else if (role.contains("SPORTS")) {
                 return "redirect:/sports-dashboard";
-            } else if (role.contains("LIBRARIAN") || role.contains("LIBRARY")) {
+            } else if (role.contains("LIBRARY") || role.contains("LIBRARIAN")) {
                 return "redirect:/library-dashboard";
             }
 
+            System.out.println("==== ERROR: Role didn't match any dashboard. Redirecting to home. ====");
             return "redirect:/";
         } else {
             model.addAttribute("error", "Invalid username or password credential profile.");
