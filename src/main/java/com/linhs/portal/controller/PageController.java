@@ -123,7 +123,7 @@ public class PageController {
 
     @GetMapping("/login")
     public String showLoginPage() {
-        return "login";
+        return "login"; 
     }
 
     @PostMapping("/login")

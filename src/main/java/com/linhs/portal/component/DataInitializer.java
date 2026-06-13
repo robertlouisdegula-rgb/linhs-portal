@@ -87,10 +87,10 @@ public class DataInitializer implements CommandLineRunner {
                         personalName = "Main Admin";
                         break;
                     case "REGISTRAR":
-                        personalName = "Maam Aicel Llanes";
+                        personalName = "Ma'am Aicel Llanes";
                         break;
                     case "LAB_ADMIN":
-                        personalName = "Maam Marissa Nario";
+                        personalName = "Ma'am Marissa Nario";
                         break;
                     case "SPORTS_ADMIN":
                         personalName = "Ghenalyn Mendoza";
@@ -105,7 +105,7 @@ public class DataInitializer implements CommandLineRunner {
                         personalName = "Sir Marcel Olan";
                         break;
                     case "LIBRARIAN":
-                        personalName = "Maam Geraldine Pasia";
+                        personalName = "Ma'am Geraldine Pasia";
                         break;
                     default:
                         personalName = "LINHS Staff Member";
