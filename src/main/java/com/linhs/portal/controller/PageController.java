@@ -110,9 +110,6 @@ public class PageController {
     @org.springframework.beans.factory.annotation.Autowired
     private com.linhs.portal.repository.LiabilityRepository liabilityRepository;
 
-    @org.springframework.beans.factory.annotation.Autowired
-    private com.linhs.portal.repository.LibraryBookRepository libraryBookRepository;
-
     // =========================================================
     // --- AUTHENTICATION & PUBLIC ENDPOINTS ---
     // =========================================================
