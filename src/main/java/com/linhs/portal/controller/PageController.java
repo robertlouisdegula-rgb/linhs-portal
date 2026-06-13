@@ -110,6 +110,9 @@ public class PageController {
     @org.springframework.beans.factory.annotation.Autowired
     private com.linhs.portal.repository.LiabilityRepository liabilityRepository;
 
+    @org.springframework.beans.factory.annotation.Autowired
+    private com.linhs.portal.repository.LibraryBookRepository libraryBookRepository;
+
     // =========================================================
     // --- AUTHENTICATION & PUBLIC ENDPOINTS ---
     // =========================================================
@@ -1033,15 +1036,111 @@ public class PageController {
         return "redirect:/sports-dashboard?tab=liabilities&success=Liability+resolved+and+student+cleared";
     }
 
+    // =========================================================
+    // --- LIBRARY DASHBOARD (TRANSACTION LOGGER) ---
+    // =========================================================
+
     @GetMapping("/library-dashboard")
-    public String showLibraryDashboard(HttpSession session) {
+    public String showLibraryDashboard(HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");
         if (user == null || user.getRoleName() == null || 
            (!user.getRoleName().trim().toUpperCase().contains("LIBRARY") && 
             !user.getRoleName().trim().toUpperCase().contains("LIBRARIAN"))) {
             return "redirect:/login";
         }
+
+        // 1. Fetch Active Borrows (Reusing BorrowRecord with "LIBRARY_BORROWED" tag)
+        List<BorrowRecord> activeBorrows = borrowRecordRepository.findAll().stream()
+                .filter(b -> "LIBRARY_BORROWED".equalsIgnoreCase(b.getStatus()))
+                .collect(Collectors.toList());
+        model.addAttribute("activeBorrows", activeBorrows);
+
+        // 2. Fetch Unresolved Liabilities (Filters general liabilities specifically for Library)
+        List<Liability> unresolved = liabilityRepository.findAll().stream()
+                .filter(l -> "PENDING".equalsIgnoreCase(l.getStatus()) && l.getTitle() != null && 
+                            (l.getTitle().toUpperCase().contains("LIBRARY") || l.getTitle().toUpperCase().contains("BOOK")))
+                .collect(Collectors.toList());
+        model.addAttribute("libraryLiabilities", unresolved);
+
         return "library-dashboard"; 
+    }
+
+    @PostMapping("/library/borrow/add")
+    public String addLibraryBorrow(@RequestParam("studentLrn") String studentLrn, @RequestParam("title") String title) {
+        try {
+            java.util.Optional<Student> studentOpt = studentRepository.findById(studentLrn);
+            if (studentOpt.isEmpty()) return "redirect:/library-dashboard?tab=borrowed&error=Student+LRN+not+found";
+
+            // Log borrow directly without checking inventory
+            BorrowRecord record = new BorrowRecord();
+            record.setStudentLrn(studentLrn);
+            record.setItemName(title); 
+            record.setBorrowedAt(java.time.LocalDateTime.now());
+            record.setStatus("LIBRARY_BORROWED");
+            
+            // Saves student name if your model requires it
+            if(studentOpt.isPresent()){
+                record.setStudentName(studentOpt.get().getName());
+            }
+            borrowRecordRepository.save(record);
+
+            // Lock student's clearance
+            Student s = studentOpt.get();
+            s.setLibraryClearance("PENDING");
+            studentRepository.save(s);
+
+            return "redirect:/library-dashboard?tab=borrowed&success=Book+loan+recorded";
+        } catch (Exception e) {
+            return "redirect:/library-dashboard?tab=borrowed&error=Failed+to+record+loan";
+        }
+    }
+
+    @PostMapping("/library/borrow/return")
+    public String returnLibraryBorrow(@RequestParam("id") Long id) {
+        java.util.Optional<BorrowRecord> opt = borrowRecordRepository.findById(id);
+        if (opt.isPresent()) {
+            BorrowRecord record = opt.get();
+            record.setStatus("LIBRARY_RETURNED");
+            borrowRecordRepository.save(record);
+        }
+        return "redirect:/library-dashboard?tab=borrowed&success=Book+marked+as+returned";
+    }
+
+    @PostMapping("/library/liability/add")
+    public String addLibraryLiability(@RequestParam("studentLrn") String studentLrn, @RequestParam("description") String description) {
+        try {
+            java.util.Optional<Student> studentOpt = studentRepository.findById(studentLrn);
+            if (studentOpt.isEmpty()) return "redirect:/library-dashboard?tab=liabilities&error=Student+LRN+not+found";
+
+            Liability liability = new Liability();
+            liability.setStudent(studentOpt.get());
+            liability.setTitle("Library Book Liability");
+            liability.setDescription(description);
+            liability.setStatus("PENDING");
+            liability.setCreatedAt(java.time.LocalDateTime.now());
+            liabilityRepository.save(liability);
+
+            return "redirect:/library-dashboard?tab=liabilities&success=Liability+recorded+successfully";
+        } catch (Exception e) {
+            return "redirect:/library-dashboard?tab=liabilities&error=Failed+to+record+liability";
+        }
+    }
+
+    @PostMapping("/library/liability/clear")
+    public String clearLibraryLiability(@RequestParam("liabilityId") Long liabilityId) {
+        java.util.Optional<com.linhs.portal.model.Liability> opt = liabilityRepository.findById(liabilityId);
+        if (opt.isPresent()) {
+            com.linhs.portal.model.Liability liability = opt.get();
+            liability.setStatus("CLEARED");
+            liabilityRepository.save(liability);
+            
+            Student s = liability.getStudent();
+            if (s != null) {
+                s.setLibraryClearance("CLEARED");
+                studentRepository.save(s);
+            }
+        }
+        return "redirect:/library-dashboard?tab=liabilities&success=Liability+resolved+and+student+cleared";
     }
 
     // =========================================================
