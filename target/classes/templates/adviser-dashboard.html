@@ -123,26 +123,38 @@
             margin: 0;
         }
 
-        /* Tables */
-        .table {
-            color: var(--text-main);
-            border-color: var(--border-color);
-            margin-bottom: 0;
+        /* STRIPPED OUT BOOTSTRAP BACKGROUNDS & FORCED LIGHT TEXT */
+        .table { 
+            color: var(--text-main) !important; 
+            border-color: var(--border-color); 
+            margin-bottom: 0; 
         }
-
-        .table th {
-            border-bottom: 1px solid var(--border-color);
-            color: var(--text-light-grey);
-            font-weight: 600;
-            padding: 12px 16px;
-            background-color: transparent;
+        .table th { 
+            border-bottom: 1px solid var(--border-color); 
+            color: var(--text-light-grey) !important; /* Soft grey for headers */
+            font-weight: 600; 
+            padding: 12px 16px; 
+            background-color: transparent !important; 
         }
-
-        .table td {
-            border-bottom: 1px solid var(--border-color);
-            padding: 16px;
-            vertical-align: middle;
-            background-color: transparent;
+        .table td { 
+            border-bottom: 1px solid var(--border-color); 
+            padding: 16px; 
+            vertical-align: middle; 
+            background-color: transparent !important; 
+            color: var(--text-main) !important; /* Bright white for data */
+        }
+        
+        /* FIX FOR MUTED/SECONDARY TEXT INSIDE TABLES */
+        .table .text-secondary, .table .text-muted {
+            color: #a1a1aa !important; /* Ensure secondary text stays readable */
+        }
+        
+        /* EYE-PLEASING ROW HOVER EFFECT */
+        .table tbody tr {
+            transition: background-color 0.2s ease;
+        }
+        .table tbody tr:hover td {
+            background-color: rgba(16, 185, 129, 0.04) !important; /* Subtle emerald glow */
         }
 
         /* Buttons */
