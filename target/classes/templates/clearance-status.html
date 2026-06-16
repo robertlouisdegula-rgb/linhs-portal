@@ -30,10 +30,13 @@
             margin-bottom: 15px;
         }
         .logo-img {
-            width: 96px;
-            height: auto;
+            width: 80px;
+            height: 80px;
             object-fit: contain;
+            border-radius: 50%; /* Ensures it stays a perfect circle */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Optional: adds a subtle shadow */
         }
+        
         .header h1 {
             color: #064e3b;
             font-size: 28px;
@@ -212,12 +215,12 @@
 <body>
 
     <div class="header">
-        <div class="logo-container">
-            <img class="/lumbanglogo.jpg" src="/lumbanglogo.jpg">
+            <div class="logo-container">
+                <img src="/path/to/your/logo.png" alt="LINHS Logo" class="logo-img">
+            </div>
+            <h1>Student Clearance Tracker</h1>
+            <p>Check your department liabilities and clearance status</p>
         </div>
-        <h1>Lumbang Integrated National High School</h1>
-        <p>Official Public Clearance Status Tracking Gateway Portal</p>
-    </div>
 
     <div class="tracker-card">
 

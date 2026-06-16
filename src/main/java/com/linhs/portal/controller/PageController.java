@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -55,6 +56,7 @@ public class PageController {
 
     private final AuthService authService;
     private final UserRepository userRepository;
+    private PasswordEncoder passwordEncoder;
     private final StudentRepository studentRepository;
     private final BorrowRecordRepository borrowRecordRepository;
     private final SportsEquipmentRepository sportsEquipmentRepository;
@@ -286,26 +288,29 @@ public class PageController {
     }
 
     @PostMapping("/admin/account/edit")
-    public String adminEditAccount(@ModelAttribute User userToUpdate, @RequestParam Map<String, String> params) {
-        Long id = userToUpdate.getId() != null ? userToUpdate.getId() : (params.containsKey("id") && !params.get("id").isEmpty() ? Long.parseLong(params.get("id")) : null);
-        
-        if (id != null) {
-            Optional<User> existing = userRepository.findById(id);
-            if (existing.isPresent()) {
-                User current = existing.get();
-                if(params.containsKey("name")) current.setName(params.get("name"));
-                if(params.containsKey("email")) current.setEmail(params.get("email"));
-                if(params.containsKey("username")) current.setUsername(params.get("username"));
+    public String editStaffAccount(
+            @RequestParam("id") Long id,
+            @RequestParam("name") String name,
+            @RequestParam("email") String email,
+            @RequestParam(value = "password", required = false) String password) {
+        try {
+            User user = userRepository.findById(id).orElse(null);
+            if (user != null) {
+                user.setName(name);
+                user.setEmail(email);
                 
-                String pass = params.get("password");
-                if (pass != null && !pass.trim().isEmpty()) {
-                    current.setPassword(pass);
+                // FIXED: Encrypt the password before saving!
+                if (password != null && !password.trim().isEmpty()) {
+                    user.setPassword(passwordEncoder.encode(password)); 
                 }
-                userRepository.save(current);
-                return "redirect:/admin-dashboard?tab=0&success=Account+updated";
+                
+                userRepository.save(user);
+                return "redirect:/admin-dashboard?tab=0&success=Account+Successfully+Updated";
             }
+            return "redirect:/admin-dashboard?tab=0&error=User+Not+Found";
+        } catch (Exception e) {
+            return "redirect:/admin-dashboard?tab=0&error=Failed+to+update+account";
         }
-        return "redirect:/admin-dashboard?tab=0&error=Account+not+found";
     }
 
     @PostMapping("/admin/adviser/create")
