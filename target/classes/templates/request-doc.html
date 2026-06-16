@@ -8,150 +8,203 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --dark-bg: #09090b;
-            --panel-bg: #141417;
-            --border-color: #2d2d30;
-            --mint-green: #20c997;
-            --mint-hover: #1aa078;
-            --text-main: #ffffff;
-            --text-muted: #d4d4d8;
-            --input-bg: #09090b;
+            --body-bg: #f4f6f8;
+            --card-bg: #ffffff;
+            --border-color: #d1d5db;
+            --emerald-primary: #064e3b; /* Deep green matching clearance tracker */
+            --emerald-accent: #10b981;  /* High visibility vibrant green */
+            --emerald-hover: #059669;
+            --text-main: #1f2937;      /* Dark slate for ultimate visibility */
+            --text-muted: #4b5563;     /* Readable charcoal grey for labels */
+            --input-bg: #ffffff;
         }
 
         body {
-            background-color: var(--dark-bg);
+            background-color: var(--body-bg);
             color: var(--text-main);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px;
+            padding: 40px 20px;
         }
 
-        .request-container {
-            background-color: var(--panel-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
+        .gateway-card {
+            background-color: var(--card-bg);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            border-radius: 16px;
             padding: 40px;
+            max-width: 750px;
             width: 100%;
-            max-width: 650px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
         }
 
-        .brand-header {
+        .gateway-header {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 35px;
         }
 
-        .brand-header i {
-            font-size: 2.5rem;
-            color: var(--mint-green);
-            margin-bottom: 15px;
-        }
-
-        .brand-header h3 {
-            font-weight: 700;
+        .gateway-header h1 {
+            color: var(--emerald-primary);
+            font-size: 28px;
+            font-weight: 800;
             letter-spacing: -0.5px;
-            color: #ffffff;
+            margin-bottom: 8px;
+        }
+
+        .gateway-header p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin: 0;
         }
 
         .form-label {
-            color: #ffffff !important;
-            font-weight: 500;
+            color: var(--text-main);
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
         }
 
-        /* Forces input text visibility to bright white */
         .form-control, .form-select {
             background-color: var(--input-bg);
             border: 1px solid var(--border-color);
-            color: #ffffff !important; 
+            color: var(--text-main);
+            padding: 12px 16px;
             border-radius: 8px;
-            padding: 12px;
+            font-size: 0.95rem;
+            transition: all 0.2s ease-in-out;
         }
 
-        .form-control::placeholder {
-            color: #a1a1aa !important;
-        }
-
+        /* Ensure input text values are perfectly black/dark on white background */
         .form-control:focus, .form-select:focus {
-            background-color: var(--input-bg);
-            border-color: var(--mint-green);
-            color: #ffffff !important;
-            box-shadow: 0 0 0 0.25rem rgba(32, 201, 151, 0.15);
+            background-color: #ffffff;
+            border-color: var(--emerald-accent);
+            color: #000000;
+            box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.15);
         }
 
-        /* Dropdown selection options readable on dark backgrounds */
-        option {
-            background-color: var(--panel-bg);
-            color: #ffffff;
+        /* Styling for native dropdown list items to keep high visibility */
+        .form-select option {
+            color: #000000;
+            background-color: #ffffff;
+        }
+
+        textarea.form-control {
+            resize: none;
         }
 
         .btn-primary {
-            background-color: var(--mint-green);
-            border: none;
-            color: #000000 !important;
+            background-color: var(--emerald-primary);
+            border-color: var(--emerald-primary);
+            color: #ffffff;
             font-weight: 600;
-            padding: 14px;
-            width: 100%;
+            padding: 14px 24px;
             border-radius: 8px;
-            transition: all 0.3s ease;
+            width: 100%;
+            font-size: 1rem;
+            letter-spacing: 0.2px;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 6px -1px rgba(6, 78, 59, 0.2);
         }
 
         .btn-primary:hover {
-            background-color: var(--mint-hover);
-            color: #000000 !important;
+            background-color: var(--emerald-hover);
+            border-color: var(--emerald-hover);
+            color: #ffffff;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 12px -1px rgba(5, 150, 105, 0.3);
+        }
+
+        .back-link {
+            color: var(--emerald-primary);
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 600;
+            transition: color 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .back-link:hover {
+            color: var(--emerald-hover);
+            text-decoration: underline;
+        }
+
+        /* Floating Alert Notifications */
+        .alert-floating {
+            border-radius: 8px;
+            padding: 14px 20px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            margin-bottom: 25px;
+            border: 1px solid transparent;
+        }
+        .alert-success-custom {
+            background-color: #ecfdf5;
+            border-color: #a7f3d0;
+            color: #065f46;
+        }
+        .alert-danger-custom {
+            background-color: #fef2f2;
+            border-color: #fca5a5;
+            color: #991b1b;
         }
     </style>
 </head>
 <body>
-    <div class="request-container">
-        <div class="brand-header">
-            <i class="fas fa-file-signature"></i>
-            <h3>Request a Document</h3>
-            <p class="text-muted small" style="color: var(--text-muted);">Submit a formal request to the Registrar's Office</p>
+
+    <div class="gateway-card">
+        
+        <div class="gateway-header">
+            <h1><i class="fas fa-file-invoice me-2 text-success"></i>Document Request Hub</h1>
+            <p>Fill out the credentials below to file an official transaction with the Registrar Division.</p>
         </div>
 
-        <div th:if="${successMessage}" class="alert alert-success bg-success bg-opacity-25 text-success border-success mb-4 text-center">
-            <i class="fas fa-check-circle me-1"></i> <span th:text="${successMessage}">Document request submitted successfully!</span>
+        <div class="alert alert-floating alert-success-custom" th:if="${successMessage}">
+            <i class="fas fa-check-circle me-2"></i> <span th:text="${successMessage}"></span>
         </div>
-        <div th:if="${errorMessage}" class="alert alert-danger bg-danger bg-opacity-25 text-danger border-danger mb-4 text-center">
-            <i class="fas fa-exclamation-circle me-1"></i> <span th:text="${errorMessage}">Failed to submit request.</span>
+        <div class="alert alert-floating alert-danger-custom" th:if="${errorMessage}">
+            <i class="fas fa-exclamation-triangle me-2"></i> <span th:text="${errorMessage}"></span>
         </div>
 
-        <form action="/request-document/submit" method="POST" class="row g-3">
+        <form action="/request-doc" method="POST" class="row g-4">
             
-            <input type="hidden" name="studentLrn" value="PUBLIC-REQ">
+            <div class="col-md-6">
+                <label class="form-label">Student LRN</label>
+                <input type="text" name="studentLrn" class="form-control" placeholder="Enter 12-digit LRN" required maxlength="12">
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label">Email Address / Contact</label>
+                <input type="email" name="contactNumber" class="form-control" placeholder="name@example.com" required>
+            </div>
 
             <div class="col-md-6">
                 <label class="form-label">First Name</label>
-                <input type="text" name="firstName" class="form-control" placeholder="e.g., Juan" required>
-            </div>
-            
-            <div class="col-md-6">
-                <label class="form-label">Last Name</label>
-                <input type="text" name="lastName" class="form-control" placeholder="e.g., Dela Cruz" required>
+                <input type="text" name="firstName" class="form-control" placeholder="e.g. Juan" required>
             </div>
 
-            <div class="col-12">
-                <label class="form-label">Email Address</label>
-                <input type="email" name="emailAddress" class="form-control" placeholder="Enter valid email" required>
+            <div class="col-md-6">
+                <label class="form-label">Last Name</label>
+                <input type="text" name="lastName" class="form-control" placeholder="e.g. Dela Cruz" required>
             </div>
 
             <div class="col-md-6">
                 <label class="form-label">Academic Year</label>
-                <input type="text" name="academicYear" class="form-control" placeholder="e.g., 2023-2024" required>
+                <input type="text" name="academicYear" class="form-control" placeholder="e.g. 2025-2026" required>
             </div>
 
             <div class="col-md-6">
                 <label class="form-label">Grade & Section</label>
-                <input type="text" name="gradeSection" class="form-control" placeholder="e.g., 10 - Rizal" required>
+                <input type="text" name="gradeSection" class="form-control" placeholder="e.g. Grade 10 - Emerald" required>
             </div>
 
-            <div class="col-12">
-                <label class="form-label">Type of Document</label>
+            <div class="col-md-12">
+                <label class="form-label">Requested Document Type</label>
                 <select name="documentType" class="form-select" required>
-                    <option value="" disabled selected>Select Document...</option>
+                    <option value="" disabled selected hidden>-- Select Document Subtype --</option>
                     <option value="Certificate of Enrollment">Certificate of Enrollment</option>
                     <option value="Certificate of Academic Excellence">Certificate of Academic Excellence</option>
                     <option value="Certified True Copy - SF 10">Certified True Copy - SF 10</option>
@@ -165,17 +218,22 @@
 
             <div class="col-12">
                 <label class="form-label">Official Purpose</label>
-                <textarea name="purpose" class="form-control" rows="3" placeholder="Type intent reason (e.g., Scholarship application, Transfer)" required></textarea>
+                <textarea name="purpose" class="form-control" rows="3" placeholder="State clear application reason (e.g., Scholarship requirements, Employment, School Transfer)" required></textarea>
             </div>
 
-            <div class="col-12 mt-4">
-                <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane me-1"></i> Dispatch Request</button>
+            <div class="col-12 mt-4 pt-2">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-paper-plane me-2"></i>Dispatch Official Request
+                </button>
             </div>
 
-            <div class="col-12 text-center mt-3">
-                <a href="/login" style="color: var(--text-muted); text-decoration: none; font-size: 0.9rem;"><i class="fas fa-arrow-left me-1"></i> Return to Main Portal Login</a>
+            <div class="col-12 text-center mt-4">
+                <a href="/login" class="back-link">
+                    <i class="fas fa-arrow-left"></i> Return to Main Portal Login
+                </a>
             </div>
         </form>
     </div>
+
 </body>
 </html>

@@ -167,30 +167,6 @@
             margin-bottom: 20px;
         }
 
-        /* Form Inputs */
-        .form-label {
-            color: var(--text-main);
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-
-        .form-control, .form-select {
-            background-color: var(--input-bg) !important;
-            border: 1px solid var(--border-color) !important;
-            color: var(--text-main) !important;
-            padding: 10px 15px;
-        }
-
-        .form-control::placeholder {
-            color: var(--text-light-grey) !important;
-            opacity: 0.5;
-        }
-
-        .form-control:focus, .form-select:focus {
-            border-color: var(--emerald-green) !important;
-            box-shadow: 0 0 0 0.25rem rgba(16, 185, 129, 0.15) !important;
-        }
-
         /* Tables */
         .table {
             color: var(--text-main) !important;
@@ -229,6 +205,21 @@
             border-color: var(--emerald-hover);
             color: white;
         }
+        
+        .btn-success-custom {
+            background-color: rgba(16, 185, 129, 0.2);
+            color: var(--emerald-green);
+            border: 1px solid var(--emerald-green);
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .btn-success-custom:hover {
+            background-color: var(--emerald-green);
+            color: #000;
+        }
 
         .empty-state {
             text-align: center;
@@ -254,7 +245,6 @@
         }
 
         .toast-success { background-color: rgba(16, 185, 129, 0.95); color: white; border: 1px solid #10b981; }
-        .toast-danger { background-color: rgba(239, 68, 68, 0.95); color: white; border: 1px solid #ef4444; }
 
         @keyframes slideDown {
             from { top: -50px; opacity: 0; }
@@ -267,9 +257,6 @@
 
     <div class="toast-notification toast-success" th:if="${param.success}">
         <i class="fas fa-check-circle me-2"></i> <span th:text="${param.success}"></span>
-    </div>
-    <div class="toast-notification toast-danger" th:if="${param.error}">
-        <i class="fas fa-exclamation-triangle me-2"></i> <span th:text="${param.error}"></span>
     </div>
 
     <nav class="top-navbar">
@@ -287,66 +274,25 @@
         <aside class="sidebar">
             <div class="sidebar-header">Portal Navigation</div>
             
-            <a class="sidebar-link active" onclick="switchPanel('directory')" id="link-directory">
-                <i class="fas fa-users w-20"></i> Student Directory
-            </a>
-            <a class="sidebar-link" onclick="switchPanel('documents')" id="link-documents">
+            <a class="sidebar-link active" onclick="switchPanel('documents')" id="link-documents">
                 <i class="fas fa-file-alt w-20"></i> Document Requests
             </a>
-            <a class="sidebar-link" onclick="switchPanel('clearance')" id="link-clearance">
-                <i class="fas fa-check-double w-20"></i> Master Clearance
+            <a class="sidebar-link" onclick="switchPanel('logs')" id="link-logs">
+                <i class="fas fa-archive w-20"></i> Doc Logs
             </a>
         </aside>
 
         <main class="main-content">
 
-            <div id="panel-directory" class="tab-pane show active">
-                <div class="custom-card">
-                    <div class="card-header-flex border-0 pb-0">
-                        <h3 class="card-title text-white">
-                            <i class="fas fa-users brand-icon"></i> Official Student Roster
-                        </h3>
-                        <div style="width: 300px; position: relative;">
-                            <i class="fas fa-search position-absolute top-50 start-0 translate-middle-y ms-3 text-secondary"></i>
-                            <input type="text" class="form-control ps-5" placeholder="Search roster...">
-                        </div>
-                    </div>
-                    
-                    <div class="table-responsive mt-4">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>LRN</th>
-                                    <th>Student Name</th>
-                                    <th>Grade & Section</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td class="text-secondary">123456789012</td>
-                                    <td class="text-white fw-bold">Juan Dela Cruz</td>
-                                    <td>Grade 10 - Rizal</td>
-                                    <td><span class="badge bg-success bg-opacity-25 text-success">Enrolled</span></td>
-                                    <td>
-                                        <button class="btn btn-sm btn-outline-secondary text-light"><i class="fas fa-edit"></i></button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <div id="panel-documents" class="tab-pane">
+            <!-- PENDING REQUESTS PANEL -->
+            <div id="panel-documents" class="tab-pane show active">
                 <div class="custom-card">
                     <div class="card-header-flex">
                         <h3 class="card-title text-white">
-                            <i class="fas fa-file-alt brand-icon"></i> Document Request Queue
+                            <i class="fas fa-file-alt brand-icon"></i> Pending Requests
                         </h3>
                     </div>
-                    <p class="card-note">Manage pending requests for Form 137, Good Moral Certificates, and Transcripts.</p>
+                    <p class="card-note">Manage incoming requests submitted through the public gateway.</p>
                     
                     <div class="table-responsive">
                         <table class="table">
@@ -354,13 +300,30 @@
                                 <tr>
                                     <th>Requested By</th>
                                     <th>Document Type</th>
+                                    <th>Purpose</th>
                                     <th>Date Requested</th>
-                                    <th>Status</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
+                                <!-- Loop through pending requests from database -->
+                                <tr th:each="req : ${pendingRequests}">
+                                    <td>
+                                        <div class="fw-bold" th:text="${req.firstName + ' ' + req.lastName}">Juan Dela Cruz</div>
+                                        <div class="small text-secondary" th:text="${req.academicYear + ' | ' + req.gradeSection}">2023-2024 | Grade 10</div>
+                                    </td>
+                                    <td th:text="${req.documentType}">Form 137</td>
+                                    <td th:text="${req.purpose}">Transfer</td>
+                                    <td th:text="${#temporals.format(req.requestedAt, 'MMM dd, yyyy - hh:mm a')}">Oct 24, 2023</td>
+                                    <td>
+                                        <form th:action="@{/registrar/documents/{id}/complete(id=${req.id})}" method="post">
+                                            <button type="submit" class="btn btn-success-custom">
+                                                <i class="fas fa-check"></i> Complete
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                <tr th:if="${pendingRequests == null or pendingRequests.isEmpty()}">
                                     <td colspan="5" class="empty-state">No pending document requests.</td>
                                 </tr>
                             </tbody>
@@ -369,29 +332,36 @@
                 </div>
             </div>
 
-            <div id="panel-clearance" class="tab-pane">
+            <!-- COMPLETED DOC LOGS PANEL -->
+            <div id="panel-logs" class="tab-pane">
                 <div class="custom-card">
                     <div class="card-header-flex">
                         <h3 class="card-title text-white">
-                            <i class="fas fa-check-double brand-icon"></i> Master Clearance Status
+                            <i class="fas fa-archive brand-icon"></i> Completed Document Logs
                         </h3>
                     </div>
-                    <p class="card-note">Overview of student clearance across all departments (Library, Lab, Sports, Adviser).</p>
+                    <p class="card-note">History of all successfully processed and completed document requests.</p>
                     
                     <div class="table-responsive">
                         <table class="table">
                             <thead>
                                 <tr>
-                                    <th>Student</th>
-                                    <th>Library</th>
-                                    <th>Laboratory</th>
-                                    <th>Sports</th>
-                                    <th>Overall Status</th>
+                                    <th>Date Completed</th>
+                                    <th>Student Name</th>
+                                    <th>Document Processed</th>
+                                    <th>Status</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td colspan="5" class="empty-state">Clearance data unavailable.</td>
+                                <!-- Loop through completed requests from database -->
+                                <tr th:each="log : ${completedRequests}">
+                                    <td class="fw-bold text-light" th:text="${#temporals.format(log.requestedAt, 'MMM dd, yyyy - hh:mm a')}">Oct 24, 2023</td>
+                                    <td th:text="${log.firstName + ' ' + log.lastName}">Juan Dela Cruz</td>
+                                    <td th:text="${log.documentType}">Form 137</td>
+                                    <td><span class="badge bg-success bg-opacity-25 text-success border border-success"><i class="fas fa-check-circle me-1"></i>Done</span></td>
+                                </tr>
+                                <tr th:if="${completedRequests == null or completedRequests.isEmpty()}">
+                                    <td colspan="4" class="empty-state">No completed logs available.</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -405,14 +375,11 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
     <script>
-        // Sidebar Navigation Logic
         function switchPanel(panelId) {
-            // Update Active Link in Sidebar
             document.querySelectorAll('.sidebar-link').forEach(link => link.classList.remove('active'));
             const activeLink = document.getElementById('link-' + panelId);
             if (activeLink) activeLink.classList.add('active');
 
-            // Update Main Content Panels
             document.querySelectorAll('.tab-pane').forEach(pane => {
                 pane.classList.remove('show', 'active');
                 pane.style.display = 'none';
@@ -422,20 +389,16 @@
             if (targetPane) {
                 targetPane.style.display = 'block';
                 setTimeout(() => targetPane.classList.add('show', 'active'), 10);
-                
-                // Save state to local storage
                 localStorage.setItem('safeRegistrarTab', panelId);
             }
         }
 
-        // Initialize state on page load
         document.addEventListener("DOMContentLoaded", function() {
             const urlParams = new URLSearchParams(window.location.search);
-            // Default to 'directory' instead of 'registry'
-            let activeTab = urlParams.get('tab') || localStorage.getItem('safeRegistrarTab') || 'directory';
+            // Default is now 'documents'
+            let activeTab = urlParams.get('tab') || localStorage.getItem('safeRegistrarTab') || 'documents';
             switchPanel(activeTab);
 
-            // Auto-dismiss toasts
             setTimeout(function() {
                 document.querySelectorAll('.toast-notification').forEach(toast => {
                     toast.style.transition = 'opacity 0.5s ease-out, transform 0.5s ease-out';

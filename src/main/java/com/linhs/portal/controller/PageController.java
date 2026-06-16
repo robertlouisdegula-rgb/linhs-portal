@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -593,16 +594,45 @@ public class PageController {
 
     @GetMapping("/registrar-dashboard")
     public String showRegistrarDashboard(HttpSession session, Model model) {
+        // Basic security check (adjust role name if yours is slightly different)
         User user = (User) session.getAttribute("user");
-        if (user == null || user.getRoleName() == null || !user.getRoleName().trim().toUpperCase().contains("REGISTRAR")) return "redirect:/login";
+        if (user == null || user.getRoleName() == null || !user.getRoleName().trim().toUpperCase().contains("REGISTRAR")) {
+            return "redirect:/login";
+        }
 
-        List<DocumentRequest> allRequests = documentRequestRepository.findAll();
-        List<DocumentRequest> pending = allRequests.stream().filter(r -> "PENDING".equalsIgnoreCase(r.getStatus())).collect(Collectors.toList());
-        List<DocumentRequest> completed = allRequests.stream().filter(r -> "COMPLETED".equalsIgnoreCase(r.getStatus())).collect(Collectors.toList());
+        // Fetch all requests sorted by date
+        List<DocumentRequest> allRequests = documentRequestRepository.findAllByOrderByRequestedAtDesc();
+
+        // Filter into Pending (status is null or not completed)
+        List<DocumentRequest> pending = allRequests.stream()
+                .filter(req -> req.getStatus() == null || !req.getStatus().equalsIgnoreCase("COMPLETED"))
+                .collect(Collectors.toList());
+
+        // Filter into Completed
+        List<DocumentRequest> completed = allRequests.stream()
+                .filter(req -> req.getStatus() != null && req.getStatus().equalsIgnoreCase("COMPLETED"))
+                .collect(Collectors.toList());
 
         model.addAttribute("pendingRequests", pending);
         model.addAttribute("completedRequests", completed);
+
         return "registrar-dashboard";
+    }
+
+    @PostMapping("/registrar/documents/{id}/complete")
+    public String completeDocumentRequest(@PathVariable("id") Long id) {
+        try {
+            DocumentRequest request = documentRequestRepository.findById(id).orElse(null);
+            if (request != null) {
+                // Change the status to COMPLETED
+                request.setStatus("COMPLETED");
+                documentRequestRepository.save(request);
+            }
+            return "redirect:/registrar-dashboard?success=Document+request+marked+as+completed";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "redirect:/registrar-dashboard?error=Failed+to+update+status";
+        }
     }
 
     @PostMapping("/registrar/request/complete")
