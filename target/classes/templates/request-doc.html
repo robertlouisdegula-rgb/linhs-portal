@@ -169,7 +169,8 @@
             <i class="fas fa-exclamation-triangle me-2"></i> <span th:text="${errorMessage}"></span>
         </div>
 
-        <form action="/request-doc" method="POST" class="row g-4">
+        <!-- FIXED: Form action URL mapped precisely to match backend routing -->
+        <form action="/request-document/submit" method="POST" class="row g-4">
             
             <div class="col-md-6">
                 <label class="form-label">Student LRN</label>
@@ -178,7 +179,8 @@
 
             <div class="col-md-6">
                 <label class="form-label">Email Address / Contact</label>
-                <input type="email" name="contactNumber" class="form-control" placeholder="name@example.com" required>
+                <!-- FIXED: Input name parameter matches the expected alias model mapping binding -->
+                <input type="email" name="emailAddress" class="form-control" placeholder="name@example.com" required>
             </div>
 
             <div class="col-md-6">
