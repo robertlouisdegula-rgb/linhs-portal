@@ -264,8 +264,9 @@ public class PageController {
         model.addAttribute("allUsers", usersList);
         model.addAttribute("users", usersList);
         
+        // FIX: Now includes ALL admin accounts (Main Admin, Registrar, Lab, Clinic, etc.) EXCEPT Advisers
         List<User> staffList = usersList.stream()
-                .filter(u -> u.getRoleName() != null && !u.getRoleName().toUpperCase().contains("ADVISER") && !u.getRoleName().toUpperCase().contains("ADMIN"))
+                .filter(u -> u.getRoleName() != null && !u.getRoleName().toUpperCase().contains("ADVISER"))
                 .collect(Collectors.toList());
         model.addAttribute("staffAccounts", staffList);
 
@@ -277,6 +278,9 @@ public class PageController {
         model.addAttribute("resources", resourceHubRepository.findAll());
         model.addAttribute("cmsAnnouncements", announcementRepository.findAll());
         model.addAttribute("announcements", announcementRepository.findAll());
+        
+        // NEW: Add gallery items so they can be viewed/deleted in the editor tab
+        model.addAttribute("galleries", galleryRepository.findAll());
 
         return "admin-dashboard";
     }
@@ -347,6 +351,7 @@ public class PageController {
 
     @PostMapping("/admin/cms/update")
     public String updateCmsAnnouncements(
+            @RequestParam(value = "id", required = false) Long id,
             @RequestParam(value = "type", required = false, defaultValue = "announcement") String type,
             @RequestParam(value = "title", required = false) String title,
             @RequestParam(value = "content", required = false) String content,
@@ -354,22 +359,37 @@ public class PageController {
             @RequestParam(value = "fileAttachment", required = false) MultipartFile fileAttachment) {
         try {
             if ("announcement".equalsIgnoreCase(type) || "about".equalsIgnoreCase(type)) {
-                Announcement announcement = new Announcement();
+                // If ID is provided, edit the existing one. Otherwise, create new.
+                Announcement announcement = (id != null) ? announcementRepository.findById(id).orElse(new Announcement()) : new Announcement();
                 announcement.setTitle(title != null ? title : type);
                 announcement.setContent(content);
                 announcementRepository.save(announcement);
             } else if ("gallery".equalsIgnoreCase(type)) {
-                Gallery gallery = new Gallery();
+                Gallery gallery = (id != null) ? galleryRepository.findById(id).orElse(new Gallery()) : new Gallery();
                 gallery.setCaption(caption);
                 if (fileAttachment != null && !fileAttachment.isEmpty()) {
                     gallery.setImageUrl(fileAttachment.getOriginalFilename());
                 }
                 galleryRepository.save(gallery);
             }
-            return "redirect:/admin-dashboard?tab=2&success=Content+Published";
+            return "redirect:/admin-dashboard?tab=2&success=Content+Published+and+Updated";
         } catch (Exception e) {
             e.printStackTrace();
             return "redirect:/admin-dashboard?tab=2&error=Failed+to+publish+content";
+        }
+    }
+
+    @PostMapping("/admin/cms/delete")
+    public String deleteCmsContent(@RequestParam("type") String type, @RequestParam("id") Long id) {
+        try {
+            if ("announcement".equalsIgnoreCase(type)) {
+                announcementRepository.deleteById(id);
+            } else if ("gallery".equalsIgnoreCase(type)) {
+                galleryRepository.deleteById(id);
+            }
+            return "redirect:/admin-dashboard?tab=2&success=Content+Successfully+Deleted";
+        } catch (Exception e) {
+            return "redirect:/admin-dashboard?tab=2&error=Failed+to+delete+content";
         }
     }
 
@@ -436,6 +456,12 @@ public class PageController {
 
         List<StudentGrade> allGrades = studentGradeRepository.findAll();
         model.addAttribute("allGrades", allGrades);
+
+        Map<String, Map<Long, String>> gradesMap = new java.util.HashMap<>();
+    for (StudentGrade g : allGrades) {
+        gradesMap.computeIfAbsent(g.getStudentLrn(), k -> new java.util.HashMap<>()).put(g.getSubjectId(), g.getGrade());
+    }
+    model.addAttribute("gradesMap", gradesMap);
 
         return "adviser-dashboard"; 
     }
