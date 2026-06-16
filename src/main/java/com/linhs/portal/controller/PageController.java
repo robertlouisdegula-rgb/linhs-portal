@@ -652,6 +652,20 @@ public class PageController {
         return "redirect:/registrar-dashboard?success=Request+Deleted";
     }
 
+    @PostMapping("/registrar/documents/{id}/delete")
+    public String deleteDocumentLog(@PathVariable("id") Long id) {
+        try {
+            // Permanently drop the item from the database using its ID
+            documentRequestRepository.deleteById(id);
+            
+            // Redirects and safely lands the user back on the "logs" view tab
+            return "redirect:/registrar-dashboard?tab=logs&success=Log+entry+permanently+deleted";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "redirect:/registrar-dashboard?tab=logs&error=Failed+to+remove+log+entry";
+        }
+    }
+
     // =========================================================
     // --- FACILITIES / PROPERTY DASHBOARD ---
     // =========================================================

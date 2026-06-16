@@ -350,6 +350,7 @@
                                     <th>Student Name</th>
                                     <th>Document Processed</th>
                                     <th>Status</th>
+                                    <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -359,9 +360,18 @@
                                     <td th:text="${log.firstName + ' ' + log.lastName}">Juan Dela Cruz</td>
                                     <td th:text="${log.documentType}">Form 137</td>
                                     <td><span class="badge bg-success bg-opacity-25 text-success border border-success"><i class="fas fa-check-circle me-1"></i>Done</span></td>
+                                    <td>
+                                        <!-- Delete form structure mapping to our backend delete controller request mapping -->
+                                        <form th:action="@{/registrar/documents/{id}/delete(id=${log.id})}" method="post" 
+                                              onsubmit="return confirm('Are you sure you want to permanently remove this log from the history? This action cannot be undone.');">
+                                            <button type="submit" class="btn btn-outline-danger btn-sm px-3">
+                                                <i class="fas fa-trash-alt me-1"></i> Delete
+                                            </button>
+                                        </form>
+                                    </td>
                                 </tr>
                                 <tr th:if="${completedRequests == null or completedRequests.isEmpty()}">
-                                    <td colspan="4" class="empty-state">No completed logs available.</td>
+                                    <td colspan="5" class="empty-state">No completed logs available.</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -395,7 +405,6 @@
 
         document.addEventListener("DOMContentLoaded", function() {
             const urlParams = new URLSearchParams(window.location.search);
-            // Default is now 'documents'
             let activeTab = urlParams.get('tab') || localStorage.getItem('safeRegistrarTab') || 'documents';
             switchPanel(activeTab);
 
