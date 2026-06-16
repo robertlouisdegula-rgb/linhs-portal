@@ -56,7 +56,7 @@ public class PageController {
 
     private final AuthService authService;
     private final UserRepository userRepository;
-    private PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
     private final StudentRepository studentRepository;
     private final BorrowRecordRepository borrowRecordRepository;
     private final SportsEquipmentRepository sportsEquipmentRepository;
@@ -73,6 +73,7 @@ public class PageController {
 
     public PageController(AuthService authService,
             UserRepository userRepository,
+            PasswordEncoder passwordEncoder,
             StudentRepository studentRepository,
             BorrowRecordRepository borrowRecordRepository,
             SportsEquipmentRepository sportsEquipmentRepository,
@@ -88,6 +89,7 @@ public class PageController {
             LibraryBorrowRecordRepository libraryBorrowRecordRepository) {
         this.authService = authService;
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
         this.studentRepository = studentRepository;
         this.borrowRecordRepository = borrowRecordRepository;
         this.sportsEquipmentRepository = sportsEquipmentRepository;
