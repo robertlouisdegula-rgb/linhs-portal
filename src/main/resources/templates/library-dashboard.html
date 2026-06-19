@@ -115,7 +115,7 @@
         .modal-footer { border-top: 1px solid var(--border-color); }
         .btn-close { filter: invert(1) grayscale(100%) brightness(200%); }
 
-        /* SEARCH MODAL STYLES ADAPTED FOR LIBRARY */
+        /* SEARCH MODAL STYLES */
         .custom-modal {
             display: none;
             position: fixed;
@@ -270,7 +270,7 @@
         </main>
     </div>
 
-    <div class="modal fade" id="logBorrowModal" tabindex="-1" aria-hidden="true">
+    <div class="modal fade" id="logBorrowModal" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -315,7 +315,7 @@
             </div>
             
             <div class="mb-3">
-                <input type="text" id="modalSearchInput" oninput="filterStudentList()" class="form-control py-2" style="color: #ffffff !important; pointer-events: auto; background-color: var(--input-bg);" placeholder="Type student name or exact LRN to filter..." autocomplete="off">
+                <input type="text" id="modalSearchInput" oninput="filterStudentList()" class="form-control py-2" style="color: #ffffff !important; background-color: var(--input-bg); pointer-events: auto;" placeholder="Type student name or exact LRN to filter..." autocomplete="off">
             </div>
             
             <div class="rounded border p-2" style="border-color: var(--border-color) !important; background-color: var(--dark-bg); max-height: 350px; overflow-y: auto;">
@@ -368,13 +368,12 @@
         function openSearchModal() {
             document.getElementById('studentSearchModal').style.display = 'flex';
             
-            // 🛡️ FIXED: setTimeout absolutely guarantees the browser gives you the typing cursor (fixes ghost focus bug)
             setTimeout(() => {
                 const searchInput = document.getElementById('modalSearchInput');
                 searchInput.value = ''; 
                 filterStudentList(); 
                 searchInput.focus();
-            }, 50);
+            }, 100); 
         }
 
         function closeSearchModal() {
