@@ -12,7 +12,11 @@ public class StudentGrade {
     private String studentLrn;
     private Long subjectId;
     private String subjectName;
-    private String gradeValue;
+    
+    // New Semester Structure
+    private Double sem1;
+    private Double sem2;
+    private Double sem3;
     private Double finalGrade;
     private String remarks;
 
@@ -31,40 +35,24 @@ public class StudentGrade {
     public String getSubjectName() { return subjectName; }
     public void setSubjectName(String subjectName) { this.subjectName = subjectName; }
 
-    public String getGradeValue() { return gradeValue; }
-    public void setGradeValue(String gradeValue) { this.gradeValue = gradeValue; }
+    public Double getSem1() { return sem1; }
+    public void setSem1(Double sem1) { this.sem1 = sem1; }
 
-    // 🛡️ THE FIX: Added this getter so the HTML Thymeleaf ${grade.grade} doesn't crash!
-    public String getGrade() { return gradeValue; }
+    public Double getSem2() { return sem2; }
+    public void setSem2(Double sem2) { this.sem2 = sem2; }
 
-    public Double getFinalGrade() { 
-        return finalGrade; 
-    }
+    public Double getSem3() { return sem3; }
+    public void setSem3(Double sem3) { this.sem3 = sem3; }
 
-    public void setFinalGrade(Double finalGrade) { 
-        this.finalGrade = finalGrade; 
-    }
+    public Double getFinalGrade() { return finalGrade; }
+    public void setFinalGrade(Double finalGrade) { this.finalGrade = finalGrade; }
 
-    // This alias method allows your Controller to pass a String grade, 
-    // cleanly parsing it to a Double before saving!
-    public void setGrade(String gradeStr) {
-        this.gradeValue = gradeStr;
-        if (gradeStr == null || gradeStr.trim().isEmpty()) {
-            this.finalGrade = null;
-        } else {
-            try {
-                this.finalGrade = Double.parseDouble(gradeStr.trim());
-            } catch (NumberFormatException e) {
-                this.finalGrade = 0.0; // Fallback value if text is unparseable
-            }
-        }
-    }
+    public String getRemarks() { return remarks; }
+    public void setRemarks(String remarks) { this.remarks = remarks; }
 
-    public String getRemarks() { 
-        return remarks; 
-    }
-
-    public void setRemarks(String remarks) {
-        this.remarks = remarks;
-    }
+    // 🛡️ Helper methods to safely display N/A in HTML if the grade hasn't been encoded yet
+    public String getSem1Display() { return sem1 != null ? String.valueOf(sem1) : "N/A"; }
+    public String getSem2Display() { return sem2 != null ? String.valueOf(sem2) : "N/A"; }
+    public String getSem3Display() { return sem3 != null ? String.valueOf(sem3) : "N/A"; }
+    public String getFinalGradeDisplay() { return finalGrade != null ? String.format("%.2f", finalGrade) : "N/A"; }
 }

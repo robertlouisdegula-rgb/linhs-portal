@@ -2,6 +2,7 @@
 <html xmlns="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LINHS Portal | Student Clearance Tracker</title>
     <style>
         * {
@@ -34,307 +35,236 @@
             height: 80px;
             object-fit: contain;
             border-radius: 50%; /* Ensures it stays a perfect circle */
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Optional: adds a subtle shadow */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
         }
-        
-        .header h1 {
-            color: #064e3b;
-            font-size: 28px;
-            font-weight: 800;
-            letter-spacing: -0.5px;
+        .title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 8px;
         }
-        .header p {
-            color: #6b7280;
-            font-size: 15px;
-            margin-top: 5px;
+        .subtitle {
+            font-size: 1rem;
+            color: #64748b;
         }
-        .tracker-card {
+
+        .container {
             background-color: #ffffff;
-            border-radius: 16px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
             width: 100%;
-            max-width: 680px;
-            padding: 35px;
-            margin-bottom: 25px;
-            border: 1px solid #e5e7eb;
-        }
-        .search-form {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 30px;
-        }
-        .search-input {
-            flex: 1;
-            padding: 14px 18px;
-            border: 2px solid #e5e7eb;
-            border-radius: 10px;
-            font-size: 16px;
-            outline: none;
-            transition: all 0.2s ease;
-        }
-        .search-input:focus {
-            border-color: #10b981;
-            box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
-        }
-        .search-btn {
-            background-color: #064e3b;
-            color: #ffffff;
-            border: none;
-            padding: 0 28px;
-            font-size: 16px;
-            font-weight: 600;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: background-color 0.2s ease;
-        }
-        .search-btn:hover {
-            background-color: #043e2f;
-        }
-        .student-profile-header {
-            background-color: #f8fafc;
+            max-width: 850px;
             border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 30px;
-            border-left: 5px solid #064e3b;
-        }
-        .student-name {
-            font-size: 20px;
-            font-weight: 700;
-            color: #1f2937;
-        }
-        .student-lrn-meta {
-            font-size: 14px;
-            color: #6b7280;
-            margin-top: 4px;
-            font-family: monospace;
-        }
-        .clearance-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-            margin-bottom: 30px;
-        }
-        @media (max-width: 520px) {
-            .clearance-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-        .department-card {
-            background-color: #ffffff;
-            border: 1px solid #e5e7eb;
-            border-radius: 12px;
-            padding: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            transition: transform 0.15s ease;
-        }
-        .department-card:hover {
-            transform: translateY(-2px);
-        }
-        .dept-icon {
-            font-size: 22px;
-            margin-right: 12px;
-        }
-        .dept-name {
-            font-weight: 600;
-            color: #4b5563;
-            flex: 1;
-        }
-        .status-badge {
-            font-size: 12px;
-            font-weight: 700;
-            padding: 6px 12px;
-            border-radius: 20px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        .status-badge.cleared {
-            background-color: #d1fae5;
-            color: #065f46;
-        }
-        .status-badge.pending {
-            background-color: #fee2e2;
-            color: #991b1b;
-        }
-        .final-status {
-            border-radius: 12px;
-            padding: 20px;
-            text-align: center;
-            font-weight: 700;
-            font-size: 16px;
-        }
-        .final-status.success {
-            background-color: #d1fae5;
-            color: #065f46;
-            border: 1px solid #a7f3d0;
-        }
-        .final-status.warning {
-            background-color: #fffdb2;
-            color: #7c2d12;
-            border: 1px solid #fde047;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            padding: 30px;
             margin-bottom: 20px;
         }
-        .back-link {
-            color: #6b7280;
-            text-decoration: none;
-            font-size: 14px;
-            font-weight: 500;
-            transition: color 0.15s ease;
-        }
-        .back-link:hover {
-            color: #111827;
-        }
-        .alert-error {
-            background-color: #fee2e2;
-            color: #991b1b;
-            border-radius: 12px;
-            padding: 16px;
-            text-align: center;
-            font-weight: 600;
-            margin-bottom: 25px;
-            border: 1px solid #fca5a5;
-        }
-        .liability-box {
-            background-color: #fff1f2;
-            border: 1px solid #fecdd3;
+
+        /* Profile Banner & Grade Button */
+        .student-info {
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
             border-radius: 8px;
-            padding: 14px;
-            margin-bottom: 10px;
-            font-size: 14px;
-            color: #881337;
+            padding: 20px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
         }
-        .liability-title {
-            font-weight: 700;
-            color: #e11d48;
-            margin-bottom: 4px;
-            font-size: 15px;
+        .student-details h2 { font-size: 1.4rem; color: #0f172a; margin-bottom: 5px; }
+        .student-details p { color: #64748b; font-size: 0.95rem; margin: 0; }
+        
+        .btn-view-grades {
+            background-color: #10b981;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
+        .btn-view-grades:hover { background-color: #059669; }
+        .btn-view-grades:active { transform: scale(0.98); }
+
+        /* Liabilities Structure */
+        .status-grid { margin-bottom: 30px; }
+        .liability-box {
+            background: #fff;
+            border-left: 4px solid #ef4444;
+            padding: 15px;
+            border-radius: 6px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            margin-bottom: 15px;
+            border-top: 1px solid #e2e8f0;
+            border-right: 1px solid #e2e8f0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .liability-title { font-weight: 600; color: #1e293b; margin-bottom: 5px; }
+
+        .final-status { padding: 20px; border-radius: 8px; font-weight: 600; text-align: center; margin-top: 20px; }
+        .final-status.success { background-color: #d1fae5; color: #065f46; border: 1px solid #34d399; }
+        .final-status.warning { background-color: #fee2e2; color: #991b1b; border: 1px solid #f87171; }
+        
+        .back-link { color: #3b82f6; text-decoration: none; font-weight: 500; }
+        .back-link:hover { text-decoration: underline; }
+
+        /* Custom Grade Modal Styles */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.6);
+            display: none; align-items: center; justify-content: center;
+            z-index: 1000; opacity: 0; transition: opacity 0.3s ease;
+        }
+        .modal-overlay.active { display: flex; opacity: 1; }
+        .modal-content {
+            background: #ffffff; width: 95%; max-width: 800px;
+            border-radius: 12px; padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            position: relative; transform: translateY(-20px);
+            transition: transform 0.3s ease; max-height: 90vh; overflow-y: auto;
+        }
+        .modal-overlay.active .modal-content { transform: translateY(0); }
+        .modal-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 20px; border-bottom: 1px solid #e2e8f0; padding-bottom: 15px;
+        }
+        .modal-title { font-size: 1.4rem; font-weight: 700; color: #1e293b; }
+        .close-btn { background: none; border: none; font-size: 1.8rem; color: #94a3b8; cursor: pointer; line-height: 1; }
+        .close-btn:hover { color: #ef4444; }
+
+        /* Modal Table */
+        .grades-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
+        .grades-table th { background-color: #f1f5f9; color: #475569; font-weight: 600; padding: 12px 15px; border-bottom: 2px solid #e2e8f0; text-align: center; }
+        .grades-table th:first-child { text-align: left; }
+        .grades-table td { padding: 12px 15px; border-bottom: 1px solid #e2e8f0; color: #333; text-align: center; }
+        .grades-table td:first-child { text-align: left; font-weight: 500; }
+        .grades-table tr:hover { background-color: #f8fafc; }
+        
+        .grade-highlight { font-weight: 700; color: #10b981; }
+        .empty-grade-state { text-align: center; padding: 30px; color: #64748b; font-style: italic; }
     </style>
 </head>
 <body>
 
     <div class="header">
-            <div class="logo-container">
-                <img src="/path/to/your/logo.png" alt="LINHS Logo" class="logo-img">
+        <div class="logo-container">
+            <img src="/images/logo.png" alt="LINHS Logo" class="logo-img">
+        </div>
+        <div class="title">LINHS Status Portal</div>
+        <div class="subtitle">Clearance & Academic Records Checker</div>
+    </div>
+
+    <div class="container" th:if="${student != null}">
+        
+        <div class="student-info">
+            <div class="student-details">
+                <h2 th:text="${student.name}">Student Name</h2>
+                <p th:text="|LRN: ${student.lrn} | Section: ${student.section != null ? student.section : 'Unassigned'}|">LRN: 123456789</p>
             </div>
-            <h1>Student Clearance Tracker</h1>
-            <p>Check your department liabilities and clearance status</p>
+            <button class="btn-view-grades" onclick="openGradeModal()">
+                <span>📄 View Academic Grades</span>
+            </button>
         </div>
 
-    <div class="tracker-card">
+        <h3 style="color: #1e293b; margin-bottom: 15px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px;">Clearance Liabilities</h3>
 
-        <form action="/clearance/track" method="GET" class="search-form">
-            <input type="text" name="lrn" class="search-input" placeholder="Enter 12-Digit Student LRN Identification code..." th:value="${student != null ? student?.lrn : ''}" pattern="\d+" required autocomplete="off">
-            <button type="submit" class="search-btn">Query Status</button>
-        </form>
+        <div class="status-grid">
+            
+            <div th:if="${not #lists.isEmpty(pendingLiabilities)}">
+                <div th:each="liability : ${pendingLiabilities}" class="liability-box">
+                    <div class="liability-title" th:text="|⚠️ ${liability.category} Hold:|">Category</div>
+                    <div th:text="${liability.description}">Description</div>
+                </div>
+            </div>
+            
+            <div th:if="${not #lists.isEmpty(facilityLogs)}">
+                <div th:each="fItem : ${facilityLogs}" class="liability-box">
+                    <div class="liability-title">🏢 Damage Reference Item:</div>
+                    <div th:text="|Facility: ${fItem?.facility != null ? fItem?.facility : 'Unknown'} - ${fItem?.description != null ? fItem?.description : 'No log details'}|">Details</div>
+                </div>
+            </div>
 
-        <div th:if="${error != null}" class="alert-error" th:text="${error}">
-            🔍 LRN matching parameter records not found inside database index registry.
+            </div>
+
+        <div th:if="${student?.adviserClearance == 'CLEARED' and student?.labClearance == 'CLEARED' and student?.sportsClearance == 'CLEARED' and student?.guidanceClearance == 'CLEARED' and student?.facilitiesClearance == 'CLEARED' and student?.libraryClearance == 'CLEARED'}"
+            class="final-status success">
+            🎉 Congratulations! You are fully cleared for this academic period.
         </div>
-        <div th:if="${notFound}" class="alert-error">
-            🔍 LRN matching parameter records not found inside database index registry.
-        </div>
-
-        <div th:if="${student != null}">
-
-            <div class="student-profile-header">
-                <div class="student-name" th:text="${student?.name}">Student Account Name Profile</div>
-                <div class="student-lrn-meta">LRN System Index Parameter Identification Code: <span th:text="${student?.lrn}">123456789012</span></div>
-                <div class="student-lrn-meta" style="margin-top: 4px; font-weight: 600; color: #374151;">Section Unit Structure Assignment: <span th:text="${student?.section}">Grade 11 - Emerald</span></div>
-            </div>
-
-            <div class="clearance-grid">
-                
-                <div class="department-card">
-                    <div class="dept-icon">👨‍🏫</div>
-                    <div class="dept-name">Class Adviser</div>
-                    <div class="status-badge" 
-                         th:classappend="${student?.adviserClearance == 'CLEARED' ? 'cleared' : 'pending'}"
-                         th:text="${student?.adviserClearance != null ? student?.adviserClearance : 'PENDING'}">PENDING</div>
-                </div>
-
-                <div class="department-card">
-                    <div class="dept-icon">🔬</div>
-                    <div class="dept-name">Laboratory Management</div>
-                    <div class="status-badge" 
-                         th:classappend="${student?.labClearance == 'CLEARED' ? 'cleared' : 'pending'}"
-                         th:text="${student?.labClearance != null ? student?.labClearance : 'PENDING'}">PENDING</div>
-                </div>
-
-                <div class="department-card">
-                    <div class="dept-icon">📚</div>
-                    <div class="dept-name">School Library</div>
-                    <div class="status-badge" 
-                         th:classappend="${student?.libraryClearance == 'CLEARED' ? 'cleared' : 'pending'}"
-                         th:text="${student?.libraryClearance != null ? student?.libraryClearance : 'PENDING'}">PENDING</div>
-                </div>
-
-                <div class="department-card">
-                    <div class="dept-icon">⚽</div>
-                    <div class="dept-name">Sports Department</div>
-                    <div class="status-badge" 
-                         th:classappend="${student?.sportsClearance == 'CLEARED' ? 'cleared' : 'pending'}"
-                         th:text="${student?.sportsClearance != null ? student?.sportsClearance : 'PENDING'}">PENDING</div>
-                </div>
-
-                <div class="department-card">
-                    <div class="dept-icon">⚖️</div>
-                    <div class="dept-name">Guidance Office</div>
-                    <div class="status-badge" 
-                         th:classappend="${student?.guidanceClearance == 'CLEARED' ? 'cleared' : 'pending'}"
-                         th:text="${student?.guidanceClearance != null ? student?.guidanceClearance : 'PENDING'}">PENDING</div>
-                </div>
-
-                <div class="department-card">
-                    <div class="dept-icon">🏢</div>
-                    <div class="dept-name">Facilities & Property</div>
-                    <div class="status-badge" 
-                         th:classappend="${student?.facilitiesClearance == 'CLEARED' ? 'cleared' : 'pending'}"
-                         th:text="${student?.facilitiesClearance != null ? student?.facilitiesClearance : 'PENDING'}">PENDING</div>
-                </div>
-            </div>
-
-            <div th:if="${unresolvedGuidance != null or unresolvedFacilities != null}" style="margin-bottom: 25px;">
-                
-                <div th:if="${unresolvedGuidance != null and not #lists.isEmpty(unresolvedGuidance)}">
-                    <h3 style="font-size: 16px; color: #b91c1c; margin-bottom: 12px; border-bottom: 1px solid #fca5a5; padding-bottom: 8px;">
-                        ⚠️ Guidance Department Holds:
-                    </h3>
-                    <div th:each="gItem : ${unresolvedGuidance}" class="liability-box">
-                        <div class="liability-title">⚖️ Infraction Incident:</div>
-                        <div th:text="|Incident Description: ${gItem?.incident != null ? gItem?.incident : 'Unspecified'}|">Details</div>
-                    </div>
-                </div>
-                
-                <div th:if="${unresolvedFacilities != null and not #lists.isEmpty(unresolvedFacilities)}" style="margin-top: 15px;">
-                    <h3 style="font-size: 16px; color: #b91c1c; margin-bottom: 12px; border-bottom: 1px solid #fca5a5; padding-bottom: 8px;">
-                        🏢 Facilities & Property Account holds:
-                    </h3>
-                    <div th:each="fItem : ${unresolvedFacilities}" class="liability-box">
-                        <div class="liability-title">🏢 Damage Reference Item:</div>
-                        <div th:text="|Facility: ${fItem?.facility != null ? fItem?.facility : 'Unknown'} - ${fItem?.description != null ? fItem?.description : 'No log details'}|">Details</div>
-                    </div>
-                </div>
-
-            </div>
-
-            <div th:if="${student?.adviserClearance == 'CLEARED' and student?.labClearance == 'CLEARED' and student?.sportsClearance == 'CLEARED' and student?.guidanceClearance == 'CLEARED' and student?.facilitiesClearance == 'CLEARED' and student?.libraryClearance == 'CLEARED'}"
-                class="final-status success">
-                🎉 Congratulations! You are fully cleared for this academic period.
-            </div>
-            <div th:unless="${student?.adviserClearance == 'CLEARED' and student?.labClearance == 'CLEARED' and student?.sportsClearance == 'CLEARED' and student?.guidanceClearance == 'CLEARED' and student?.facilitiesClearance == 'CLEARED' and student?.libraryClearance == 'CLEARED'}"
-                class="final-status warning">
-                ⚠️ You still have pending liabilities. Please visit the respective departments displayed above to resolve holds.
-            </div>
-
-        </div>
-
-        <div style="text-align: center; margin-top: 15px;">
-            <a href="/" class="back-link">← Return to Homepage Portal</a>
+        <div th:unless="${student?.adviserClearance == 'CLEARED' and student?.labClearance == 'CLEARED' and student?.sportsClearance == 'CLEARED' and student?.guidanceClearance == 'CLEARED' and student?.facilitiesClearance == 'CLEARED' and student?.libraryClearance == 'CLEARED'}"
+            class="final-status warning">
+            ⚠️ You still have pending liabilities. Please visit the respective departments displayed above to resolve holds.
         </div>
 
     </div>
 
+    <div class="container" th:if="${student == null and param.error}">
+        <div class="final-status warning">
+            ❌ Student LRN not found. Please verify your number and try again.
+        </div>
+    </div>
+
+    <div style="text-align: center; margin-top: 15px;">
+        <a href="/" class="back-link">← Return to Homepage Portal</a>
+    </div>
+
+    <div class="modal-overlay" id="gradesModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Academic Record</div>
+                <button class="close-btn" onclick="closeGradeModal()">&times;</button>
+            </div>
+            
+            <div th:if="${#lists.isEmpty(studentGrades)}" class="empty-grade-state">
+                No academic grades have been submitted for this student yet.
+            </div>
+
+            <table class="grades-table" th:if="${not #lists.isEmpty(studentGrades)}">
+                <thead>
+                    <tr>
+                        <th>Subject</th>
+                        <th>Sem 1</th>
+                        <th>Sem 2</th>
+                        <th>Sem 3</th>
+                        <th>Final Grade</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="grade : ${studentGrades}">
+                        <td th:text="${grade.subjectName}">Subject Name</td>
+                        <td th:text="${grade.getSem1Display()}">N/A</td>
+                        <td th:text="${grade.getSem2Display()}">N/A</td>
+                        <td th:text="${grade.getSem3Display()}">N/A</td>
+                        <td class="grade-highlight" th:text="${grade.getFinalGradeDisplay()}">N/A</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const modal = document.getElementById('gradesModal');
+        
+        function openGradeModal() {
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden'; // Prevents background scrolling
+        }
+
+        function closeGradeModal() {
+            modal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Close modal if user clicks anywhere outside the white box
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                closeGradeModal();
+            }
+        });
+    </script>
 </body>
 </html>

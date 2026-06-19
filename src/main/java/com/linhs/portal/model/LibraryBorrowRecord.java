@@ -4,20 +4,36 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "library_borrow_records")
 public class LibraryBorrowRecord {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "student_lrn", nullable = false)
     private String studentLrn;
+
+    @Column(name = "student_name", nullable = false)
     private String studentName;
+
+    @Column(name = "book_title", nullable = false)
     private String bookTitle;
-    private String status;
+
+    @Column(name = "status", nullable = false)
+    private String status; // Values: "ACTIVE" or "RETURNED"
+
+    @Column(name = "borrowed_at", nullable = false)
     private LocalDateTime borrowedAt;
 
+    @Column(name = "returned_at")
+    private LocalDateTime returnedAt;
+
+    // Default constructor required by JPA
     public LibraryBorrowRecord() {
     }
 
+    // Getters and Setters
     public Long getId() {
         return id;
     }
@@ -66,16 +82,16 @@ public class LibraryBorrowRecord {
         this.borrowedAt = borrowedAt;
     }
 
-    // =========================================================
-    // --- BRIDGE METHOD TO MATCH CONTROLLER EXPECTATIONS ---
-    // =========================================================
-
-    // Maps the controller's lbr.getBorrowDate() call to the borrowedAt field
-    public LocalDateTime getBorrowDate() {
-        return this.borrowedAt;
+    public LocalDateTime getReturnedAt() {
+        return returnedAt;
     }
 
-    public void setBorrowDate(LocalDateTime borrowDate) {
-        this.borrowedAt = borrowDate;
+    public void setReturnedAt(LocalDateTime returnedAt) {
+        this.returnedAt = returnedAt;
+    }
+
+    // Bridge method to maintain backward compatibility with old dashboard fragments
+    public LocalDateTime getBorrowDate() {
+        return this.borrowedAt;
     }
 }

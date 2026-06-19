@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -29,6 +30,7 @@ import com.linhs.portal.model.Gallery;
 import com.linhs.portal.model.GuidanceLog;
 import com.linhs.portal.model.LabLiability;
 import com.linhs.portal.model.Liability;
+import com.linhs.portal.model.LibraryBorrowRecord;
 import com.linhs.portal.model.ResourceHub;
 import com.linhs.portal.model.Student;
 import com.linhs.portal.model.StudentGrade;
@@ -229,7 +231,7 @@ public class PageController {
             model.addAttribute("notFound", true);
             model.addAttribute("unresolvedGuidance", new ArrayList<>());
             model.addAttribute("unresolvedFacilities", new ArrayList<>());
-            return "clearance-status";
+            return "clearance-status"; // <-- Skip this one (this is for when a student isn't found)[cite: 22]
         }
 
         Student student = studentOpt.get();
@@ -248,7 +250,11 @@ public class PageController {
         model.addAttribute("unresolvedGuidance", unresolvedGuidance != null ? unresolvedGuidance : new ArrayList<>());
         model.addAttribute("unresolvedFacilities", unresolvedFacilities != null ? unresolvedFacilities : new ArrayList<>());
 
-        return "clearance-status";
+        // ---> ADD THESE TWO LINES RIGHT HERE <---
+        List<StudentGrade> studentGrades = studentGradeRepository.findByStudentLrn(student.getLrn());
+        model.addAttribute("studentGrades", studentGrades);
+
+        return "clearance-status"; // <-- This is the final return statement of the method![cite: 22]
     }
 
     // =========================================================
@@ -439,7 +445,7 @@ public class PageController {
         
         if (user == null || user.getRoleName() == null || 
             (!user.getRoleName().trim().toUpperCase().contains("ADVISER") && 
-             !user.getRoleName().trim().toUpperCase().contains("TEACHER"))) {
+            !user.getRoleName().trim().toUpperCase().contains("TEACHER"))) {
             return "redirect:/login";
         }
 
@@ -465,11 +471,11 @@ public class PageController {
         List<StudentGrade> allGrades = studentGradeRepository.findAll();
         model.addAttribute("allGrades", allGrades);
 
-        Map<String, Map<Long, String>> gradesMap = new java.util.HashMap<>();
-    for (StudentGrade g : allGrades) {
-        gradesMap.computeIfAbsent(g.getStudentLrn(), k -> new java.util.HashMap<>()).put(g.getSubjectId(), g.getGrade());
-    }
-    model.addAttribute("gradesMap", gradesMap);
+        Map<String, Map<Long, StudentGrade>> gradesMap = new java.util.HashMap<>();
+        for (StudentGrade g : allGrades) {
+            gradesMap.computeIfAbsent(g.getStudentLrn(), k -> new java.util.HashMap<>()).put(g.getSubjectId(), g);
+        }
+        model.addAttribute("gradesMap", gradesMap);
 
         return "adviser-dashboard"; 
     }
@@ -535,33 +541,52 @@ public class PageController {
     @PostMapping("/adviser/grade/save")
     public String saveStudentGrades(@RequestParam("studentLrn") String studentLrn, @RequestParam Map<String, String> params) {
         try {
-            for (String key : params.keySet()) {
-                if (key.startsWith("subject_")) {
-                    Long subjectId = Long.parseLong(key.replace("subject_", ""));
-                    String gradeValue = params.get(key);
-                    Optional<Subject> subjOpt = subjectRepository.findById(subjectId);
+            List<Subject> allSubjects = subjectRepository.findAll();
+            List<StudentGrade> existingGrades = studentGradeRepository.findByStudentLrn(studentLrn);
+
+            for (Subject subj : allSubjects) {
+                Long subjectId = subj.getId();
+                String sem1Key = "sem1_" + subjectId;
+                String sem2Key = "sem2_" + subjectId;
+                String sem3Key = "sem3_" + subjectId;
+
+                // Only process if at least one parameter for this subject was sent
+                if (params.containsKey(sem1Key) || params.containsKey(sem2Key) || params.containsKey(sem3Key)) {
                     
-                    if (subjOpt.isPresent()) {
-                        Subject subj = subjOpt.get();
-                        List<StudentGrade> existing = studentGradeRepository.findByStudentLrn(studentLrn);
-                        StudentGrade currentGrade = existing.stream().filter(g -> g.getSubjectId().equals(subjectId)).findFirst().orElse(new StudentGrade());
-                        
-                        if (currentGrade.getStudentLrn() == null) {
-                            currentGrade.setStudentLrn(studentLrn);
-                            currentGrade.setSubjectId(subjectId);
-                            currentGrade.setSubjectName(subj.getName());
-                        }
-                        currentGrade.setGrade(gradeValue);
-                        
-                        try {
-                            double numericGrade = Double.parseDouble(gradeValue);
-                            currentGrade.setRemarks(numericGrade >= 75.0 ? "PASSED" : "FAILED");
-                        } catch (Exception ex) {
-                            currentGrade.setRemarks("FAILED");
-                        }
-                        
-                        studentGradeRepository.save(currentGrade);
+                    StudentGrade currentGrade = existingGrades.stream()
+                            .filter(g -> g.getSubjectId().equals(subjectId))
+                            .findFirst()
+                            .orElse(new StudentGrade());
+
+                    if (currentGrade.getStudentLrn() == null) {
+                        currentGrade.setStudentLrn(studentLrn);
+                        currentGrade.setSubjectId(subjectId);
+                        currentGrade.setSubjectName(subj.getName());
                     }
+
+                    // Parse the individual semesters
+                    String s1 = params.get(sem1Key);
+                    currentGrade.setSem1((s1 != null && !s1.trim().isEmpty()) ? Double.parseDouble(s1) : null);
+
+                    String s2 = params.get(sem2Key);
+                    currentGrade.setSem2((s2 != null && !s2.trim().isEmpty()) ? Double.parseDouble(s2) : null);
+
+                    String s3 = params.get(sem3Key);
+                    currentGrade.setSem3((s3 != null && !s3.trim().isEmpty()) ? Double.parseDouble(s3) : null);
+
+                    // Compute Final Grade ONLY if all 3 semesters have grades
+                    if (currentGrade.getSem1() != null && currentGrade.getSem2() != null && currentGrade.getSem3() != null) {
+                        double avg = (currentGrade.getSem1() + currentGrade.getSem2() + currentGrade.getSem3()) / 3.0;
+                        // Format to exactly 2 decimal places
+                        currentGrade.setFinalGrade(Math.round(avg * 100.0) / 100.0);
+                        currentGrade.setRemarks(currentGrade.getFinalGrade() >= 75.0 ? "PASSED" : "FAILED");
+                    } else {
+                        // Keep incomplete grades as N/A and pending
+                        currentGrade.setFinalGrade(null);
+                        currentGrade.setRemarks("PENDING");
+                    }
+
+                    studentGradeRepository.save(currentGrade);
                 }
             }
             return "redirect:/adviser-dashboard?tab=grading&success=Grades+Saved";
@@ -1117,109 +1142,90 @@ public class PageController {
     // =========================================================
     // --- LIBRARY DASHBOARD (TRANSACTION LOGGER) ---
     // =========================================================
+// 1. RENDER DASHBOARD PANELS
+@GetMapping("/library-dashboard")
+public String showLibraryDashboard(Model model) {
+    // Collect separate sets for Active Tab and History Log Tab
+    List<LibraryBorrowRecord> activeBorrows = libraryBorrowRecordRepository.findByStatusOrderByBorrowedAtDesc("ACTIVE");
+    List<LibraryBorrowRecord> libraryLogs = libraryBorrowRecordRepository.findByStatusOrderByBorrowedAtDesc("RETURNED");
+    
+    model.addAttribute("activeBorrows", activeBorrows);
+    model.addAttribute("libraryLogs", libraryLogs);
+    return "library-dashboard";
+}
 
-    @GetMapping("/library-dashboard")
-    public String showLibraryDashboard(HttpSession session, Model model) {
-        User user = (User) session.getAttribute("user");
-        if (user == null || user.getRoleName() == null || 
-           (!user.getRoleName().trim().toUpperCase().contains("LIBRARY") && 
-            !user.getRoleName().trim().toUpperCase().contains("LIBRARIAN"))) {
-            return "redirect:/login";
-        }
-
-        // 1. Fetch Active Borrows (Reusing BorrowRecord with "LIBRARY_BORROWED" tag)
-        List<BorrowRecord> activeBorrows = borrowRecordRepository.findAll().stream()
-                .filter(b -> "LIBRARY_BORROWED".equalsIgnoreCase(b.getStatus()))
-                .collect(Collectors.toList());
-        model.addAttribute("activeBorrows", activeBorrows);
-
-        // 2. Fetch Unresolved Liabilities (Filters general liabilities specifically for Library)
-        List<Liability> unresolved = liabilityRepository.findAll().stream()
-                .filter(l -> "PENDING".equalsIgnoreCase(l.getStatus()) && l.getTitle() != null && 
-                            (l.getTitle().toUpperCase().contains("LIBRARY") || l.getTitle().toUpperCase().contains("BOOK")))
-                .collect(Collectors.toList());
-        model.addAttribute("libraryLiabilities", unresolved);
-
-        return "library-dashboard"; 
+// 2. LIVE SEARCH REST API (Processes AJAX calls from search box dropdown)
+@GetMapping("/api/students/search")
+@ResponseBody
+public List<Student> searchStudentsForLibrary(@RequestParam("q") String query) {
+    if (query == null || query.trim().length() < 2) {
+        return new java.util.ArrayList<>();
     }
+    return studentRepository.findByLrnContainingOrNameContainingIgnoreCase(query, query);
+}
 
-    @PostMapping("/library/borrow/add")
-    public String addLibraryBorrow(@RequestParam("studentLrn") String studentLrn, @RequestParam("title") String title) {
-        try {
-            java.util.Optional<Student> studentOpt = studentRepository.findById(studentLrn);
-            if (studentOpt.isEmpty()) return "redirect:/library-dashboard?tab=borrowed&error=Student+LRN+not+found";
-
-            // Log borrow directly without checking inventory
-            BorrowRecord record = new BorrowRecord();
-            record.setStudentLrn(studentLrn);
-            record.setItemName(title); 
-            record.setBorrowedAt(java.time.LocalDateTime.now());
-            record.setStatus("LIBRARY_BORROWED");
-            
-            // Saves student name if your model requires it
-            if(studentOpt.isPresent()){
-                record.setStudentName(studentOpt.get().getName());
-            }
-            borrowRecordRepository.save(record);
-
-            // Lock student's clearance
-            Student s = studentOpt.get();
-            s.setLibraryClearance("PENDING");
-            studentRepository.save(s);
-
-            return "redirect:/library-dashboard?tab=borrowed&success=Book+loan+recorded";
-        } catch (Exception e) {
-            return "redirect:/library-dashboard?tab=borrowed&error=Failed+to+record+loan";
-        }
+// 3. LOG NEW ACTIVE BOOK BORROW
+@PostMapping("/library/borrow/add")
+public String addLibraryBorrow(@RequestParam("studentLrn") String lrn,
+                               @RequestParam("studentName") String name,
+                               @RequestParam("bookTitle") String bookTitle,
+                               RedirectAttributes redirectAttributes) {
+    LibraryBorrowRecord record = new LibraryBorrowRecord();
+    record.setStudentLrn(lrn);
+    record.setStudentName(name);
+    record.setBookTitle(bookTitle);
+    record.setStatus("ACTIVE");
+    record.setBorrowedAt(LocalDateTime.now());
+    libraryBorrowRecordRepository.save(record);
+    
+    // Automatically set the student's global library clearance status to PENDING
+    Optional<Student> studentOpt = studentRepository.findById(lrn);
+    if (studentOpt.isPresent()) {
+        Student student = studentOpt.get();
+        student.setLibraryClearance("PENDING");
+        studentRepository.save(student);
     }
+    
+    redirectAttributes.addFlashAttribute("successMessage", "Book borrowing logged successfully!");
+    return "redirect:/library-dashboard";
+}
 
-    @PostMapping("/library/borrow/return")
-    public String returnLibraryBorrow(@RequestParam("id") Long id) {
-        java.util.Optional<BorrowRecord> opt = borrowRecordRepository.findById(id);
-        if (opt.isPresent()) {
-            BorrowRecord record = opt.get();
-            record.setStatus("LIBRARY_RETURNED");
-            borrowRecordRepository.save(record);
-        }
-        return "redirect:/library-dashboard?tab=borrowed&success=Book+marked+as+returned";
-    }
-
-    @PostMapping("/library/liability/add")
-    public String addLibraryLiability(@RequestParam("studentLrn") String studentLrn, @RequestParam("description") String description) {
-        try {
-            java.util.Optional<Student> studentOpt = studentRepository.findById(studentLrn);
-            if (studentOpt.isEmpty()) return "redirect:/library-dashboard?tab=liabilities&error=Student+LRN+not+found";
-
-            Liability liability = new Liability();
-            liability.setStudent(studentOpt.get());
-            liability.setTitle("Library Book Liability");
-            liability.setDescription(description);
-            liability.setStatus("PENDING");
-            liability.setCreatedAt(java.time.LocalDateTime.now());
-            liabilityRepository.save(liability);
-
-            return "redirect:/library-dashboard?tab=liabilities&success=Liability+recorded+successfully";
-        } catch (Exception e) {
-            return "redirect:/library-dashboard?tab=liabilities&error=Failed+to+record+liability";
-        }
-    }
-
-    @PostMapping("/library/liability/clear")
-    public String clearLibraryLiability(@RequestParam("liabilityId") Long liabilityId) {
-        java.util.Optional<com.linhs.portal.model.Liability> opt = liabilityRepository.findById(liabilityId);
-        if (opt.isPresent()) {
-            com.linhs.portal.model.Liability liability = opt.get();
-            liability.setStatus("CLEARED");
-            liabilityRepository.save(liability);
-            
-            Student s = liability.getStudent();
-            if (s != null) {
-                s.setLibraryClearance("CLEARED");
-                studentRepository.save(s);
+// 4. MARK AS RETURNED (Moves item out of active borrows into log history)
+@PostMapping("/library/borrow/return")
+public String returnLibraryBook(@RequestParam("id") Long id, RedirectAttributes redirectAttributes) {
+    Optional<LibraryBorrowRecord> recordOpt = libraryBorrowRecordRepository.findById(id);
+    if (recordOpt.isPresent()) {
+        LibraryBorrowRecord record = recordOpt.get();
+        record.setStatus("RETURNED");
+        record.setReturnedAt(LocalDateTime.now());
+        libraryBorrowRecordRepository.save(record);
+        
+        // Check if this student has any remaining unreturned books
+        List<LibraryBorrowRecord> remainingActive = libraryBorrowRecordRepository.findByStudentLrnAndStatus(record.getStudentLrn(), "ACTIVE");
+        
+        // If they returned all books, auto-clear their clearance row!
+        if (remainingActive.isEmpty()) {
+            Optional<Student> studentOpt = studentRepository.findById(record.getStudentLrn());
+            if (studentOpt.isPresent()) {
+                Student student = studentOpt.get();
+                student.setLibraryClearance("CLEARED");
+                studentRepository.save(student);
             }
         }
-        return "redirect:/library-dashboard?tab=liabilities&success=Liability+resolved+and+student+cleared";
     }
+    
+    redirectAttributes.addFlashAttribute("successMessage", "Book returned successfully and liability removed!");
+    return "redirect:/library-dashboard";
+}
+
+// 5. CLEAR LOG HISTORY FROM THE DATABASE WEEKLIES
+@PostMapping("/library/logs/clear")
+@jakarta.transaction.Transactional
+public String clearLibraryLogs(RedirectAttributes redirectAttributes) {
+    libraryBorrowRecordRepository.deleteByStatus("RETURNED");
+    redirectAttributes.addFlashAttribute("successMessage", "Historical return logs wiped cleanly!");
+    return "redirect:/library-dashboard";
+}
 
     // =========================================================
     // --- BACKGROUND PROCESSING COMPONENTS ---
@@ -1273,7 +1279,7 @@ public class PageController {
 
     public static class OpenLiabilityItem {
         private final String category;
-        private final String description;
+        private final String description; 
         private final LocalDateTime loggedAt;
         private final String state;
         public OpenLiabilityItem(String category, String description, LocalDateTime loggedAt, String state) { this.category = category; this.description = description; this.loggedAt = loggedAt; this.state = state; }

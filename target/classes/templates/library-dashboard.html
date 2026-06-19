@@ -41,200 +41,97 @@
             z-index: 10;
         }
 
-        .brand-title {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: var(--text-main);
-        }
-
+        .brand-title { font-size: 1.25rem; font-weight: 700; color: var(--text-main); }
         .brand-icon { color: var(--emerald-green); }
 
-        .user-info {
-            font-size: 0.9rem;
-            color: var(--text-light-grey);
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
+        .user-info { font-size: 0.9rem; color: var(--text-light-grey); display: flex; align-items: center; gap: 15px; }
 
-        .layout-wrapper {
-            display: flex;
-            flex: 1;
-            overflow: hidden;
-        }
+        .layout-wrapper { display: flex; flex: 1; overflow: hidden; }
 
         .sidebar {
-            width: 280px;
-            background-color: var(--panel-bg);
-            border-right: 1px solid var(--border-color);
-            padding: 24px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
+            width: 280px; background-color: var(--panel-bg); border-right: 1px solid var(--border-color);
+            padding: 24px; display: flex; flex-direction: column; gap: 8px;
         }
 
         .sidebar-header {
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--text-light-grey);
-            font-weight: 600;
-            margin-bottom: 16px;
-            padding-left: 12px;
+            font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px;
+            color: var(--text-light-grey); font-weight: 600; margin-bottom: 16px; padding-left: 12px;
         }
 
         .sidebar-link {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 16px;
-            color: var(--text-light-grey);
-            text-decoration: none;
-            border-radius: 8px;
-            font-weight: 500;
-            transition: all 0.2s ease;
-            cursor: pointer;
-            border: 1px solid transparent;
+            display: flex; align-items: center; gap: 12px; padding: 12px 16px;
+            color: var(--text-light-grey); text-decoration: none; border-radius: 8px;
+            font-weight: 500; transition: all 0.2s ease; cursor: pointer; border: 1px solid transparent;
         }
 
-        .sidebar-link:hover {
-            color: var(--text-main);
-            background-color: rgba(255, 255, 255, 0.03);
-        }
-
+        .sidebar-link:hover { color: var(--text-main); background-color: rgba(255, 255, 255, 0.03); }
         .sidebar-link.active {
-            background-color: var(--emerald-green);
-            color: #000000;
-            font-weight: 600;
-            border-color: var(--emerald-green);
+            background-color: var(--emerald-green); color: #000000; font-weight: 600; border-color: var(--emerald-green);
         }
 
-        .main-content {
-            flex: 1;
-            padding: 30px 40px;
-            overflow-y: auto;
-            background-color: var(--dark-bg);
-        }
+        .main-content { flex: 1; padding: 30px 40px; overflow-y: auto; background-color: var(--dark-bg); }
 
-        .tab-pane {
-            display: none;
-            opacity: 0;
-            transition: opacity 0.2s ease-in-out;
-        }
-
-        .tab-pane.show.active {
-            display: block;
-            opacity: 1;
-        }
+        .tab-pane { display: none; opacity: 0; transition: opacity 0.2s ease-in-out; }
+        .tab-pane.show.active { display: block; opacity: 1; }
 
         .custom-card {
-            background-color: var(--panel-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 24px;
-            margin-bottom: 24px;
+            background-color: var(--panel-bg); border: 1px solid var(--border-color);
+            border-radius: 12px; padding: 24px; margin-bottom: 24px;
         }
 
         .card-header-flex {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 15px;
-            flex-wrap: wrap;
-            gap: 15px;
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 20px; border-bottom: 1px solid var(--border-color);
+            padding-bottom: 15px; flex-wrap: wrap; gap: 15px;
         }
 
-        .card-title {
-            font-size: 1.2rem;
-            font-weight: 600;
-            margin: 0;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+        .card-title { font-size: 1.2rem; font-weight: 600; margin: 0; display: flex; align-items: center; gap: 10px; }
 
         .form-label { color: var(--text-light-grey); font-size: 0.9rem; }
         .form-control, .form-select {
-            background-color: var(--input-bg) !important;
-            border: 1px solid var(--border-color) !important;
-            color: var(--text-main) !important;
+            background-color: var(--input-bg) !important; border: 1px solid var(--border-color) !important; color: var(--text-main) !important;
         }
         .form-control:focus, .form-select:focus {
-            border-color: var(--emerald-green) !important;
-            box-shadow: 0 0 0 0.25rem rgba(16, 185, 129, 0.15) !important;
+            border-color: var(--emerald-green) !important; box-shadow: 0 0 0 0.25rem rgba(16, 185, 129, 0.15) !important;
         }
 
-        /* STRIPPED OUT BOOTSTRAP WHITE BACKGROUNDS */
-        .table { 
-            color: var(--text-main) !important; 
-            border-color: var(--border-color); 
-            margin-bottom: 0; 
-        }
-        .table th { 
-            border-bottom: 1px solid var(--border-color); 
-            color: var(--text-light-grey) !important; 
-            font-weight: 600; 
-            padding: 12px 16px; 
-            background-color: transparent !important; /* Forces dark theme */
-        }
-        .table td { 
-            border-bottom: 1px solid var(--border-color); 
-            padding: 16px; 
-            vertical-align: middle; 
-            background-color: transparent !important; /* Forces dark theme */
-            color: var(--text-main) !important;
-        }
-        
-        /* EYE-PLEASING ROW HOVER EFFECT */
-        .table tbody tr {
-            transition: background-color 0.2s ease;
-        }
-        .table tbody tr:hover td {
-            background-color: rgba(16, 185, 129, 0.04) !important;
-        }
+        .table { color: var(--text-main) !important; border-color: var(--border-color); margin-bottom: 0; }
+        .table th { border-bottom: 1px solid var(--border-color); color: var(--text-light-grey) !important; font-weight: 600; padding: 12px 16px; background-color: transparent !important; }
+        .table td { border-bottom: 1px solid var(--border-color); padding: 16px; vertical-align: middle; background-color: transparent !important; color: var(--text-main) !important; }
+        .table tbody tr { transition: background-color 0.2s ease; }
+        .table tbody tr:hover td { background-color: rgba(16, 185, 129, 0.04) !important; }
 
-        .btn-primary {
-            background-color: var(--emerald-green);
-            border-color: var(--emerald-green);
-            color: #000;
-            font-weight: 600;
-            padding: 8px 16px;
-            border-radius: 6px;
-        }
+        .btn-primary { background-color: var(--emerald-green); border-color: var(--emerald-green); color: #000; font-weight: 600; padding: 8px 16px; border-radius: 6px; }
         .btn-primary:hover { background-color: var(--emerald-hover); border-color: var(--emerald-hover); color: white; }
 
         .status-badge { padding: 4px 10px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; }
         .status-danger { background-color: rgba(239, 68, 68, 0.15); color: var(--danger-red); }
+        .status-success { background-color: rgba(16, 185, 129, 0.15); color: var(--emerald-green); }
 
         .empty-state { text-align: center; padding: 40px 20px; color: var(--text-light-grey); }
 
-        .toast-notification {
-            position: fixed; top: 30px; left: 50%; transform: translateX(-50%); z-index: 9999;
-            min-width: 320px; padding: 1rem 1.5rem; border-radius: 8px; font-weight: 500;
-            text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.5); animation: slideDown 0.4s cubic-bezier(0.16,1,0.3,1);
-        }
-        .toast-success { background-color: rgba(16, 185, 129, 0.95); color: white; border: 1px solid #10b981; }
-        .toast-danger { background-color: rgba(239, 68, 68, 0.95); color: white; border: 1px solid #ef4444; }
-
-        @keyframes slideDown { from { top: -50px; opacity: 0; } to { top: 30px; opacity: 1; } }
-        
         .modal-content { background-color: var(--panel-bg); border: 1px solid var(--border-color); }
         .modal-header { border-bottom: 1px solid var(--border-color); }
         .modal-footer { border-top: 1px solid var(--border-color); }
         .btn-close { filter: invert(1) grayscale(100%) brightness(200%); }
+
+        /* LIVE SEARCH DROPDOWN STYLES */
+        .search-dropdown {
+            position: absolute; width: 100%; background: var(--panel-bg); border: 1px solid var(--border-color);
+            border-radius: 0 0 8px 8px; max-height: 200px; overflow-y: auto; z-index: 1000; display: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+        }
+        .search-item {
+            padding: 10px 15px; cursor: pointer; border-bottom: 1px solid var(--border-color);
+        }
+        .search-item:hover { background-color: rgba(16, 185, 129, 0.1); }
+        .search-item-name { font-weight: 600; color: white; }
+        .search-item-lrn { font-size: 0.8rem; color: var(--text-light-grey); }
+
     </style>
 </head>
 
 <body>
-
-    <div class="toast-notification toast-success" th:if="${param.success}">
-        <i class="fas fa-check-circle me-2"></i> <span th:text="${param.success}"></span>
-    </div>
-    <div class="toast-notification toast-danger" th:if="${param.error}">
-        <i class="fas fa-exclamation-triangle me-2"></i> <span th:text="${param.error}"></span>
-    </div>
 
     <nav class="top-navbar">
         <div class="brand-title"><i class="fas fa-book-open brand-icon me-2"></i>LINHS Library Portal</div>
@@ -248,11 +145,12 @@
         <aside class="sidebar">
             <div class="sidebar-header">Portal Navigation</div>
             <a class="sidebar-link active" onclick="switchPanel('borrowed')" id="link-borrowed"><i class="fas fa-book-reader w-20"></i> Active Book Borrows</a>
-            <a class="sidebar-link text-danger" onclick="switchPanel('liabilities')" id="link-liabilities" style="border-left: 3px solid transparent;"><i class="fas fa-exclamation-circle w-20"></i> Library Liabilities</a>
+            <a class="sidebar-link" onclick="switchPanel('logs')" id="link-logs"><i class="fas fa-history w-20"></i> Library Logs</a>
         </aside>
 
         <main class="main-content">
 
+            <!-- TAB 1: ACTIVE BORROWS -->
             <div id="panel-borrowed" class="tab-pane show active">
                 <div class="custom-card">
                     <div class="card-header-flex border-0 pb-0 mb-3">
@@ -267,7 +165,7 @@
                                     <th>Student Details</th>
                                     <th>Book Borrowed</th>
                                     <th>Date Borrowed</th>
-                                    <th>Actions</th>
+                                    <th class="text-end">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -276,12 +174,12 @@
                                 </tr>
                                 <tr th:each="borrow : ${activeBorrows}">
                                     <td>
-                                        <div style="font-weight: 500; color: white;" th:text="${borrow.studentName != null ? borrow.studentName : 'Unknown Student'}">Jane Doe</div>
+                                        <div style="font-weight: 500; color: white;" th:text="${borrow.studentName}">Jane Doe</div>
                                         <div style="font-size: 0.85rem; color: var(--text-light-grey);" th:text="${borrow.studentLrn}">123456789012</div>
                                     </td>
-                                    <td th:text="${borrow.itemName}">Noli Me Tangere</td>
-                                    <td th:text="${borrow.borrowedAt != null ? #temporals.format(borrow.borrowedAt, 'yyyy-MM-dd') : 'No Date'}">2024-03-01</td>
-                                    <td>
+                                    <td th:text="${borrow.bookTitle}">Noli Me Tangere</td>
+                                    <td th:text="${#temporals.format(borrow.borrowedAt, 'MMM dd, yyyy')}">Mar 01, 2024</td>
+                                    <td class="text-end">
                                         <form th:action="@{/library/borrow/return}" method="POST" class="d-inline">
                                             <input type="hidden" name="id" th:value="${borrow.id}">
                                             <button type="submit" class="btn btn-sm btn-primary">Mark Returned</button>
@@ -294,16 +192,17 @@
                 </div>
             </div>
 
-            <div id="panel-liabilities" class="tab-pane">
-                <div class="custom-card border-danger" style="border-color: rgba(239, 68, 68, 0.3) !important;">
+            <!-- TAB 2: LIBRARY LOGS -->
+            <div id="panel-logs" class="tab-pane">
+                <div class="custom-card">
                     <div class="card-header-flex border-0 pb-0 mb-3">
                         <div>
-                            <h3 class="card-title text-danger"><i class="fas fa-exclamation-triangle me-2"></i> Student Liabilities</h3>
-                            <small style="color: var(--text-light-grey);">Students flagged as PENDING for Library Clearance.</small>
+                            <h3 class="card-title text-white"><i class="fas fa-history brand-icon me-2"></i> Returned Book Logs</h3>
+                            <small style="color: var(--text-light-grey);">History of all resolved library transactions.</small>
                         </div>
-                        <button class="btn btn-sm" style="background-color: rgba(239, 68, 68, 0.15); color: var(--danger-red); border: 1px solid var(--danger-red);" data-bs-toggle="modal" data-bs-target="#addLiabilityModal">
-                            <i class="fas fa-flag me-2"></i> Report Issue
-                        </button>
+                        <form th:action="@{/library/logs/clear}" method="POST" onsubmit="return confirm('Are you sure you want to delete all return logs? This cannot be undone.');">
+                            <button type="submit" class="btn btn-sm btn-outline-danger"><i class="fas fa-trash-alt me-2"></i> Clear Logs</button>
+                        </form>
                     </div>
                     
                     <div class="table-responsive">
@@ -311,32 +210,25 @@
                             <thead>
                                 <tr>
                                     <th>Student Details</th>
-                                    <th>Reported Liability</th>
+                                    <th>Book Borrowed</th>
+                                    <th>Date Borrowed</th>
+                                    <th>Date Returned</th>
                                     <th>Status</th>
-                                    <th>Date Logged</th>
-                                    <th class="text-end">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr th:if="${#lists.isEmpty(libraryLiabilities)}">
-                                    <td colspan="5" class="empty-state"><i class="fas fa-check-circle mb-3" style="font-size: 2.5rem; color: var(--emerald-green); opacity: 0.7;"></i><br>All students are currently cleared. No pending library liabilities!</td>
+                                <tr th:if="${#lists.isEmpty(libraryLogs)}">
+                                    <td colspan="5" class="empty-state">No past logs available.</td>
                                 </tr>
-                                <tr class="liability-row" th:each="liability : ${libraryLiabilities}">
+                                <tr th:each="log : ${libraryLogs}">
                                     <td>
-                                        <div class="fw-bold text-white search-target" th:text="${liability.student != null ? liability.student.name : 'Unknown Student'}">John Doe</div>
-                                        <div style="font-size: 0.85rem; color: var(--text-light-grey);" class="search-target" th:text="${liability.student != null ? liability.student.lrn : 'No LRN'}">123456789012</div>
+                                        <div style="font-weight: 500; color: white;" th:text="${log.studentName}">John Doe</div>
+                                        <div style="font-size: 0.85rem; color: var(--text-light-grey);" th:text="${log.studentLrn}">123456789012</div>
                                     </td>
-                                    <td th:text="${liability.description != null ? liability.description : 'Overdue/Lost Book'}">Lost Book</td>
-                                    <td><span class="status-badge status-danger" th:text="${liability.status}">PENDING</span></td>
-                                    <td th:text="${#temporals.format(liability.createdAt, 'yyyy-MM-dd')}">2024-03-10</td>
-                                    <td class="text-end">
-                                        <form th:action="@{/library/liability/clear}" method="POST" onsubmit="return confirm('Confirm that this liability has been resolved and clear the student?');">
-                                            <input type="hidden" name="liabilityId" th:value="${liability.id}">
-                                            <button type="submit" class="btn btn-sm btn-outline-success border-success text-success" style="background: transparent;">
-                                                <i class="fas fa-check me-1"></i> Resolve & Clear
-                                            </button>
-                                        </form>
-                                    </td>
+                                    <td th:text="${log.bookTitle}">El Filibusterismo</td>
+                                    <td th:text="${#temporals.format(log.borrowedAt, 'MMM dd, yyyy')}">Mar 01, 2024</td>
+                                    <td th:text="${#temporals.format(log.returnedAt, 'MMM dd, yyyy')}">Mar 05, 2024</td>
+                                    <td><span class="status-badge status-success">RETURNED</span></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -346,6 +238,7 @@
         </main>
     </div>
 
+    <!-- RECORD NEW LOAN MODAL -->
     <div class="modal fade" id="logBorrowModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -354,46 +247,28 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <form action="/library/borrow/add" method="POST">
-                    <div class="modal-body">
-                        <div class="mb-3">
-                            <label class="form-label">Student LRN</label>
-                            <input type="text" name="studentLrn" class="form-control" pattern="\d{12}" required>
+                    <div class="modal-body" style="position: relative;">
+                        <div class="mb-3 position-relative">
+                            <label class="form-label">Search Student (Name or LRN)</label>
+                            <input type="text" id="studentSearchInput" class="form-control" placeholder="Type to search..." autocomplete="off" required>
+                            
+                            <!-- Hidden input that actually gets submitted -->
+                            <input type="hidden" name="studentLrn" id="selectedStudentLrn" required>
+                            <input type="hidden" name="studentName" id="selectedStudentName" required>
+                            
+                            <!-- Dropdown for search results -->
+                            <div id="searchDropdown" class="search-dropdown">
+                                <!-- Results injected via JavaScript -->
+                            </div>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Book Title</label>
-                            <input type="text" name="title" class="form-control" placeholder="e.g. Noli Me Tangere" required>
+                            <input type="text" name="bookTitle" class="form-control" placeholder="e.g. Noli Me Tangere" required>
                         </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-outline-secondary text-light" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-primary">Authorize Loan</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="addLiabilityModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title text-white"><i class="fas fa-flag me-2 text-danger"></i> Report Library Issue</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <form action="/library/liability/add" method="POST">
-                    <div class="modal-body">
-                        <div class="mb-3">
-                            <label class="form-label">Student LRN</label>
-                            <input type="text" name="studentLrn" class="form-control" pattern="\d{12}" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Issue Description</label>
-                            <textarea name="description" class="form-control" rows="3" placeholder="e.g., Unreturned copy of El Filibusterismo" required></textarea>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-outline-secondary text-light" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn" style="background-color: var(--danger-red); color: white;">Save Liability</button>
+                        <button type="submit" class="btn btn-primary" id="submitLoanBtn" disabled>Authorize Loan</button>
                     </div>
                 </form>
             </div>
@@ -403,19 +278,77 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         function switchPanel(panelId) {
-            document.querySelectorAll('.sidebar-link').forEach(link => { link.classList.remove('active'); if(link.id === 'link-liabilities') link.classList.add('text-danger'); });
-            const activeLink = document.getElementById('link-' + panelId);
-            if (activeLink) { activeLink.classList.add('active'); if(panelId === 'liabilities') activeLink.classList.remove('text-danger'); }
-            document.querySelectorAll('.tab-pane').forEach(pane => { pane.classList.remove('show', 'active'); pane.style.display = 'none'; });
+            document.querySelectorAll('.sidebar-link').forEach(link => link.classList.remove('active'));
+            document.getElementById('link-' + panelId).classList.add('active');
+            
+            document.querySelectorAll('.tab-pane').forEach(pane => {
+                pane.classList.remove('show', 'active');
+                pane.style.display = 'none';
+            });
             const targetPane = document.getElementById('panel-' + panelId);
-            if (targetPane) { targetPane.style.display = 'block'; setTimeout(() => targetPane.classList.add('show', 'active'), 10); localStorage.setItem('safeLibTab', panelId); }
+            targetPane.style.display = 'block';
+            setTimeout(() => targetPane.classList.add('show', 'active'), 10);
+            localStorage.setItem('libActiveTab', panelId);
         }
 
         document.addEventListener("DOMContentLoaded", function() {
-            const urlParams = new URLSearchParams(window.location.search);
-            let activeTab = urlParams.get('tab') || localStorage.getItem('safeLibTab') || 'borrowed';
+            let activeTab = localStorage.getItem('libActiveTab') || 'borrowed';
             switchPanel(activeTab);
-            setTimeout(function() { document.querySelectorAll('.toast-notification').forEach(toast => { toast.style.transition = 'opacity 0.5s ease-out, transform 0.5s ease-out'; toast.style.opacity = '0'; toast.style.transform = 'translateX(-50%) translateY(-20px)'; setTimeout(() => toast.remove(), 500); }); }, 4000);
+
+            // LIVE SEARCH LOGIC
+            const searchInput = document.getElementById('studentSearchInput');
+            const dropdown = document.getElementById('searchDropdown');
+            const hiddenLrn = document.getElementById('selectedStudentLrn');
+            const hiddenName = document.getElementById('selectedStudentName');
+            const submitBtn = document.getElementById('submitLoanBtn');
+
+            searchInput.addEventListener('input', function() {
+                const query = this.value.trim();
+                
+                // Reset selection if user starts typing again
+                hiddenLrn.value = '';
+                hiddenName.value = '';
+                submitBtn.disabled = true;
+
+                if (query.length < 2) {
+                    dropdown.style.display = 'none';
+                    return;
+                }
+
+                // Fetch data from backend
+                fetch(`/api/students/search?q=${encodeURIComponent(query)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        dropdown.innerHTML = '';
+                        if (data.length > 0) {
+                            data.forEach(student => {
+                                const item = document.createElement('div');
+                                item.className = 'search-item';
+                                item.innerHTML = `<div class="search-item-name">${student.name}</div><div class="search-item-lrn">${student.lrn}</div>`;
+                                
+                                item.addEventListener('click', function() {
+                                    searchInput.value = student.name + ' (' + student.lrn + ')';
+                                    hiddenLrn.value = student.lrn;
+                                    hiddenName.value = student.name;
+                                    submitBtn.disabled = false;
+                                    dropdown.style.display = 'none';
+                                });
+                                dropdown.appendChild(item);
+                            });
+                            dropdown.style.display = 'block';
+                        } else {
+                            dropdown.innerHTML = '<div class="p-3 text-muted text-center">No student found</div>';
+                            dropdown.style.display = 'block';
+                        }
+                    }).catch(error => console.error('Error fetching students:', error));
+            });
+
+            // Close dropdown if clicked outside
+            document.addEventListener('click', function(e) {
+                if (!searchInput.contains(e.target) && !dropdown.contains(e.target)) {
+                    dropdown.style.display = 'none';
+                }
+            });
         });
     </script>
 </body>
