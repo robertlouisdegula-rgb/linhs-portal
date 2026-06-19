@@ -27,337 +27,352 @@
             color: var(--text-main);
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
 
-        .navbar {
+        .top-navbar {
             background-color: var(--panel-bg);
             border-bottom: 1px solid var(--border-color);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
         }
+
+        .brand-title { font-size: 1.25rem; font-weight: 700; color: var(--text-main); }
+        .brand-icon { color: var(--emerald-green); }
+
+        .user-info { font-size: 0.9rem; color: var(--text-light-grey); display: flex; align-items: center; gap: 15px; }
+
+        .layout-wrapper { display: flex; flex: 1; overflow: hidden; }
 
         .sidebar {
-            background-color: var(--panel-bg);
-            border-right: 1px solid var(--border-color);
-            min-height: calc(100vh - 56px);
-            padding: 20px 0;
+            width: 280px; background-color: var(--panel-bg); border-right: 1px solid var(--border-color);
+            padding: 24px; display: flex; flex-direction: column; gap: 8px;
         }
 
-        .nav-link {
-            color: var(--text-light-grey);
-            padding: 12px 20px;
-            border-left: 3px solid transparent;
-            transition: all 0.2s;
-            cursor: pointer;
+        .sidebar-header {
+            font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px;
+            color: var(--text-light-grey); font-weight: 600; margin-bottom: 16px; padding-left: 12px;
         }
 
-        .nav-link:hover, .nav-link.active {
-            color: var(--emerald-green);
-            background-color: rgba(16, 185, 129, 0.05);
-            border-left: 3px solid var(--emerald-green);
+        .sidebar-link {
+            display: flex; align-items: center; gap: 12px; padding: 12px 16px;
+            color: var(--text-light-grey); text-decoration: none; border-radius: 8px;
+            font-weight: 500; transition: all 0.2s ease; cursor: pointer; border: 1px solid transparent;
         }
 
-        .nav-link i {
-            width: 24px;
+        .sidebar-link:hover { color: var(--text-main); background-color: rgba(255, 255, 255, 0.03); }
+        .sidebar-link.active {
+            background-color: var(--emerald-green); color: #000000; font-weight: 600; border-color: var(--emerald-green);
         }
 
-        .tab-pane {
-            display: none;
-            background-color: var(--panel-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 25px;
+        .main-content { flex: 1; padding: 30px 40px; overflow-y: auto; background-color: var(--dark-bg); }
+
+        .tab-pane { display: none; opacity: 0; transition: opacity 0.2s ease-in-out; }
+        .tab-pane.show.active { display: block; opacity: 1; }
+
+        .custom-card {
+            background-color: var(--panel-bg); border: 1px solid var(--border-color);
+            border-radius: 12px; padding: 24px; margin-bottom: 24px;
         }
 
-        .tab-pane.active {
-            display: block;
+        .card-header-flex {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 20px; border-bottom: 1px solid var(--border-color);
+            padding-bottom: 15px; flex-wrap: wrap; gap: 15px;
         }
 
-        /* CUSTOM INPUTS */
-        .custom-input {
-            background-color: var(--input-bg);
-            border: 1px solid var(--border-color);
-            color: #ffffff !important; /* FIXED: Forces text to be visible */
-            border-radius: 6px;
-            padding: 10px 15px;
-            width: 100%;
-            pointer-events: auto; /* FIXED: Ensures interactions are caught */
+        .card-title { font-size: 1.2rem; font-weight: 600; margin: 0; display: flex; align-items: center; gap: 10px; }
+
+        .form-label { color: var(--text-light-grey); font-size: 0.9rem; }
+        .form-control, .form-select {
+            background-color: var(--input-bg) !important; border: 1px solid var(--border-color) !important; color: var(--text-main) !important;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: var(--emerald-green) !important; box-shadow: 0 0 0 0.25rem rgba(16, 185, 129, 0.15) !important;
         }
 
-        .custom-input:focus {
-            outline: none;
-            border-color: var(--emerald-green);
-            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
-        }
+        .table { color: var(--text-main) !important; border-color: var(--border-color); margin-bottom: 0; }
+        .table th { border-bottom: 1px solid var(--border-color); color: var(--text-light-grey) !important; font-weight: 600; padding: 12px 16px; background-color: transparent !important; }
+        .table td { border-bottom: 1px solid var(--border-color); padding: 16px; vertical-align: middle; background-color: transparent !important; color: var(--text-main) !important; }
+        .table tbody tr { transition: background-color 0.2s ease; }
+        .table tbody tr:hover td { background-color: rgba(16, 185, 129, 0.04) !important; }
 
-        .custom-btn {
-            background-color: var(--emerald-green);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 6px;
-            font-weight: 500;
-            transition: background-color 0.2s;
-        }
+        .btn-primary { background-color: var(--emerald-green); border-color: var(--emerald-green); color: #000; font-weight: 600; padding: 8px 16px; border-radius: 6px; }
+        .btn-primary:hover { background-color: var(--emerald-hover); border-color: var(--emerald-hover); color: white; }
 
-        .custom-btn:hover {
-            background-color: var(--emerald-hover);
-            color: white;
-        }
+        .status-badge { padding: 4px 10px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; }
+        .status-danger { background-color: rgba(239, 68, 68, 0.15); color: var(--danger-red); }
+        .status-success { background-color: rgba(16, 185, 129, 0.15); color: var(--emerald-green); }
 
-        .status-badge {
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 600;
-        }
+        .empty-state { text-align: center; padding: 40px 20px; color: var(--text-light-grey); }
 
-        .badge-active { background-color: rgba(16, 185, 129, 0.2); color: #34d399; }
-        .badge-returned { background-color: rgba(107, 114, 128, 0.2); color: #9ca3af; }
-        .badge-overdue { background-color: rgba(239, 68, 68, 0.2); color: #f87171; }
+        .modal-content { background-color: var(--panel-bg); border: 1px solid var(--border-color); }
+        .modal-header { border-bottom: 1px solid var(--border-color); }
+        .modal-footer { border-top: 1px solid var(--border-color); }
+        .btn-close { filter: invert(1) grayscale(100%) brightness(200%); }
 
-        .custom-table { color: var(--text-main); }
-        .custom-table th { background-color: #141417; color: var(--text-light-grey); border-bottom: 1px solid var(--border-color); border-top: none; }
-        .custom-table td { border-bottom: 1px solid var(--border-color); vertical-align: middle; background-color: transparent; color: var(--text-light-grey); }
-
-        /* MODAL CSS */
-        .modal-overlay {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-color: rgba(0, 0, 0, 0.75);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 1050; /* Slightly elevated */
-            backdrop-filter: blur(4px);
-        }
-
+        /* SEARCH MODAL STYLES ADAPTED FOR LIBRARY */
         .custom-modal {
-            background-color: var(--panel-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
+            display: none;
+            position: fixed;
+            z-index: 1060; /* Higher than Bootstrap modal */
+            left: 0;
+            top: 0;
             width: 100%;
-            max-width: 500px;
-            padding: 25px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            height: 100%;
+            background-color: rgba(0,0,0,0.7);
+            backdrop-filter: blur(4px);
+            align-items: flex-start;
+            justify-content: center;
         }
 
-        .student-list {
-            max-height: 300px;
-            overflow-y: auto;
+        .custom-modal-content {
+            background-color: var(--panel-bg);
+            margin-top: 5%;
+            padding: 24px;
             border: 1px solid var(--border-color);
-            border-radius: 6px;
-            background-color: var(--input-bg);
+            width: 90%;
+            max-width: 600px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
         .student-item {
-            padding: 12px 15px;
-            border-bottom: 1px solid var(--border-color);
-            cursor: pointer;
             transition: background-color 0.2s;
+            border-radius: 6px;
+            cursor: pointer;
         }
 
-        .student-item:hover { background-color: rgba(16, 185, 129, 0.1); }
-        .student-item:last-child { border-bottom: none; }
-        .student-name { font-weight: 600; color: var(--text-main); }
+        .student-item:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .text-emerald-custom { color: var(--emerald-green) !important; }
+        .btn-outline-emerald {
+            border: 1px solid var(--emerald-green);
+            color: var(--emerald-green) !important;
+            background: transparent;
+            font-weight: 600;
+        }
+        .btn-outline-emerald:hover {
+            background-color: var(--emerald-green);
+            color: #000000 !important;
+        }
     </style>
 </head>
 
 <body>
 
-    <nav class="navbar navbar-dark sticky-top px-4">
-        <span class="navbar-brand mb-0 h1"><i class="fas fa-book-reader text-success me-2"></i> Library Management Portal</span>
-        <div class="d-flex align-items-center">
-            <span class="text-light me-3"><i class="fas fa-user-circle me-1"></i> Library Admin</span>
-            <form th:action="@{/logout}" method="post" class="m-0">
-                <button type="submit" class="btn btn-sm btn-outline-danger"><i class="fas fa-sign-out-alt"></i> Logout</button>
-            </form>
+    <nav class="top-navbar">
+        <div class="brand-title"><i class="fas fa-book-open brand-icon me-2"></i>LINHS Library Portal</div>
+        <div class="user-info">
+            <span th:text="${'Logged in as: ' + (session.user != null ? session.user.name : 'Librarian')}">Logged in as: Librarian</span>
+            <a href="/logout" class="btn btn-outline-light btn-sm"><i class="fas fa-sign-out-alt me-2"></i>Sign Out</a>
         </div>
     </nav>
 
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-md-3 sidebar">
-                <div class="nav-link active" onclick="switchPanel('issue-panel')" id="nav-issue">
-                    <i class="fas fa-plus-circle"></i> Issue New Book
-                </div>
-                <div class="nav-link" onclick="switchPanel('active-panel')" id="nav-active">
-                    <i class="fas fa-list"></i> Active Borrows
-                </div>
-                <div class="nav-link" onclick="switchPanel('history-panel')" id="nav-history">
-                    <i class="fas fa-history"></i> Borrow History
-                </div>
-            </div>
+    <div class="layout-wrapper">
+        <aside class="sidebar">
+            <div class="sidebar-header">Portal Navigation</div>
+            <a class="sidebar-link active" onclick="switchPanel('borrowed')" id="link-borrowed"><i class="fas fa-book-reader w-20"></i> Active Book Borrows</a>
+            <a class="sidebar-link" onclick="switchPanel('logs')" id="link-logs"><i class="fas fa-history w-20"></i> Library Logs</a>
+        </aside>
 
-            <div class="col-md-9 p-4">
-                
-                <div th:if="${successMessage}" class="alert alert-success bg-success text-white border-0" th:text="${successMessage}"></div>
-                <div th:if="${errorMessage}" class="alert alert-danger bg-danger text-white border-0" th:text="${errorMessage}"></div>
+        <main class="main-content">
 
-                <div id="issue-panel" class="tab-pane active">
-                    <h4 class="mb-4" style="color: var(--emerald-green);"><i class="fas fa-book me-2"></i> Issue Book to Student</h4>
+            <div id="panel-borrowed" class="tab-pane show active">
+                <div class="custom-card">
+                    <div class="card-header-flex border-0 pb-0 mb-3">
+                        <h3 class="card-title text-white"><i class="fas fa-book-reader brand-icon"></i> Currently Borrowed Books</h3>
+                        <button class="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#logBorrowModal"><i class="fas fa-hand-holding me-2"></i> Record New Loan</button>
+                    </div>
                     
-                    <form action="/library/record" method="POST">
-                        
-                        <div class="mb-3">
-                            <label class="form-label text-light-grey">Student Reference (LRN)</label>
-                            <div class="input-group">
-                                <input type="text" class="form-control custom-input" id="selectedStudentDisplay" placeholder="Select a student..." readonly style="cursor: pointer;" onclick="openSearchModal()">
-                                <button class="btn btn-outline-secondary custom-btn" type="button" onclick="openSearchModal()">
-                                    <i class="fas fa-search"></i> Search
-                                </button>
-                            </div>
-                            <input type="hidden" name="lrn" id="selectedLrn" required>
-                            <input type="hidden" name="studentName" id="selectedName" required>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label text-light-grey">Book Title / Asset Name</label>
-                            <input type="text" name="bookTitle" class="custom-input" placeholder="e.g. Fundamentals of Physics 10th Ed." required>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label text-light-grey">Borrow Date</label>
-                                <input type="date" name="borrowDate" class="custom-input" id="borrowDateInput" required>
-                            </div>
-                            <div class="col-md-6 mb-4">
-                                <label class="form-label text-light-grey">Expected Return Date</label>
-                                <input type="date" name="expectedReturnDate" class="custom-input" id="expectedReturnDateInput" required>
-                            </div>
-                        </div>
-
-                        <button type="submit" class="custom-btn w-100" id="submitLoanBtn" disabled>
-                            <i class="fas fa-check-circle me-1"></i> Record Book Loan
-                        </button>
-                    </form>
-                </div>
-
-                <div id="active-panel" class="tab-pane">
-                    <h4 class="mb-4 text-white"><i class="fas fa-list me-2"></i> Active Book Loans</h4>
                     <div class="table-responsive">
-                        <table class="table custom-table">
+                        <table class="table">
                             <thead>
                                 <tr>
-                                    <th>Student</th>
-                                    <th>Book Title</th>
-                                    <th>Borrowed</th>
-                                    <th>Expected Return</th>
-                                    <th>Action</th>
+                                    <th>Student Details</th>
+                                    <th>Book Borrowed</th>
+                                    <th>Date Borrowed</th>
+                                    <th class="text-end">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr th:each="record : ${activeRecords}">
+                                <tr th:if="${#lists.isEmpty(activeBorrows)}">
+                                    <td colspan="4" class="empty-state">No active library book loans recorded.</td>
+                                </tr>
+                                <tr th:each="borrow : ${activeBorrows}">
                                     <td>
-                                        <div class="fw-bold text-white" th:text="${record.studentName}">Name</div>
-                                        <small class="text-muted" th:text="${record.studentLrn}">LRN</small>
+                                        <div style="font-weight: 500; color: white;" th:text="${borrow.studentName}">Jane Doe</div>
+                                        <div style="font-size: 0.85rem; color: var(--text-light-grey);" th:text="${borrow.studentLrn}">123456789012</div>
                                     </td>
-                                    <td th:text="${record.bookTitle}">Book Name</td>
-                                    <td th:text="${#temporals.format(record.borrowDate, 'MMM dd, yyyy')}">Date</td>
-                                    <td>
-                                        <span th:class="${record.expectedReturnDate.isBefore(#temporals.createNow()) ? 'text-danger fw-bold' : ''}"
-                                              th:text="${#temporals.format(record.expectedReturnDate, 'MMM dd, yyyy')}">Date</span>
-                                    </td>
-                                    <td>
-                                        <form action="/library/return" method="POST" class="m-0">
-                                            <input type="hidden" name="recordId" th:value="${record.id}">
-                                            <button type="submit" class="btn btn-sm btn-outline-success">Mark Returned</button>
+                                    <td th:text="${borrow.bookTitle}">Noli Me Tangere</td>
+                                    <td th:text="${#temporals.format(borrow.borrowedAt, 'MMM dd, yyyy')}">Mar 01, 2024</td>
+                                    <td class="text-end">
+                                        <form th:action="@{/library/borrow/return}" method="POST" class="d-inline">
+                                            <input type="hidden" name="id" th:value="${borrow.id}">
+                                            <button type="submit" class="btn btn-sm btn-primary">Mark Returned</button>
                                         </form>
                                     </td>
-                                </tr>
-                                <tr th:if="${#lists.isEmpty(activeRecords)}">
-                                    <td colspan="5" class="text-center py-4 text-muted">No active book loans currently recorded.</td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
+            </div>
 
-                <div id="history-panel" class="tab-pane">
-                    <h4 class="mb-4 text-white"><i class="fas fa-history me-2"></i> Book Return History</h4>
+            <div id="panel-logs" class="tab-pane">
+                <div class="custom-card">
+                    <div class="card-header-flex border-0 pb-0 mb-3">
+                        <div>
+                            <h3 class="card-title text-white"><i class="fas fa-history brand-icon me-2"></i> Returned Book Logs</h3>
+                            <small style="color: var(--text-light-grey);">History of all resolved library transactions.</small>
+                        </div>
+                        <form th:action="@{/library/logs/clear}" method="POST" onsubmit="return confirm('Are you sure you want to delete all return logs? This cannot be undone.');">
+                            <button type="submit" class="btn btn-sm btn-outline-danger"><i class="fas fa-trash-alt me-2"></i> Clear Logs</button>
+                        </form>
+                    </div>
+                    
                     <div class="table-responsive">
-                        <table class="table custom-table">
+                        <table class="table">
                             <thead>
                                 <tr>
-                                    <th>Student</th>
-                                    <th>Book Title</th>
-                                    <th>Borrowed</th>
+                                    <th>Student Details</th>
+                                    <th>Book Borrowed</th>
+                                    <th>Date Borrowed</th>
+                                    <th>Date Returned</th>
                                     <th>Status</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr th:each="record : ${historyRecords}">
-                                    <td>
-                                        <div class="fw-bold text-white" th:text="${record.studentName}">Name</div>
-                                        <small class="text-muted" th:text="${record.studentLrn}">LRN</small>
-                                    </td>
-                                    <td th:text="${record.bookTitle}">Book Name</td>
-                                    <td th:text="${#temporals.format(record.borrowDate, 'MMM dd, yyyy')}">Date</td>
-                                    <td><span class="status-badge badge-returned">Returned</span></td>
+                                <tr th:if="${#lists.isEmpty(libraryLogs)}">
+                                    <td colspan="5" class="empty-state">No past logs available.</td>
                                 </tr>
-                                <tr th:if="${#lists.isEmpty(historyRecords)}">
-                                    <td colspan="4" class="text-center py-4 text-muted">No return history available.</td>
+                                <tr th:each="log : ${libraryLogs}">
+                                    <td>
+                                        <div style="font-weight: 500; color: white;" th:text="${log.studentName}">John Doe</div>
+                                        <div style="font-size: 0.85rem; color: var(--text-light-grey);" th:text="${log.studentLrn}">123456789012</div>
+                                    </td>
+                                    <td th:text="${log.bookTitle}">El Filibusterismo</td>
+                                    <td th:text="${#temporals.format(log.borrowedAt, 'MMM dd, yyyy')}">Mar 01, 2024</td>
+                                    <td th:text="${#temporals.format(log.returnedAt, 'MMM dd, yyyy')}">Mar 05, 2024</td>
+                                    <td><span class="status-badge status-success">RETURNED</span></td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
-
             </div>
-        </div>
+        </main>
     </div>
 
-    <div class="modal-overlay" id="studentSearchModal">
-        <div class="custom-modal">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h5 class="m-0 text-white">Select Student Reference</h5>
-                <button type="button" class="btn-close btn-close-white" onclick="closeSearchModal()"></button>
-            </div>
-            
-            <input type="text" id="modalSearchInput" class="custom-input mb-3" placeholder="Search Name or Lrv..." oninput="filterStudentList()" autocomplete="off">
-            
-            <div class="student-list">
-                <div th:each="student : ${students}" class="student-item" th:onclick="|selectStudent('${student.lrn}', '${student.name}')|">
-                    <div class="student-name" th:text="${student.name}">Student Name</div>
-                    <div class="student-lrn text-muted" style="font-size: 0.85rem;" th:text="${student.lrn}">123456789012</div>
+    <div class="modal fade" id="logBorrowModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-white"><i class="fas fa-hand-holding me-2"></i> Record Book Loan</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
+                <form action="/library/borrow/add" method="POST">
+                    <div class="modal-body">
+                        <div class="mb-3 position-relative">
+                            <label class="form-label">Search Student *</label>
+                            <div class="input-group">
+                                <input type="hidden" name="studentLrn" id="selectedLrn" required>
+                                <input type="hidden" name="studentName" id="selectedName" required>
+                                
+                                <input type="text" class="form-control" id="selectedStudentDisplay" placeholder="Select student from database..." readonly required style="cursor: default;" onclick="openSearchModal()">
+                                <button type="button" class="btn btn-outline-emerald" onclick="openSearchModal()">
+                                    <i class="fas fa-search me-1"></i> Search
+                                </button>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Book Title *</label>
+                            <input type="text" name="bookTitle" class="form-control" placeholder="e.g. Noli Me Tangere" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary text-light" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary" id="submitLoanBtn" disabled>Authorize Loan</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
 
+    <div id="studentSearchModal" class="custom-modal">
+        <div class="custom-modal-content">
+            <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3" style="border-color: var(--border-color) !important;">
+                <h5 class="mb-0 fw-bold text-white"><i class="fas fa-users me-2 text-emerald-custom"></i>Global Student Database</h5>
+                <button type="button" class="btn btn-sm btn-outline-light" onclick="closeSearchModal()">
+                    <i class="fas fa-times me-1"></i> Close
+                </button>
+            </div>
+            
+            <div class="mb-3">
+                <input type="text" id="modalSearchInput" oninput="filterStudentList()" class="form-control py-2" style="color: #ffffff !important; pointer-events: auto; background-color: var(--input-bg);" placeholder="Type student name or exact LRN to filter..." autocomplete="off">
+            </div>
+            
+            <div class="rounded border p-2" style="border-color: var(--border-color) !important; background-color: var(--dark-bg); max-height: 350px; overflow-y: auto;">
+                
+                <th:block th:if="${allStudents != null and !#lists.isEmpty(allStudents)}">
+                    <div th:each="student : ${allStudents}" 
+                         class="student-item p-3 mb-1 border-bottom" 
+                         style="border-color: var(--border-color) !important;" 
+                         th:attr='onclick=|selectStudent("${student.lrn}", "${student.name}")|'>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong class="student-name d-block text-white" th:text="${student.name}">Student Name</strong>
+                                <small class="student-lrn text-emerald-custom" style="font-family: monospace;" th:text="${student.lrn}">123456789012</small>
+                            </div>
+                        </div>
+                    </div>
+                </th:block>
+
+                <div th:if="${allStudents == null or #lists.isEmpty(allStudents)}" class="text-center py-4 text-light">
+                    No active student accounts found inside the system database.
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Set default dates for the Issue Book form
-        document.addEventListener('DOMContentLoaded', function() {
-            const today = new Date();
-            const nextWeek = new Date(today);
-            nextWeek.setDate(today.getDate() + 7); // Default 1 week loan
-
-            document.getElementById('borrowDateInput').valueAsDate = today;
-            document.getElementById('expectedReturnDateInput').valueAsDate = nextWeek;
-        });
-
         // Tab Switching Logic
         function switchPanel(panelId) {
-            document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
-            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+            document.querySelectorAll('.sidebar-link').forEach(link => link.classList.remove('active'));
+            document.getElementById('link-' + panelId).classList.add('active');
             
-            document.getElementById(panelId).classList.add('active');
-            
-            if (panelId === 'issue-panel') document.getElementById('nav-issue').classList.add('active');
-            if (panelId === 'active-panel') document.getElementById('nav-active').classList.add('active');
-            if (panelId === 'history-panel') document.getElementById('nav-history').classList.add('active');
+            document.querySelectorAll('.tab-pane').forEach(pane => {
+                pane.classList.remove('show', 'active');
+                pane.style.display = 'none';
+            });
+            const targetPane = document.getElementById('panel-' + panelId);
+            targetPane.style.display = 'block';
+            setTimeout(() => targetPane.classList.add('show', 'active'), 10);
+            localStorage.setItem('libActiveTab', panelId);
         }
 
-        // --- FIXED MODAL LOGIC ---
+        document.addEventListener("DOMContentLoaded", function() {
+            let activeTab = localStorage.getItem('libActiveTab') || 'borrowed';
+            switchPanel(activeTab);
+        });
+
+        // Search Modal Controller Logic
         function openSearchModal() {
-            const modal = document.getElementById('studentSearchModal');
-            const searchInput = document.getElementById('modalSearchInput');
+            document.getElementById('studentSearchModal').style.display = 'flex';
             
-            modal.style.display = 'flex';
-            
-            // Setting a timeout prevents the "ghost focus" browser bug
-            // It ensures the modal is fully painted before requesting focus
+            // 🛡️ FIXED: setTimeout absolutely guarantees the browser gives you the typing cursor (fixes ghost focus bug)
             setTimeout(() => {
-                searchInput.value = ''; // Clears previous search
-                filterStudentList(); // Resets the list
+                const searchInput = document.getElementById('modalSearchInput');
+                searchInput.value = ''; 
+                filterStudentList(); 
                 searchInput.focus();
             }, 50);
         }
@@ -369,12 +384,8 @@
         function selectStudent(lrn, name) {
             document.getElementById('selectedLrn').value = lrn;
             document.getElementById('selectedName').value = name;
-            
-            const display = document.getElementById('selectedStudentDisplay');
-            display.value = name + ' (' + lrn + ')';
-            display.style.borderColor = 'var(--emerald-green)';
-            display.style.color = 'var(--emerald-green)';
-            
+            document.getElementById('selectedStudentDisplay').value = name + ' (' + lrn + ')';
+            document.getElementById('selectedStudentDisplay').style.borderColor = 'var(--emerald-green)';
             document.getElementById('submitLoanBtn').disabled = false;
             closeSearchModal();
         }
@@ -382,12 +393,9 @@
         function filterStudentList() {
             let filter = document.getElementById('modalSearchInput').value.toLowerCase();
             let items = document.querySelectorAll('.student-item');
-            
             items.forEach(item => {
                 let name = item.querySelector('.student-name').textContent.toLowerCase();
                 let lrn = item.querySelector('.student-lrn').textContent.toLowerCase();
-                
-                // Show block if match, else none
                 item.style.display = (name.includes(filter) || lrn.includes(filter)) ? 'block' : 'none';
             });
         }
