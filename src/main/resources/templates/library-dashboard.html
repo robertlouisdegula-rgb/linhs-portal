@@ -141,6 +141,13 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
+        /* Enhanced focus styling for the custom search input */
+        #modalSearchInput:focus {
+            border-color: var(--emerald-green) !important;
+            box-shadow: 0 0 0 0.25rem rgba(16, 185, 129, 0.25) !important;
+            outline: none;
+        }
+
         .student-item {
             transition: background-color 0.2s;
             border-radius: 6px;
@@ -270,7 +277,9 @@
         </main>
     </div>
 
-    <div class="modal fade" id="logBorrowModal" aria-hidden="true">
+    <!-- THE FIX: Added 'data-bs-focus="false"' and 'tabindex="-1"' -->
+    <!-- This forcefully disables Bootstrap's focus trap, letting the custom modal function -->
+    <div class="modal fade" id="logBorrowModal" tabindex="-1" aria-hidden="true" data-bs-focus="false">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
