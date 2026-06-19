@@ -34,7 +34,7 @@
             width: 80px;
             height: 80px;
             object-fit: contain;
-            border-radius: 50%; /* Ensures it stays a perfect circle */
+            border-radius: 50%;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
         }
         .title {
@@ -58,7 +58,6 @@
             margin-bottom: 20px;
         }
 
-        /* Profile Banner & Grade Button */
         .student-info {
             background-color: #f8fafc;
             border: 1px solid #e2e8f0;
@@ -91,7 +90,6 @@
         .btn-view-grades:hover { background-color: #059669; }
         .btn-view-grades:active { transform: scale(0.98); }
 
-        /* Liabilities Structure */
         .status-grid { margin-bottom: 30px; }
         .liability-box {
             background: #fff;
@@ -113,7 +111,6 @@
         .back-link { color: #3b82f6; text-decoration: none; font-weight: 500; }
         .back-link:hover { text-decoration: underline; }
 
-        /* Custom Grade Modal Styles */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(15, 23, 42, 0.6);
@@ -137,7 +134,6 @@
         .close-btn { background: none; border: none; font-size: 1.8rem; color: #94a3b8; cursor: pointer; line-height: 1; }
         .close-btn:hover { color: #ef4444; }
 
-        /* Modal Table */
         .grades-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
         .grades-table th { background-color: #f1f5f9; color: #475569; font-weight: 600; padding: 12px 15px; border-bottom: 2px solid #e2e8f0; text-align: center; }
         .grades-table th:first-child { text-align: left; }
@@ -175,21 +171,23 @@
 
         <div class="status-grid">
             
-            <div th:if="${not #lists.isEmpty(pendingLiabilities)}">
-                <div th:each="liability : ${pendingLiabilities}" class="liability-box">
-                    <div class="liability-title" th:text="|⚠️ ${liability.category} Hold:|">Category</div>
-                    <div th:text="${liability.description}">Description</div>
+            <!-- GUIDANCE LOGS ALIGNED WITH CONTROLLER -->
+            <div th:if="${not #lists.isEmpty(unresolvedGuidance)}">
+                <div th:each="guidance : ${unresolvedGuidance}" class="liability-box">
+                    <div class="liability-title">⚠️ Guidance Office Hold:</div>
+                    <div th:text="${guidance.description != null ? guidance.description : 'Pending resolution at Guidance Office'}">Description</div>
                 </div>
             </div>
             
-            <div th:if="${not #lists.isEmpty(facilityLogs)}">
-                <div th:each="fItem : ${facilityLogs}" class="liability-box">
+            <!-- FACILITY LOGS ALIGNED WITH CONTROLLER -->
+            <div th:if="${not #lists.isEmpty(unresolvedFacilities)}">
+                <div th:each="fItem : ${unresolvedFacilities}" class="liability-box">
                     <div class="liability-title">🏢 Damage Reference Item:</div>
                     <div th:text="|Facility: ${fItem?.facility != null ? fItem?.facility : 'Unknown'} - ${fItem?.description != null ? fItem?.description : 'No log details'}|">Details</div>
                 </div>
             </div>
 
-            </div>
+        </div>
 
         <div th:if="${student?.adviserClearance == 'CLEARED' and student?.labClearance == 'CLEARED' and student?.sportsClearance == 'CLEARED' and student?.guidanceClearance == 'CLEARED' and student?.facilitiesClearance == 'CLEARED' and student?.libraryClearance == 'CLEARED'}"
             class="final-status success">
@@ -223,6 +221,7 @@
                 No academic grades have been submitted for this student yet.
             </div>
 
+            <!-- GRADES TABLE ALIGNED WITH STANDARD VARIABLES -->
             <table class="grades-table" th:if="${not #lists.isEmpty(studentGrades)}">
                 <thead>
                     <tr>
@@ -236,10 +235,10 @@
                 <tbody>
                     <tr th:each="grade : ${studentGrades}">
                         <td th:text="${grade.subjectName}">Subject Name</td>
-                        <td th:text="${grade.getSem1Display()}">N/A</td>
-                        <td th:text="${grade.getSem2Display()}">N/A</td>
-                        <td th:text="${grade.getSem3Display()}">N/A</td>
-                        <td class="grade-highlight" th:text="${grade.getFinalGradeDisplay()}">N/A</td>
+                        <td th:text="${grade.sem1}">N/A</td>
+                        <td th:text="${grade.sem2}">N/A</td>
+                        <td th:text="${grade.sem3}">N/A</td>
+                        <td class="grade-highlight" th:text="${grade.finalGrade}">N/A</td>
                     </tr>
                 </tbody>
             </table>
@@ -251,7 +250,7 @@
         
         function openGradeModal() {
             modal.classList.add('active');
-            document.body.style.overflow = 'hidden'; // Prevents background scrolling
+            document.body.style.overflow = 'hidden'; 
         }
 
         function closeGradeModal() {
@@ -259,7 +258,6 @@
             document.body.style.overflow = 'auto';
         }
 
-        // Close modal if user clicks anywhere outside the white box
         modal.addEventListener('click', function(e) {
             if (e.target === modal) {
                 closeGradeModal();

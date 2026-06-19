@@ -1151,6 +1151,10 @@ public String showLibraryDashboard(Model model) {
     
     model.addAttribute("activeBorrows", activeBorrows);
     model.addAttribute("libraryLogs", libraryLogs);
+
+    List<Student> allStudents = studentRepository.findAll();
+    model.addAttribute("allStudents", allStudents);
+
     return "library-dashboard";
 }
 
