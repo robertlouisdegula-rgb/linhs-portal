@@ -19,38 +19,37 @@ public class Student {
     @Column(name = "section")
     private String section;
 
-    // --- Clearance Status Fields ---
+    // --- Clearance Status Fields NOW DEFAULT TO "CLEARED" ---
     @Column(name = "adviser_clearance")
-    private String adviserClearance = "PENDING";
+    private String adviserClearance = "CLEARED";
 
     @Column(name = "lab_clearance")
-    private String labClearance = "PENDING";
+    private String labClearance = "CLEARED";
 
     @Column(name = "sports_clearance")
-    private String sportsClearance = "PENDING";
+    private String sportsClearance = "CLEARED";
 
     @Column(name = "guidance_clearance")
-    private String guidanceClearance = "PENDING";
+    private String guidanceClearance = "CLEARED";
 
     @Column(name = "facilities_clearance")
-    private String facilitiesClearance = "PENDING";
+    private String facilitiesClearance = "CLEARED";
 
     @Column(name = "library_clearance")
-    private String libraryClearance = "PENDING";
+    private String libraryClearance = "CLEARED";
 
     // 1. Default constructor (Strictly required by Spring Data JPA)
     public Student() {
     }
 
-    // 2. Custom constructor (Required by PageController.java for the Edit Student
-    // feature)
+    // 2. Custom constructor (Required by PageController.java for the Edit Student feature)
     public Student(String lrn, String name, String section) {
         this.lrn = lrn;
         this.name = name;
         this.section = section;
     }
 
-    // --- Standard Getters and Setters ---
+    // --- Basic Getters and Setters ---
     public String getLrn() {
         return lrn;
     }

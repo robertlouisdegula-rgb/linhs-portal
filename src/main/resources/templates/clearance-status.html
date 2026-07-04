@@ -114,7 +114,6 @@
             font-family: monospace;
         }
         
-        /* NEW: Button for viewing grades */
         .btn-view-grades {
             background-color: #10b981;
             color: white;
@@ -232,7 +231,6 @@
             font-size: 15px;
         }
 
-        /* NEW: Modal CSS for Grades */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(15, 23, 42, 0.6); display: none; align-items: center; justify-content: center;
@@ -263,7 +261,7 @@
 
     <div class="header">
         <div class="logo-container">
-            <img src="/lumbanglogo.jpg" alt="LINHS Logo" class="logo-img">
+            <img src="/images/logo.png" alt="LINHS Logo" class="logo-img">
         </div>
         <h1>Student Clearance Tracker</h1>
         <p>Check your department liabilities and clearance status</p>
@@ -302,48 +300,48 @@
                     <div class="dept-icon">👨‍🏫</div>
                     <div class="dept-name">Class Adviser</div>
                     <div class="status-badge" 
-                         th:classappend="${student?.adviserClearance == 'CLEARED' ? 'cleared' : 'pending'}"
-                         th:text="${student?.adviserClearance != null ? student?.adviserClearance : 'PENDING'}">PENDING</div>
+                         th:classappend="${student?.adviserClearance == 'PENDING' ? 'pending' : 'cleared'}"
+                         th:text="${student?.adviserClearance == 'PENDING' ? 'PENDING' : 'CLEARED'}">CLEARED</div>
                 </div>
 
                 <div class="department-card">
                     <div class="dept-icon">🔬</div>
                     <div class="dept-name">Laboratory Management</div>
                     <div class="status-badge" 
-                         th:classappend="${student?.labClearance == 'CLEARED' ? 'cleared' : 'pending'}"
-                         th:text="${student?.labClearance != null ? student?.labClearance : 'PENDING'}">PENDING</div>
+                         th:classappend="${student?.labClearance == 'PENDING' ? 'pending' : 'cleared'}"
+                         th:text="${student?.labClearance == 'PENDING' ? 'PENDING' : 'CLEARED'}">CLEARED</div>
                 </div>
 
                 <div class="department-card">
                     <div class="dept-icon">📚</div>
                     <div class="dept-name">School Library</div>
                     <div class="status-badge" 
-                         th:classappend="${student?.libraryClearance == 'CLEARED' ? 'cleared' : 'pending'}"
-                         th:text="${student?.libraryClearance != null ? student?.libraryClearance : 'PENDING'}">PENDING</div>
+                         th:classappend="${student?.libraryClearance == 'PENDING' ? 'pending' : 'cleared'}"
+                         th:text="${student?.libraryClearance == 'PENDING' ? 'PENDING' : 'CLEARED'}">CLEARED</div>
                 </div>
 
                 <div class="department-card">
                     <div class="dept-icon">⚽</div>
                     <div class="dept-name">Sports Department</div>
                     <div class="status-badge" 
-                         th:classappend="${student?.sportsClearance == 'CLEARED' ? 'cleared' : 'pending'}"
-                         th:text="${student?.sportsClearance != null ? student?.sportsClearance : 'PENDING'}">PENDING</div>
+                         th:classappend="${student?.sportsClearance == 'PENDING' ? 'pending' : 'cleared'}"
+                         th:text="${student?.sportsClearance == 'PENDING' ? 'PENDING' : 'CLEARED'}">CLEARED</div>
                 </div>
 
                 <div class="department-card">
                     <div class="dept-icon">⚖️</div>
                     <div class="dept-name">Guidance Office</div>
                     <div class="status-badge" 
-                         th:classappend="${student?.guidanceClearance == 'CLEARED' ? 'cleared' : 'pending'}"
-                         th:text="${student?.guidanceClearance != null ? student?.guidanceClearance : 'PENDING'}">PENDING</div>
+                         th:classappend="${student?.guidanceClearance == 'PENDING' ? 'pending' : 'cleared'}"
+                         th:text="${student?.guidanceClearance == 'PENDING' ? 'PENDING' : 'CLEARED'}">CLEARED</div>
                 </div>
 
                 <div class="department-card">
                     <div class="dept-icon">🏢</div>
                     <div class="dept-name">Facilities & Property</div>
                     <div class="status-badge" 
-                         th:classappend="${student?.facilitiesClearance == 'CLEARED' ? 'cleared' : 'pending'}"
-                         th:text="${student?.facilitiesClearance != null ? student?.facilitiesClearance : 'PENDING'}">PENDING</div>
+                         th:classappend="${student?.facilitiesClearance == 'PENDING' ? 'pending' : 'cleared'}"
+                         th:text="${student?.facilitiesClearance == 'PENDING' ? 'PENDING' : 'CLEARED'}">CLEARED</div>
                 </div>
             </div>
 
@@ -371,11 +369,11 @@
 
             </div>
 
-            <div th:if="${student?.adviserClearance == 'CLEARED' and student?.labClearance == 'CLEARED' and student?.sportsClearance == 'CLEARED' and student?.guidanceClearance == 'CLEARED' and student?.facilitiesClearance == 'CLEARED' and student?.libraryClearance == 'CLEARED'}"
+            <div th:if="${student?.adviserClearance != 'PENDING' and student?.labClearance != 'PENDING' and student?.sportsClearance != 'PENDING' and student?.guidanceClearance != 'PENDING' and student?.facilitiesClearance != 'PENDING' and student?.libraryClearance != 'PENDING'}"
                 class="final-status success">
                 🎉 Congratulations! You are fully cleared for this academic period.
             </div>
-            <div th:unless="${student?.adviserClearance == 'CLEARED' and student?.labClearance == 'CLEARED' and student?.sportsClearance == 'CLEARED' and student?.guidanceClearance == 'CLEARED' and student?.facilitiesClearance == 'CLEARED' and student?.libraryClearance == 'CLEARED'}"
+            <div th:if="${student?.adviserClearance == 'PENDING' or student?.labClearance == 'PENDING' or student?.sportsClearance == 'PENDING' or student?.guidanceClearance == 'PENDING' or student?.facilitiesClearance == 'PENDING' or student?.libraryClearance == 'PENDING'}"
                 class="final-status warning">
                 ⚠️ You still have pending liabilities. Please visit the respective departments displayed above to resolve holds.
             </div>

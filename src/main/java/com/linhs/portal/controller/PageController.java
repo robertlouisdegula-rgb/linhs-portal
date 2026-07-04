@@ -28,6 +28,7 @@ import com.linhs.portal.model.DocumentRequest;
 import com.linhs.portal.model.FacilityLog;
 import com.linhs.portal.model.Gallery;
 import com.linhs.portal.model.GuidanceLog;
+import com.linhs.portal.model.LabEquipment;
 import com.linhs.portal.model.LabLiability;
 import com.linhs.portal.model.Liability;
 import com.linhs.portal.model.LibraryBorrowRecord;
@@ -857,127 +858,117 @@ public class PageController {
     // --- SPORTS & LAB & LIBRARY DASHBOARDS ---
     // =========================================================
     
-   @GetMapping("/lab-dashboard")
-    public String showLabDashboard(HttpSession session, Model model) {
-        User user = (User) session.getAttribute("user");
-        if (user == null || user.getRoleName() == null || !user.getRoleName().trim().toUpperCase().contains("LAB")) return "redirect:/login";
-
-        // 1. Fetch Inventory
-        model.addAttribute("labEquipments", labEquipmentRepository.findAll());
-
-        // 2. Fetch Active Borrows
-        List<BorrowRecord> activeBorrows = borrowRecordRepository.findAll().stream()
-                .filter(b -> "LAB_BORROWED".equalsIgnoreCase(b.getStatus()))
-                .collect(java.util.stream.Collectors.toList());
-        model.addAttribute("activeBorrows", activeBorrows);
-
-        // 3. Fetch Unresolved Liabilities
-        List<LabLiability> unresolved = labLiabilityRepository.findAll().stream()
-                .filter(l -> "UNPAID".equalsIgnoreCase(l.getStatus()))
-                .collect(Collectors.toList());
-        model.addAttribute("labLiabilities", unresolved);
-
-        return "lab-dashboard"; 
+// ---------------------------------------------------------
+    // LABORATORY MODULE MAPPINGS
+    // ---------------------------------------------------------
+    
+    @GetMapping("/lab-dashboard")
+    public String showLabDashboard(Model model) {
+        model.addAttribute("equipments", labEquipmentRepository.findAll());
+        model.addAttribute("liabilities", labLiabilityRepository.findAll());
+        
+        // 🟢 FIXED: Added this so the global student search modal actually loads names!
+        model.addAttribute("allStudents", studentRepository.findAll()); 
+        
+        return "lab-dashboard";
     }
 
-    @PostMapping("/lab/borrow/add")
-    public String addLabBorrow(
-            @RequestParam("studentLrn") String studentLrn,
-            @RequestParam("equipmentName") String equipmentName) { 
-        try {
-            // SECURITY CHECK 1: Verify the student exists
-            java.util.Optional<Student> studentOpt = studentRepository.findById(studentLrn);
-            if (studentOpt.isEmpty()) {
-                return "redirect:/lab-dashboard?tab=borrowed&error=Loan+Failed:+Student+LRN+not+found.";
-            }
-
-            // SECURITY CHECK 2: Verify the apparatus exists AND is in stock
-            java.util.Optional<com.linhs.portal.model.LabEquipment> equipOpt = labEquipmentRepository.findByName(equipmentName);
-            if (equipOpt.isEmpty()) {
-                return "redirect:/lab-dashboard?tab=borrowed&error=Loan+Failed:+Apparatus+not+found+in+inventory.";
-            }
-            
-            com.linhs.portal.model.LabEquipment equipment = equipOpt.get();
-            if (equipment.getQuantity() <= 0) {
-                return "redirect:/lab-dashboard?tab=borrowed&error=Loan+Failed:+Apparatus+is+currently+out+of+stock!";
-            }
-
-            // 1. Deduct from lab inventory
-            equipment.setQuantity(equipment.getQuantity() - 1);
-            if (equipment.getQuantity() == 0) {
-                equipment.setStatus("OUT OF STOCK"); 
-            }
-            labEquipmentRepository.save(equipment);
-
-            // 2. Log the borrow using your EXISTING BorrowRecord
-            BorrowRecord record = new BorrowRecord();
-            record.setStudentLrn(studentLrn);
-            
-            // Uses the fields specific to your BorrowRecord model
-            record.setItemName(equipmentName); 
-            record.setBorrowedAt(java.time.LocalDateTime.now()); 
-            
-            // TRICK: Saves as LAB_BORROWED so it doesn't mix with Sports items!
-            record.setStatus("LAB_BORROWED"); 
-            borrowRecordRepository.save(record);
-
-            // 3. Flag the student's Lab clearance as pending
-            Student s = studentOpt.get();
-            s.setLabClearance("PENDING"); 
-            studentRepository.save(s);
-            
-            return "redirect:/lab-dashboard?tab=borrowed&success=Apparatus+loan+authorized+and+inventory+updated";
-        } catch (Exception e) {
-            return "redirect:/lab-dashboard?tab=borrowed&error=Failed+to+record+loan";
-        }
+    // 1. REGISTER NEW APPARATUS
+    @PostMapping("/lab/equipment/add")
+    public String addLabEquipment(@RequestParam("code") String code,
+                                  @RequestParam("name") String name,
+                                  @RequestParam("quantity") Integer quantity,
+                                  @RequestParam("status") String status,
+                                  RedirectAttributes redirectAttributes) {
+        LabEquipment equipment = new LabEquipment();
+        equipment.setCode(code);
+        equipment.setName(name);
+        equipment.setQuantity(quantity);
+        equipment.setStatus(status);
+        labEquipmentRepository.save(equipment);
+        
+        redirectAttributes.addFlashAttribute("successMessage", "New apparatus registered successfully!");
+        return "redirect:/lab-dashboard";
     }
 
-    @PostMapping("/lab/borrow/return")
-    public String returnLabBorrow(@RequestParam("id") Long id) {
-        java.util.Optional<BorrowRecord> opt = borrowRecordRepository.findById(id);
+    // 2. EDIT APPARATUS
+    @PostMapping("/lab/equipment/edit")
+    public String editLabEquipment(@RequestParam("id") Long id,
+                                   @RequestParam("name") String name,
+                                   @RequestParam("quantity") Integer quantity,
+                                   @RequestParam("status") String status,
+                                   RedirectAttributes redirectAttributes) {
+        Optional<LabEquipment> opt = labEquipmentRepository.findById(id);
         if (opt.isPresent()) {
-            BorrowRecord record = opt.get();
-            
-            // 1. Mark record as returned
-            record.setStatus("LAB_RETURNED");
-            borrowRecordRepository.save(record);
-
-            // 2. Add the apparatus back to the inventory stock
-            // Make sure to use getItemName() to match your model
-            java.util.Optional<com.linhs.portal.model.LabEquipment> equipOpt = labEquipmentRepository.findByName(record.getItemName());
-            if (equipOpt.isPresent()) {
-                com.linhs.portal.model.LabEquipment equipment = equipOpt.get();
-                equipment.setQuantity(equipment.getQuantity() + 1);
-                
-                if ("OUT OF STOCK".equals(equipment.getStatus()) || "UNAVAILABLE".equals(equipment.getStatus())) {
-                    equipment.setStatus("AVAILABLE");
-                }
-                labEquipmentRepository.save(equipment);
-            }
+            LabEquipment eq = opt.get();
+            eq.setName(name);
+            eq.setQuantity(quantity);
+            eq.setStatus(status);
+            labEquipmentRepository.save(eq);
+            redirectAttributes.addFlashAttribute("successMessage", "Apparatus updated successfully!");
         }
-        return "redirect:/lab-dashboard?tab=borrowed&success=Apparatus+returned+and+inventory+restocked";
+        return "redirect:/lab-dashboard";
     }
 
+    // 3. DELETE APPARATUS
+    @PostMapping("/lab/equipment/delete")
+    public String deleteLabEquipment(@RequestParam("id") Long id, RedirectAttributes redirectAttributes) {
+        labEquipmentRepository.deleteById(id);
+        redirectAttributes.addFlashAttribute("successMessage", "Apparatus permanently deleted.");
+        return "redirect:/lab-dashboard";
+    }
+
+    // 4. RECORD LIABILITY (Automatically sets Clearance to PENDING)
+    @PostMapping("/lab/liability/add")
+    public String addLabLiability(@RequestParam("studentLrn") String lrn,
+                                  @RequestParam("studentName") String name,
+                                  @RequestParam("description") String description,
+                                  RedirectAttributes redirectAttributes) {
+        LabLiability liability = new LabLiability();
+        liability.setStudentLrn(lrn);
+        liability.setStudentName(name);
+        liability.setDescription(description);
+        liability.setStatus("UNPAID");
+        liability.setDateLogged(LocalDate.now().toString());
+        labLiabilityRepository.save(liability);
+        
+        // Auto-update student clearance
+        Optional<Student> studentOpt = studentRepository.findById(lrn);
+        if (studentOpt.isPresent()) {
+            Student student = studentOpt.get();
+            student.setLabClearance("PENDING");
+            studentRepository.save(student);
+        }
+        
+        redirectAttributes.addFlashAttribute("successMessage", "Liability recorded and clearance set to PENDING!");
+        return "redirect:/lab-dashboard";
+    }
+
+    // 5. CLEAR LIABILITY (Automatically checks if student can be CLEARED)
     @PostMapping("/lab/liability/clear")
-    public String clearLabLiability(@RequestParam("liabilityId") Long liabilityId) {
-        java.util.Optional<com.linhs.portal.model.LabLiability> opt = labLiabilityRepository.findById(liabilityId);
+    public String clearLabLiability(@RequestParam("id") Long id, RedirectAttributes redirectAttributes) {
+        Optional<LabLiability> opt = labLiabilityRepository.findById(id);
         if (opt.isPresent()) {
-            com.linhs.portal.model.LabLiability liability = opt.get();
+            LabLiability liability = opt.get();
             liability.setStatus("CLEARED");
             labLiabilityRepository.save(liability);
             
-            // Check if student has other pending liabilities before fully clearing them
-            List<com.linhs.portal.model.LabLiability> remaining = labLiabilityRepository.findByStudentLrnAndStatus(liability.getStudentLrn(), "UNPAID");
-            if (remaining.isEmpty()) {
-                java.util.Optional<Student> studentOpt = studentRepository.findById(liability.getStudentLrn());
+            // Check if they have any other UNPAID lab liabilities left
+            List<LabLiability> activeLiabilities = labLiabilityRepository.findAll().stream()
+                    .filter(l -> l.getStudentLrn().equals(liability.getStudentLrn()) && "UNPAID".equals(l.getStatus()))
+                    .collect(Collectors.toList());
+                    
+            if (activeLiabilities.isEmpty()) {
+                Optional<Student> studentOpt = studentRepository.findById(liability.getStudentLrn());
                 if (studentOpt.isPresent()) {
-                    Student s = studentOpt.get();
-                    s.setLabClearance("CLEARED");
-                    studentRepository.save(s);
+                    Student student = studentOpt.get();
+                    student.setLabClearance("CLEARED");
+                    studentRepository.save(student);
                 }
             }
+            redirectAttributes.addFlashAttribute("successMessage", "Liability cleared and student status updated!");
         }
-        return "redirect:/lab-dashboard?tab=liabilities&success=Liability+resolved+and+student+cleared";
+        return "redirect:/lab-dashboard";
     }
 
     @GetMapping("/sports-dashboard")
