@@ -232,7 +232,8 @@ public class PageController {
             model.addAttribute("notFound", true);
             model.addAttribute("unresolvedGuidance", new ArrayList<>());
             model.addAttribute("unresolvedFacilities", new ArrayList<>());
-            return "clearance-status_3";
+            // FIXED: Removed the "_3" typo so it routes to your actual HTML file
+            return "clearance-status"; 
         }
 
         Student student = studentOpt.get();
@@ -265,7 +266,8 @@ public class PageController {
         List<StudentGrade> studentGrades = studentGradeRepository.findByStudentLrn(student.getLrn());
         model.addAttribute("studentGrades", studentGrades);
 
-        return "clearance-status_3";
+        // FIXED: Removed the "_3" typo so it properly loads your page!
+        return "clearance-status"; 
     }
 
     // =========================================================
