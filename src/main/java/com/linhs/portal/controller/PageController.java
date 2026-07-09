@@ -394,7 +394,7 @@ public class PageController {
                 Gallery gallery = (id != null) ? galleryRepository.findById(id).orElse(new Gallery()) : new Gallery();
                 gallery.setCaption(caption);
                 
-                // --- THE FIX: ACTUALLY SAVE THE PHYSICAL FILE TO THE FOLDER ---
+                // ACTUALLY SAVE THE PHYSICAL FILE TO THE FOLDER
                 if (fileAttachment != null && !fileAttachment.isEmpty()) {
                     String filename = fileAttachment.getOriginalFilename();
                     java.nio.file.Path uploadPath = java.nio.file.Paths.get("uploads");
@@ -417,6 +417,39 @@ public class PageController {
         } catch (Exception e) {
             e.printStackTrace();
             return "redirect:/admin-dashboard?tab=2&error=Failed+to+publish+content";
+        }
+    }
+
+    @PostMapping("/admin/resource/add")
+    public String updateCmsResources(
+            @RequestParam(value = "title", required = false) String title,
+            @RequestParam(value = "file", required = false) MultipartFile file) {
+        try {
+            ResourceHub resource = new ResourceHub();
+            resource.setTitle(title);
+            
+            // ACTUALLY SAVE THE PHYSICAL FILE TO THE FOLDER
+            if (file != null && !file.isEmpty()) {
+                String filename = file.getOriginalFilename();
+                java.nio.file.Path uploadPath = java.nio.file.Paths.get("uploads");
+                
+                // Create the 'uploads' folder if it doesn't exist yet
+                if (!java.nio.file.Files.exists(uploadPath)) {
+                    java.nio.file.Files.createDirectories(uploadPath);
+                }
+                
+                // Save the file
+                java.nio.file.Path filePath = uploadPath.resolve(filename);
+                java.nio.file.Files.copy(file.getInputStream(), filePath, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+                
+                // Save the correct URL path for the browser so it downloads properly
+                resource.setFileUrl("/uploads/" + filename);
+            }
+            resourceHubRepository.save(resource);
+            return "redirect:/admin-dashboard?tab=2&success=Resource+Added";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "redirect:/admin-dashboard?tab=2&error=Failed+to+add+resource";
         }
     }
 
@@ -431,50 +464,6 @@ public class PageController {
             return "redirect:/admin-dashboard?tab=2&success=Content+Successfully+Deleted";
         } catch (Exception e) {
             return "redirect:/admin-dashboard?tab=2&error=Failed+to+delete+content";
-        }
-    }
-
-    @PostMapping("/admin/cms/update")
-    public String updateCmsAnnouncements(
-            @RequestParam(value = "id", required = false) Long id,
-            @RequestParam(value = "type", required = false, defaultValue = "announcement") String type,
-            @RequestParam(value = "title", required = false) String title,
-            @RequestParam(value = "content", required = false) String content,
-            @RequestParam(value = "caption", required = false) String caption,
-            @RequestParam(value = "fileAttachment", required = false) MultipartFile fileAttachment) {
-        try {
-            if ("announcement".equalsIgnoreCase(type) || "about".equalsIgnoreCase(type)) {
-                Announcement announcement = (id != null) ? announcementRepository.findById(id).orElse(new Announcement()) : new Announcement();
-                announcement.setTitle(title != null ? title : type);
-                announcement.setContent(content);
-                announcementRepository.save(announcement);
-            } else if ("gallery".equalsIgnoreCase(type)) {
-                Gallery gallery = (id != null) ? galleryRepository.findById(id).orElse(new Gallery()) : new Gallery();
-                gallery.setCaption(caption);
-                
-                // --- THE FIX: ACTUALLY SAVE THE PHYSICAL FILE TO THE FOLDER ---
-                if (fileAttachment != null && !fileAttachment.isEmpty()) {
-                    String filename = fileAttachment.getOriginalFilename();
-                    java.nio.file.Path uploadPath = java.nio.file.Paths.get("uploads");
-                    
-                    // Create the 'uploads' folder if it doesn't exist yet
-                    if (!java.nio.file.Files.exists(uploadPath)) {
-                        java.nio.file.Files.createDirectories(uploadPath);
-                    }
-                    
-                    // Save the file
-                    java.nio.file.Path filePath = uploadPath.resolve(filename);
-                    java.nio.file.Files.copy(fileAttachment.getInputStream(), filePath, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
-                    
-                    // Save the correct URL path for the browser
-                    gallery.setImageUrl("/uploads/" + filename);
-                }
-                galleryRepository.save(gallery);
-            }
-            return "redirect:/admin-dashboard?tab=2&success=Content+Published+and+Updated";
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "redirect:/admin-dashboard?tab=2&error=Failed+to+publish+content";
         }
     }
 
