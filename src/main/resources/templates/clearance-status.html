@@ -261,7 +261,7 @@
 
     <div class="header">
         <div class="logo-container">
-            <img src="/lumbanglogo.jpg" alt="LINHS Logo" class="logo-img">
+            <img src="/lumbanglogo.png" alt="LINHS Logo" class="logo-img">
         </div>
         <h1>Student Clearance Tracker</h1>
         <p>Check your department liabilities and clearance status</p>
@@ -345,7 +345,7 @@
                     </h3>
                     <div th:each="gItem : ${unresolvedGuidance}" class="liability-box">
                         <div class="liability-title">⚖️ Infraction Incident:</div>
-                        <div th:text="'Incident Description: ' + (${gItem.incident} != null ? ${gItem.incident} : 'Unspecified')">Details</div>
+                        <div th:text="${'Incident Description: ' + (gItem.incident != null ? gItem.incident : 'Unspecified')}">Details</div>
                     </div>
                 </div>
                 
@@ -355,7 +355,7 @@
                     </h3>
                     <div th:each="fItem : ${unresolvedFacilities}" class="liability-box">
                         <div class="liability-title">🏢 Damage Reference Item:</div>
-                        <div th:text="'Facility: ' + (${fItem.facility} != null ? fItem.facility : 'Unknown') + ' - ' + (${fItem.description} != null ? fItem.description : 'No log details')">Details</div>
+                        <div th:text="${'Facility: ' + (fItem.facility != null ? fItem.facility : 'Unknown') + ' - ' + (fItem.description != null ? fItem.description : 'No log details')}">Details</div>
                     </div>
                 </div>
 
