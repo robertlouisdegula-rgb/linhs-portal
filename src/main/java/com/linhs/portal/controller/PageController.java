@@ -232,21 +232,24 @@ public class PageController {
             model.addAttribute("notFound", true);
             model.addAttribute("unresolvedGuidance", new ArrayList<>());
             model.addAttribute("unresolvedFacilities", new ArrayList<>());
-            return "clearance-status";
+            return "clearance-status_3";
         }
 
         Student student = studentOpt.get();
         model.addAttribute("student", student);
 
-        // Map database statuses strictly to "CLEAR" or "LIABILITY"
+        // Fixed mapping: Treats initialization strings like "PENDING" as CLEAR.
+        // It will only show LIABILITY if explicitly changed to an active restriction or hold status.
         java.util.function.Function<String, String> formatStatus = (status) -> {
-            if (status == null || status.trim().isEmpty() || status.equalsIgnoreCase("CLEARED") || status.equalsIgnoreCase("CLEAR")) {
+            if (status == null || status.trim().isEmpty() || 
+                status.equalsIgnoreCase("CLEARED") || 
+                status.equalsIgnoreCase("CLEAR") || 
+                status.equalsIgnoreCase("PENDING")) {
                 return "CLEAR";
             }
             return "LIABILITY";
         };
 
-        // Adviser status removed as requested. Only processing the 5 departments.
         model.addAttribute("labStatus", formatStatus.apply(student.getLabClearance()));
         model.addAttribute("sportsStatus", formatStatus.apply(student.getSportsClearance()));
         model.addAttribute("guidanceStatus", formatStatus.apply(student.getGuidanceClearance()));
@@ -262,7 +265,7 @@ public class PageController {
         List<StudentGrade> studentGrades = studentGradeRepository.findByStudentLrn(student.getLrn());
         model.addAttribute("studentGrades", studentGrades);
 
-        return "clearance-status";
+        return "clearance-status_3";
     }
 
     // =========================================================
@@ -1239,12 +1242,12 @@ public String clearLibraryLogs(RedirectAttributes redirectAttributes) {
         List<LiabilityDetailsRow> details = new ArrayList<>();
 
         for (Student s : allStudents) {
-            // Evaluates as clear if null, 'CLEARED', or 'CLEAR'. Adviser logic completely removed.
-            boolean labOk = s.getLabClearance() == null || s.getLabClearance().equalsIgnoreCase("CLEARED") || s.getLabClearance().equalsIgnoreCase("CLEAR");
-            boolean sportsOk = s.getSportsClearance() == null || s.getSportsClearance().equalsIgnoreCase("CLEARED") || s.getSportsClearance().equalsIgnoreCase("CLEAR");
-            boolean guidanceOk = s.getGuidanceClearance() == null || s.getGuidanceClearance().equalsIgnoreCase("CLEARED") || s.getGuidanceClearance().equalsIgnoreCase("CLEAR");
-            boolean facilitiesOk = s.getFacilitiesClearance() == null || s.getFacilitiesClearance().equalsIgnoreCase("CLEARED") || s.getFacilitiesClearance().equalsIgnoreCase("CLEAR");
-            boolean libraryOk = s.getLibraryClearance() == null || s.getLibraryClearance().equalsIgnoreCase("CLEARED") || s.getLibraryClearance().equalsIgnoreCase("CLEAR");
+            // Evaluates as clear if null, 'CLEARED', 'CLEAR', or standard placeholder 'PENDING'
+            boolean labOk = s.getLabClearance() == null || s.getLabClearance().equalsIgnoreCase("CLEARED") || s.getLabClearance().equalsIgnoreCase("CLEAR") || s.getLabClearance().equalsIgnoreCase("PENDING");
+            boolean sportsOk = s.getSportsClearance() == null || s.getSportsClearance().equalsIgnoreCase("CLEARED") || s.getSportsClearance().equalsIgnoreCase("CLEAR") || s.getSportsClearance().equalsIgnoreCase("PENDING");
+            boolean guidanceOk = s.getGuidanceClearance() == null || s.getGuidanceClearance().equalsIgnoreCase("CLEARED") || s.getGuidanceClearance().equalsIgnoreCase("CLEAR") || s.getGuidanceClearance().equalsIgnoreCase("PENDING");
+            boolean facilitiesOk = s.getFacilitiesClearance() == null || s.getFacilitiesClearance().equalsIgnoreCase("CLEARED") || s.getFacilitiesClearance().equalsIgnoreCase("CLEAR") || s.getFacilitiesClearance().equalsIgnoreCase("PENDING");
+            boolean libraryOk = s.getLibraryClearance() == null || s.getLibraryClearance().equalsIgnoreCase("CLEARED") || s.getLibraryClearance().equalsIgnoreCase("CLEAR") || s.getLibraryClearance().equalsIgnoreCase("PENDING");
 
             boolean isCleared = labOk && sportsOk && guidanceOk && facilitiesOk && libraryOk;
 
