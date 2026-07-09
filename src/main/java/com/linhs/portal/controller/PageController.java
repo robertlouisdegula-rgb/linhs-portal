@@ -232,18 +232,26 @@ public class PageController {
             model.addAttribute("notFound", true);
             model.addAttribute("unresolvedGuidance", new ArrayList<>());
             model.addAttribute("unresolvedFacilities", new ArrayList<>());
-            return "clearance-status"; // <-- Skip this one (this is for when a student isn't found)[cite: 22]
+            return "clearance-status";
         }
 
         Student student = studentOpt.get();
         model.addAttribute("student", student);
 
-        model.addAttribute("adviserStatus", student.getAdviserClearance());
-        model.addAttribute("labStatus", student.getLabClearance());
-        model.addAttribute("sportsStatus", student.getSportsClearance());
-        model.addAttribute("guidanceStatus", student.getGuidanceClearance());
-        model.addAttribute("facilitiesStatus", student.getFacilitiesClearance());
-        model.addAttribute("libraryStatus", student.getLibraryClearance());
+        // Map database statuses strictly to "CLEAR" or "LIABILITY"
+        java.util.function.Function<String, String> formatStatus = (status) -> {
+            if (status == null || status.trim().isEmpty() || status.equalsIgnoreCase("CLEARED") || status.equalsIgnoreCase("CLEAR")) {
+                return "CLEAR";
+            }
+            return "LIABILITY";
+        };
+
+        // Adviser status removed as requested. Only processing the 5 departments.
+        model.addAttribute("labStatus", formatStatus.apply(student.getLabClearance()));
+        model.addAttribute("sportsStatus", formatStatus.apply(student.getSportsClearance()));
+        model.addAttribute("guidanceStatus", formatStatus.apply(student.getGuidanceClearance()));
+        model.addAttribute("facilitiesStatus", formatStatus.apply(student.getFacilitiesClearance()));
+        model.addAttribute("libraryStatus", formatStatus.apply(student.getLibraryClearance()));
 
         List<GuidanceLog> unresolvedGuidance = guidanceLogRepository.findByLrnAndStatus(student.getLrn(), "UNSOLVED");
         List<FacilityLog> unresolvedFacilities = facilityLogRepository.findByLrnAndStatus(student.getLrn(), "UNSOLVED");
@@ -251,11 +259,10 @@ public class PageController {
         model.addAttribute("unresolvedGuidance", unresolvedGuidance != null ? unresolvedGuidance : new ArrayList<>());
         model.addAttribute("unresolvedFacilities", unresolvedFacilities != null ? unresolvedFacilities : new ArrayList<>());
 
-        // ---> ADD THESE TWO LINES RIGHT HERE <---
         List<StudentGrade> studentGrades = studentGradeRepository.findByStudentLrn(student.getLrn());
         model.addAttribute("studentGrades", studentGrades);
 
-        return "clearance-status"; // <-- This is the final return statement of the method![cite: 22]
+        return "clearance-status";
     }
 
     // =========================================================
@@ -1232,14 +1239,16 @@ public String clearLibraryLogs(RedirectAttributes redirectAttributes) {
         List<LiabilityDetailsRow> details = new ArrayList<>();
 
         for (Student s : allStudents) {
-            boolean isCleared = "CLEARED".equalsIgnoreCase(s.getAdviserClearance()) &&
-                                "CLEARED".equalsIgnoreCase(s.getLabClearance()) &&
-                                "CLEARED".equalsIgnoreCase(s.getSportsClearance()) &&
-                                "CLEARED".equalsIgnoreCase(s.getGuidanceClearance()) &&
-                                "CLEARED".equalsIgnoreCase(s.getFacilitiesClearance()) &&
-                                "CLEARED".equalsIgnoreCase(s.getLibraryClearance());
+            // Evaluates as clear if null, 'CLEARED', or 'CLEAR'. Adviser logic completely removed.
+            boolean labOk = s.getLabClearance() == null || s.getLabClearance().equalsIgnoreCase("CLEARED") || s.getLabClearance().equalsIgnoreCase("CLEAR");
+            boolean sportsOk = s.getSportsClearance() == null || s.getSportsClearance().equalsIgnoreCase("CLEARED") || s.getSportsClearance().equalsIgnoreCase("CLEAR");
+            boolean guidanceOk = s.getGuidanceClearance() == null || s.getGuidanceClearance().equalsIgnoreCase("CLEARED") || s.getGuidanceClearance().equalsIgnoreCase("CLEAR");
+            boolean facilitiesOk = s.getFacilitiesClearance() == null || s.getFacilitiesClearance().equalsIgnoreCase("CLEARED") || s.getFacilitiesClearance().equalsIgnoreCase("CLEAR");
+            boolean libraryOk = s.getLibraryClearance() == null || s.getLibraryClearance().equalsIgnoreCase("CLEARED") || s.getLibraryClearance().equalsIgnoreCase("CLEAR");
 
-            String overallStatus = isCleared ? "CLEARED" : "HAS UNRESOLVED LIABILITIES";
+            boolean isCleared = labOk && sportsOk && guidanceOk && facilitiesOk && libraryOk;
+
+            String overallStatus = isCleared ? "CLEAR" : "HAS UNRESOLVED LIABILITIES";
             LiabilityDetailsRow row = new LiabilityDetailsRow(s.getName(), s.getLrn(), overallStatus);
 
             List<GuidanceLog> guidLogs = guidanceLogRepository.findByLrnAndStatus(s.getLrn(), "UNSOLVED");
