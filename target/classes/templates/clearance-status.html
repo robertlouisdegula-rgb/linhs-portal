@@ -270,7 +270,7 @@
     <div class="tracker-card">
 
         <form action="/clearance/track" method="GET" class="search-form">
-            <input type="text" name="lrn" class="search-input" placeholder="Enter 12-Digit Student LRN Identification code..." th:value="${student != null ? student.lrn : ''}" pattern="\d+" required autocomplete="off">
+            <input type="text" name="lrn" class="search-input" placeholder="Enter 12-Digit Student LRN Identification code..." th:value="${student?.lrn}" pattern="\d+" required autocomplete="off">
             <button type="submit" class="search-btn">Query Status</button>
         </form>
 
@@ -285,9 +285,9 @@
 
             <div class="student-profile-header">
                 <div>
-                    <div class="student-name" th:text="${student.name}">Student Account Name Profile</div>
-                    <div class="student-lrn-meta">LRN System Index Parameter Identification Code: <span th:text="${student.lrn}">123456789012</span></div>
-                    <div class="student-lrn-meta" style="margin-top: 4px; font-weight: 600; color: #374151;">Section Unit Structure Assignment: <span th:text="${student.section}">Grade 11 - Emerald</span></div>
+                    <div class="student-name" th:text="${student?.name}">Student Account Name Profile</div>
+                    <div class="student-lrn-meta">LRN System Index Parameter Identification Code: <span th:text="${student?.lrn}">123456789012</span></div>
+                    <div class="student-lrn-meta" style="margin-top: 4px; font-weight: 600; color: #374151;">Section Unit Structure Assignment: <span th:text="${student?.section}">Grade 11 - Emerald</span></div>
                 </div>
                 <button class="btn-view-grades" onclick="openGradeModal()">
                     📄 View Academic Grades
@@ -295,7 +295,6 @@
             </div>
 
             <div class="clearance-grid">
-
                 <div class="department-card">
                     <div class="dept-icon">🔬</div>
                     <div class="dept-name">Laboratory Management</div>
@@ -345,7 +344,7 @@
                     </h3>
                     <div th:each="gItem : ${unresolvedGuidance}" class="liability-box">
                         <div class="liability-title">⚖️ Infraction Incident:</div>
-                        <div th:text="${'Incident Description: ' + (gItem.incident != null ? gItem.incident : 'Unspecified')}">Details</div>
+                        <div th:text="|Incident Description: ${gItem?.incident ?: 'Unspecified'}|">Details</div>
                     </div>
                 </div>
                 
@@ -355,10 +354,9 @@
                     </h3>
                     <div th:each="fItem : ${unresolvedFacilities}" class="liability-box">
                         <div class="liability-title">🏢 Damage Reference Item:</div>
-                        <div th:text="${'Facility: ' + (fItem.facility != null ? fItem.facility : 'Unknown') + ' - ' + (fItem.description != null ? fItem.description : 'No log details')}">Details</div>
+                        <div th:text="|Facility: ${fItem?.facility ?: 'Unknown'} - ${fItem?.description ?: 'No log details'}|">Details</div>
                     </div>
                 </div>
-
             </div>
 
             <div th:if="${labStatus == 'CLEAR' and sportsStatus == 'CLEAR' and guidanceStatus == 'CLEAR' and facilitiesStatus == 'CLEAR' and libraryStatus == 'CLEAR'}"
@@ -401,11 +399,11 @@
                 </thead>
                 <tbody>
                     <tr th:each="grade : ${studentGrades}">
-                        <td th:text="${grade.subjectName}">Subject Name</td>
-                        <td th:text="${grade.getSem1Display()}">N/A</td>
-                        <td th:text="${grade.getSem2Display()}">N/A</td>
-                        <td th:text="${grade.getSem3Display()}">N/A</td>
-                        <td class="grade-highlight" th:text="${grade.getFinalGradeDisplay()}">N/A</td>
+                        <td th:text="${grade?.subjectName}">Subject Name</td>
+                        <td th:text="${grade?.getSem1Display()}">N/A</td>
+                        <td th:text="${grade?.getSem2Display()}">N/A</td>
+                        <td th:text="${grade?.getSem3Display()}">N/A</td>
+                        <td class="grade-highlight" th:text="${grade?.getFinalGradeDisplay()}">N/A</td>
                     </tr>
                 </tbody>
             </table>
